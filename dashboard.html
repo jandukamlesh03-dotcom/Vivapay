@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>VIVI PAY – Dashboard</title>
+    <!-- Supabase JS Client (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <!-- Our Supabase client setup -->
+    <script src="supabaseClient.js"></script>
+    <style>
+        /* --- Dashboard specific styles --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        body { background: #0a0e17; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .app-card { background: #131a2b; border-radius: 28px; padding: 24px 20px 28px; width: 100%; max-width: 420px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #1e2a3a; }
+
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+        .dash-header h2 { color: #ffffff; font-size: 20px; }
+        .dash-header .user-actions { display: flex; gap: 8px; align-items: center; }
+        .btn-signout { background: #e74c5e; border: none; color: #fff; padding: 8px 16px; border-radius: 40px; font-weight: 600; font-size: 13px; cursor: pointer; transition: opacity 0.2s; }
+        .btn-signout:active { opacity: 0.7; }
+
+        .balance-card { background: linear-gradient(145deg, #0e1625, #182234); border-radius: 24px; padding: 20px 16px; border: 1px solid #1e2a3a; margin-bottom: 20px; text-align: center; }
+        .balance-card .label { color: #8a9bb5; font-size: 14px; font-weight: 500; }
+        .balance-card .amount { color: #ffffff; font-size: 38px; font-weight: 700; margin: 4px 0; }
+        .balance-card .amount span { color: #00d4aa; }
+        .balance-card .sub { color: #4a5a72; font-size: 13px; }
+
+        .section-title { color: #ffffff; font-size: 17px; font-weight: 600; margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title .badge { background: #1e2a3a; font-size: 11px; padding: 2px 12px; border-radius: 40px; color: #8a9bb5; font-weight: 400; }
+
+        /* Deposit form */
+        .deposit-form { display: flex; flex-direction: column; gap: 12px; background: #0e1625; border-radius: 20px; padding: 16px; border: 1px solid #1e2a3a; }
+        .deposit-form .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+        .deposit-form .field { flex: 1; min-width: 120px; }
+        .deposit-form label { display: block; font-size: 13px; color: #8a9bb5; margin-bottom: 4px; }
+        .deposit-form input { width: 100%; padding: 12px 14px; background: #131a2b; border: 1.5px solid #1e2a3a; border-radius: 14px; color: #fff; font-size: 15px; outline: none; }
+        .deposit-form input:focus { border-color: #00d4aa; }
+        .deposit-form .btn-primary { background: #00d4aa; border: none; border-radius: 40px; padding: 12px 24px; font-weight: 700; color: #0a0e17; cursor: pointer; font-size: 15px; transition: background 0.2s; }
+        .deposit-form .btn-primary:active { background: #00b894; }
+        .deposit-form .upi-note { background: #1a2538; border-radius: 12px; padding: 10px 14px; font-size: 14px; color: #b0c4de; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .deposit-form .upi-note strong { color: #fff; }
+        .deposit-form .upi-note a { color: #00d4aa; text-decoration: none; font-weight: 600; }
+
+        /* History list */
+        .history-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+        .history-item { background: #0e1625; border-radius: 14px; padding: 12px 16px; border: 1px solid #1e2a3a; display: flex; justify-content: space-between; align-items: center; }
+        .history-item .left .amount { color: #fff; font-weight: 600; font-size: 16px; }
+        .history-item .left .date { color: #4a5a72; font-size: 12px; }
+        .history-item .status { font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 40px; text-transform: capitalize; }
+        .status-pending { background: #1f2a3a; color: #fbbf24; }
+        .status-accepted { background: #0f2a1f; color: #6ee7b7; }
+        .status-rejected { background: #2a1118; color: #f87171; }
+
+        .empty-state { color: #4a5a72; text-align: center; padding: 20px 0; font-size: 14px; }
+
+        .dash-footer { margin-top: 24px; padding-top: 14px; border-top: 1px solid #1e2a3a; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .dash-footer .version { color: #4a5a72; font-size: 12px; }
+
+        @media (max-width: 420px) {
+            .app-card { padding: 16px; }
+            .balance-card .amount { font-size: 30px; }
+            .deposit-form .row { flex-direction: column; align-items: stretch; }
+            .deposit-form .btn-primary { width: 100%; }
+            .dash-header { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-card" id="dashboardApp">
+        <!-- Header -->
+        <div class="dash-header">
+            <h2>💳 VIVI PAY</h2>
+            <div class="user-actions">
+                <span id="userIdDisplay" class="user-id" style="color:#8a9bb5;font-size:12px;"></span>
+                <button class="btn-signout" id="signOutBtn">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Balance -->
+        <div class="balance-card">
+            <div class="label">💰 Wallet Balance</div>
+            <div class="amount"><span id="balanceAmount">0.00</span> IToken</div>
+            <div class="sub">1 Rs = 1 IToken</div>
+        </div>
+
+        <!-- Deposit Form -->
+        <div class="section-title">📥 New Deposit Request</div>
+        <form id="depositForm" class="deposit-form">
+            <div class="upi-note">
+                <span>💳 UPI to pay: <strong>7878674198@omni</strong></span>
+                <a href="https://t.me/cecoinpay" target="_blank">📱 Telegram Support</a>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label for="depositAmount">Amount (₹)</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount" min="1" required />
+                </div>
+                <button type="submit" class="btn-primary" id="depositBtn">Submit</button>
+            </div>
+        </form>
+
+        <!-- History -->
+        <div class="section-title">
+            📋 Deposit History
+            <span class="badge" id="historyCount">0</span>
+        </div>
+        <div id="historyContainer">
+            <div class="history-list" id="historyList">
+                <!-- items will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dash-footer">
+            <span class="version">v2.0.0</span>
+            <span style="color:#4a5a72;font-size:12px;">🔒 Secured by Supabase</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // --- DOM refs ---
+            const balanceEl = document.getElementById('balanceAmount');
+            const depositForm = document.getElementById('depositForm');
+            const depositAmount = document.getElementById('depositAmount');
+            const depositBtn = document.getElementById('depositBtn');
+            const historyList = document.getElementById('historyList');
+            const historyCount = document.getElementById('historyCount');
+            const userIdDisplay = document.getElementById('userIdDisplay');
+            const signOutBtn = document.getElementById('signOutBtn');
+
+            let currentUser = null;
+
+            // --- Helper: format date ---
+            function formatDate(iso) {
+                if (!iso) return '';
+                const d = new Date(iso);
+                return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            // --- Render history ---
+            function renderHistory(requests) {
+                historyList.innerHTML = '';
+                if (!requests || requests.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state">No deposit requests yet.</div>';
+                    historyCount.textContent = '0';
+                    return;
+                }
+                historyCount.textContent = requests.length;
+                requests.forEach(req => {
+                    const statusClass = 'status-' + (req.status || 'pending');
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `
+                        <div class="left">
+                            <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
+                            <div class="date">${formatDate(req.created_at)}</div>
+                        </div>
+                        <span class="status ${statusClass}">${req.status || 'pending'}</span>
+                    `;
+                    historyList.appendChild(item);
+                });
+            }
+
+            // --- Fetch wallet balance and deposit history ---
+            async function loadDashboard() {
+                try {
+                    // 1. Get current user
+                    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                    if (userError) throw userError;
+                    if (!user) {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    currentUser = user;
+                    userIdDisplay.textContent = 'ID: ' + user.id.slice(0, 8);
+
+                    // 2. Fetch wallet balance
+                    const { data: wallet, error: walletError } = await supabaseClient
+                        .from('wallets')
+                        .select('balance')
+                        .eq('user_id', user.id)
+                        .maybeSingle();
+
+                    if (walletError) throw walletError;
+                    balanceEl.textContent = wallet ? Number(wallet.balance).toFixed(2) : '0.00';
+
+                    // 3. Fetch deposit requests
+                    const { data: deposits, error: depError } = await supabaseClient
+                        .from('deposit_requests')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .order('created_at', { ascending: false });
+
+                    if (depError) throw depError;
+                    renderHistory(deposits || []);
+
+                } catch (err) {
+                    console.error('Dashboard load error:', err);
+                    alert('Could not load dashboard data. Please refresh.');
+                }
+            }
+
+            // --- Submit deposit request ---
+            depositForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const amount = parseFloat(depositAmount.value);
+                if (!amount || amount <= 0) {
+                    alert('Please enter a valid amount.');
+                    return;
+                }
+
+                depositBtn.disabled = true;
+                depositBtn.textContent = 'Submitting…';
+
+                try {
+                    // Get current user
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if (!user) throw new Error('Not logged in.');
+
+                    // Insert deposit request with status 'pending'
+                    const { data, error } = await supabaseClient
+                        .from('deposit_requests')
+                        .insert({
+                            user_id: user.id,
+                            amount: amount,
+                            proof_url: null, // we don't collect proof in this simple version
+                            status: 'pending',
+                            created_at: new Date().toISOString(),
+                        })
+                        .select();
+
+                    if (error) throw error;
+
+                    // Refresh history
+                    await loadDashboard();
+                    depositAmount.value = '';
+                    alert('Deposit request submitted! Wait for admin approval.');
+
+                } catch (err) {
+                    console.error('Deposit error:', err);
+                    alert('Failed to submit deposit. Please try again.');
+                } finally {
+                    depositBtn.disabled = false;
+                    depositBtn.textContent = 'Submit';
+                }
+            });
+
+            // --- Sign out ---
+            signOutBtn.addEventListener('click', async function() {
+                try {
+                    await supabaseClient.auth.signOut();
+                    window.location.href = 'index.html';
+                } catch (err) {
+                    console.error('Sign out error:', err);
+                }
+            });
+
+            // --- Initial load ---
+            loadDashboard();
+
+            // --- Auto-refresh every 30s (optional) ---
+            setInterval(() => {
+                if (currentUser) loadDashboard();
+            }, 30000);
+
+        })();
+    </script>
+</body>
+</html>
