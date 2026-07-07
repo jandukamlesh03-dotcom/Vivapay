@@ -47,6 +47,7 @@
         .history-item { background: #0e1625; border-radius: 14px; padding: 12px 16px; border: 1px solid #1e2a3a; display: flex; justify-content: space-between; align-items: center; }
         .history-item .left .amount { color: #fff; font-weight: 600; font-size: 16px; }
         .history-item .left .date { color: #4a5a72; font-size: 12px; }
+        .history-item .left .utr { color: #6a7d99; font-size: 12px; margin-top: 2px; }
         .history-item .status { font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 40px; text-transform: capitalize; }
         .status-pending { background: #1f2a3a; color: #fbbf24; }
         .status-accepted { background: #0f2a1f; color: #6ee7b7; }
@@ -96,8 +97,12 @@
                     <label for="depositAmount">Amount (₹)</label>
                     <input type="number" id="depositAmount" placeholder="Enter amount" min="1" required />
                 </div>
-                <button type="submit" class="btn-primary" id="depositBtn">Submit</button>
+                <div class="field">
+                    <label for="depositUtr">UTR ID</label>
+                    <input type="text" id="depositUtr" placeholder="Enter UTR ID" required />
+                </div>
             </div>
+            <button type="submit" class="btn-primary" id="depositBtn" style="width:100%;">Submit</button>
         </form>
 
         <!-- History -->
@@ -113,7 +118,7 @@
 
         <!-- Footer -->
         <div class="dash-footer">
-            <span class="version">v2.0.0</span>
+            <span class="version">v2.1.0</span>
             <span style="color:#4a5a72;font-size:12px;">🔒 Secured by Supabase</span>
         </div>
     </div>
@@ -126,6 +131,7 @@
             const balanceEl = document.getElementById('balanceAmount');
             const depositForm = document.getElementById('depositForm');
             const depositAmount = document.getElementById('depositAmount');
+            const depositUtr = document.getElementById('depositUtr');
             const depositBtn = document.getElementById('depositBtn');
             const historyList = document.getElementById('historyList');
             const historyCount = document.getElementById('historyCount');
@@ -157,6 +163,7 @@
                     item.innerHTML = `
                         <div class="left">
                             <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
+                            <div class="utr">UTR: ${req.utr_id ? req.utr_id : '—'}</div>
                             <div class="date">${formatDate(req.created_at)}</div>
                         </div>
                         <span class="status ${statusClass}">${req.status || 'pending'}</span>
@@ -208,8 +215,14 @@
             depositForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const amount = parseFloat(depositAmount.value);
+                const utr = depositUtr.value.trim();
+
                 if (!amount || amount <= 0) {
                     alert('Please enter a valid amount.');
+                    return;
+                }
+                if (!utr) {
+                    alert('Please enter the UTR ID.');
                     return;
                 }
 
@@ -227,6 +240,7 @@
                         .insert({
                             user_id: user.id,
                             amount: amount,
+                            utr_id: utr,
                             proof_url: null, // we don't collect proof in this simple version
                             status: 'pending',
                             created_at: new Date().toISOString(),
@@ -238,6 +252,7 @@
                     // Refresh history
                     await loadDashboard();
                     depositAmount.value = '';
+                    depositUtr.value = '';
                     alert('Deposit request submitted! Wait for admin approval.');
 
                 } catch (err) {
