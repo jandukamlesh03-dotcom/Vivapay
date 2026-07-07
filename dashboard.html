@@ -7,10 +7,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabaseClient.js"></script>
   <style>
-    /* ===== RESET & BASE ===== */
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    /* ============================================================
+       PROFESSIONAL DARK THEME (GitHub-inspired)
+       ============================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
     body {
-      background: #0a0e17;
+      background: #0d1117;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -19,318 +26,335 @@
     .app-container {
       max-width: 420px;
       width: 100%;
-      background: #131a2b;
+      background: #161b22;
       border-radius: 28px;
       padding: 18px 16px 20px;
-      border: 1px solid #1e2a3a;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      border: 1px solid #30363d;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
       position: relative;
       min-height: 600px;
     }
-    .tab-content { display: none; animation: fadeIn 0.25s ease; }
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
     .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(8px); }
+      to { opacity:1; transform:translateY(0); }
+    }
 
-    /* ===== HEADER ===== */
+    /* ----- HEADER ----- */
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #30363d;
     }
     .page-header .logo {
       font-size: 22px;
       font-weight: 700;
-      color: #fff;
+      color: #f0f6fc;
+      letter-spacing: 0.5px;
     }
-    .page-header .logo span { color: #00d4aa; }
+    .page-header .logo span { color: #00c49a; }
     .page-header .user-badge {
-      background: #1e2a3a;
+      background: #0f131a;
       padding: 4px 12px;
       border-radius: 40px;
-      color: #b0c4de;
+      color: #8b949e;
       font-size: 11px;
+      border: 1px solid #30363d;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    /* ===== COMMON ===== */
+    /* ----- COMMON ----- */
     .stat-box {
-      background: #0e1625;
-      border-radius: 16px;
+      background: #0f131a;
+      border-radius: 14px;
       padding: 12px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       text-align: center;
       flex: 1;
     }
-    .stat-box .stat-label {
-      color: #8a9bb5;
-      font-size: 13px;
-      font-weight: 500;
-    }
-    .stat-box .stat-value {
-      color: #fff;
-      font-size: 20px;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-    .stat-box .stat-value.green { color: #6ee7b7; }
+    .stat-box .stat-label { color: #8b949e; font-size: 13px; font-weight: 500; }
+    .stat-box .stat-value { color: #f0f6fc; font-size: 20px; font-weight: 700; margin-top: 4px; }
+    .stat-box .stat-value.green { color: #58c4a0; }
 
     .btn-teal {
-      background: #00d4aa;
+      background: #00c49a;
       border: none;
       border-radius: 40px;
       padding: 10px 24px;
       font-weight: 700;
-      color: #0a0e17;
+      color: #0d1117;
       font-size: 15px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.1s;
     }
-    .btn-teal:active { background: #00b894; }
-    .btn-danger { background: #e74c5e; border: none; border-radius: 40px; padding: 8px 20px; font-weight: 700; color: #fff; cursor: pointer; }
-    .btn-danger:active { opacity:0.7; }
+    .btn-teal:active { background: #00a88a; transform: scale(0.97); }
 
-    .empty-state { color: #4a5a72; text-align: center; padding: 20px 0; font-size: 14px; }
+    .btn-danger {
+      background: #f85149;
+      border: none;
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+    }
+    .btn-danger:active { opacity: 0.7; }
 
-    /* ===== HOME TAB ===== */
+    .empty-state { color: #8b949e; text-align: center; padding: 20px 0; font-size: 14px; }
+
+    /* ----- HOME TAB ----- */
     .token-card {
-      background: linear-gradient(145deg, #0e1625, #1a2538);
+      background: linear-gradient(145deg, #0f131a, #1c2333);
       border-radius: 24px;
       padding: 18px 20px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .token-card .left .label { color: #8a9bb5; font-size: 14px; font-weight: 500; }
-    .token-card .left .amount { color: #fff; font-size: 32px; font-weight: 700; }
-    .token-card .left .amount span { color: #00d4aa; }
-    .token-card .left .sub { color: #4a5a72; font-size: 12px; margin-top: 2px; }
-    .token-card .right .btn-teal { padding: 10px 24px; }
+    .token-card .left .label { color: #8b949e; font-size: 14px; font-weight: 500; }
+    .token-card .left .amount { color: #f0f6fc; font-size: 32px; font-weight: 700; }
+    .token-card .left .amount span { color: #00c49a; }
+    .token-card .left .sub { color: #8b949e; font-size: 12px; margin-top: 2px; }
 
     .stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
 
-    .quick-actions { display: flex; gap: 10px; margin-bottom: 18px; }
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
     .quick-actions .qa-btn {
       flex: 1;
-      background: #0e1625;
-      border: 1px solid #1e2a3a;
+      background: #0f131a;
+      border: 1px solid #30363d;
       border-radius: 14px;
       padding: 12px;
       text-align: center;
-      color: #b0c4de;
+      color: #c9d1d9;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: 0.2s;
     }
-    .quick-actions .qa-btn:active { background: #1e2a3a; }
+    .quick-actions .qa-btn:active { background: #1c2333; border-color: #00c49a; }
 
     .notice-box {
-      background: #0e1625;
+      background: #0f131a;
       border-radius: 16px;
       padding: 14px 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       margin-bottom: 12px;
       cursor: pointer;
+      transition: 0.2s;
     }
-    .notice-box .title { color: #fff; font-weight: 600; font-size: 15px; }
-    .notice-box .desc { color: #8a9bb5; font-size: 13px; margin-top: 4px; }
-    .notice-box .more { color: #00d4aa; font-size: 13px; float: right; }
+    .notice-box:active { border-color: #00c49a; }
+    .notice-box .title { color: #f0f6fc; font-weight: 600; font-size: 15px; }
+    .notice-box .desc { color: #8b949e; font-size: 13px; margin-top: 4px; }
+    .notice-box .more { color: #00c49a; font-size: 13px; float: right; }
 
-    /* ===== BUY TAB (Investment Packages) ===== */
+    /* ----- BUY TAB (Investment Packages) ----- */
     .pkg-card {
-      background: #0e1625;
+      background: #0f131a;
       border-radius: 16px;
       padding: 18px 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .pkg-card .left .pkg-name { color: #fff; font-size: 18px; font-weight: 600; }
-    .pkg-card .left .pkg-detail { color: #8a9bb5; font-size: 14px; margin-top: 2px; }
-    .pkg-card .left .pkg-profit { color: #6ee7b7; font-size: 14px; font-weight: 600; }
+    .pkg-card .left .pkg-name { color: #f0f6fc; font-size: 18px; font-weight: 600; }
+    .pkg-card .left .pkg-detail { color: #8b949e; font-size: 14px; margin-top: 2px; }
+    .pkg-card .left .pkg-profit { color: #58c4a0; font-size: 14px; font-weight: 600; }
     .pkg-card .right .btn-invest {
-      background: #00d4aa;
+      background: #00c49a;
       border: none;
       border-radius: 40px;
       padding: 10px 24px;
       font-weight: 700;
-      color: #0a0e17;
+      color: #0d1117;
       font-size: 15px;
       cursor: pointer;
     }
-    .pkg-card .right .btn-invest:active { background: #00b894; }
+    .pkg-card .right .btn-invest:active { background: #00a88a; }
 
-    /* ===== DEPOSIT TAB ===== */
-    .deposit-form {
-      background: #0e1625;
+    /* ----- DEPOSIT & WITHDRAW FORMS ----- */
+    .deposit-form, .withdraw-form {
+      background: #0f131a;
       border-radius: 20px;
       padding: 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       margin-bottom: 20px;
     }
     .upi-display {
-      background: #1a2538;
+      background: #1c2333;
       border-radius: 12px;
       padding: 14px;
       text-align: center;
       margin-bottom: 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
     }
-    .upi-display .upi-label { color: #8a9bb5; font-size: 14px; }
+    .upi-display .upi-label { color: #8b949e; font-size: 14px; }
     .upi-display .upi-id {
       font-size: 24px;
       font-weight: 700;
-      color: #fff;
+      color: #f0f6fc;
       margin: 4px 0;
       letter-spacing: 1px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
     .upi-display .copy-btn {
-      background: #00d4aa;
+      background: #30363d;
       border: none;
       border-radius: 40px;
       padding: 4px 16px;
       font-weight: 600;
-      color: #0a0e17;
+      color: #f0f6fc;
       font-size: 13px;
       cursor: pointer;
     }
-    .upi-display .telegram-link { color: #00d4aa; text-decoration: none; font-weight: 600; }
+    .upi-display .copy-btn:active { background: #484f58; }
+    .upi-display .telegram-link { color: #00c49a; text-decoration: none; font-weight: 600; }
 
-    .deposit-form .field { margin-bottom: 12px; }
-    .deposit-form label { display: block; font-size: 13px; color: #8a9bb5; margin-bottom: 4px; }
-    .deposit-form input {
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 4px;
+    }
+    .field input {
       width: 100%;
       padding: 12px 14px;
-      background: #131a2b;
-      border: 1.5px solid #1e2a3a;
+      background: #0d1117;
+      border: 1.5px solid #30363d;
       border-radius: 14px;
-      color: #fff;
+      color: #f0f6fc;
       font-size: 15px;
       outline: none;
     }
-    .deposit-form input:focus { border-color: #00d4aa; }
-    .deposit-form .btn-primary {
+    .field input:focus { border-color: #00c49a; }
+    .field input::placeholder { color: #484f58; }
+
+    .btn-primary {
       width: 100%;
-      background: #00d4aa;
+      background: #00c49a;
       border: none;
       border-radius: 40px;
       padding: 12px;
       font-weight: 700;
-      color: #0a0e17;
+      color: #0d1117;
       font-size: 16px;
       cursor: pointer;
     }
-    .deposit-form .btn-primary:active { background: #00b894; }
+    .btn-primary:active { background: #00a88a; }
 
+    /* ----- HISTORY ITEMS ----- */
     .history-item {
-      background: #0e1625;
+      background: #0f131a;
       border-radius: 14px;
       padding: 12px 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
     }
-    .history-item .left .amount { color: #fff; font-weight: 600; font-size: 16px; }
-    .history-item .left .date { color: #4a5a72; font-size: 12px; }
-    .status-pending { background: #1f2a3a; color: #fbbf24; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
-    .status-accepted { background: #0f2a1f; color: #6ee7b7; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
-    .status-rejected { background: #2a1118; color: #f87171; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
-
-    /* ===== WITHDRAWAL TAB ===== */
-    .withdraw-form {
-      background: #0e1625;
-      border-radius: 20px;
-      padding: 16px;
-      border: 1px solid #1e2a3a;
-      margin-bottom: 20px;
-    }
-    .withdraw-form .field { margin-bottom: 12px; }
-    .withdraw-form label { display: block; font-size: 13px; color: #8a9bb5; margin-bottom: 4px; }
-    .withdraw-form input {
-      width: 100%;
-      padding: 12px 14px;
-      background: #131a2b;
-      border: 1.5px solid #1e2a3a;
-      border-radius: 14px;
-      color: #fff;
-      font-size: 15px;
-      outline: none;
-    }
-    .withdraw-form input:focus { border-color: #00d4aa; }
-    .withdraw-form .btn-primary {
-      width: 100%;
-      background: #00d4aa;
-      border: none;
+    .history-item .left .amount { color: #f0f6fc; font-weight: 600; font-size: 16px; }
+    .history-item .left .date { color: #8b949e; font-size: 12px; }
+    .status-pending {
+      background: #1c2333;
+      color: #d29922;
+      padding: 4px 14px;
       border-radius: 40px;
-      padding: 12px;
-      font-weight: 700;
-      color: #0a0e17;
-      font-size: 16px;
-      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+      border: 1px solid #d29922;
+    }
+    .status-accepted {
+      background: #0f2a1f;
+      color: #58c4a0;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+      border: 1px solid #58c4a0;
+    }
+    .status-rejected {
+      background: #2a1118;
+      color: #f85149;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+      border: 1px solid #f85149;
     }
 
-    /* ===== MINE TAB ===== */
+    /* ----- MINE TAB ----- */
     .mine-item {
-      background: #0e1625;
+      background: #0f131a;
       border-radius: 14px;
       padding: 14px 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
       cursor: pointer;
+      transition: 0.2s;
     }
-    .mine-item .label { color: #b0c4de; font-size: 15px; }
-    .mine-item .arrow { color: #4a5a72; font-size: 18px; }
-    .mine-item:active { background: #1a2538; }
+    .mine-item:active { background: #1c2333; border-color: #00c49a; }
+    .mine-item .label { color: #c9d1d9; font-size: 15px; }
+    .mine-item .arrow { color: #8b949e; font-size: 18px; }
 
     .inv-item {
-      background: #0e1625;
+      background: #0f131a;
       border-radius: 14px;
       padding: 12px 16px;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .inv-item .left .pkg { color: #fff; font-weight: 600; }
-    .inv-item .left .detail { color: #8a9bb5; font-size: 12px; }
+    .inv-item .left .pkg { color: #f0f6fc; font-weight: 600; }
+    .inv-item .left .detail { color: #8b949e; font-size: 12px; }
     .inv-item .btn-sell {
-      background: #fbbf24;
+      background: #d29922;
       border: none;
       border-radius: 40px;
       padding: 4px 16px;
       font-weight: 600;
-      color: #0a0e17;
+      color: #0d1117;
       font-size: 13px;
       cursor: pointer;
     }
-    .inv-item .btn-sell:active { background: #f59e0b; }
+    .inv-item .btn-sell:active { background: #b8860b; }
 
     .mine-footer {
       margin-top: 20px;
       padding-top: 16px;
-      border-top: 1px solid #1e2a3a;
+      border-top: 1px solid #30363d;
       text-align: center;
     }
-    .mine-footer .version { color: #4a5a72; font-size: 12px; }
+    .mine-footer .version { color: #8b949e; font-size: 12px; }
     .mine-footer .signout-btn {
-      background: #e74c5e;
+      background: #f85149;
       border: none;
       color: #fff;
       padding: 10px 20px;
@@ -343,11 +367,14 @@
     }
     .mine-footer .signout-btn:active { opacity: 0.7; }
 
-    /* ===== MODAL ===== */
+    /* ============================================================
+       CUSTOM MODAL  (Professional)
+       ============================================================ */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -356,30 +383,68 @@
     }
     .modal-overlay.show { display: flex; }
     .modal-box {
-      background: #131a2b;
+      background: #161b22;
       border-radius: 28px;
       padding: 28px 24px;
       max-width: 400px;
       width: 100%;
-      border: 1px solid #1e2a3a;
+      border: 1px solid #30363d;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
       max-height: 90vh;
       overflow-y: auto;
     }
-    .modal-box .modal-title { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
-    .modal-box .modal-body { color: #b0c4de; font-size: 15px; margin-bottom: 16px; }
-    .modal-box .modal-body .highlight { color: #6ee7b7; font-weight: 600; }
-    .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
-    .modal-box .modal-actions .btn-confirm { background: #00d4aa; border: none; border-radius: 40px; padding: 10px 24px; font-weight: 700; color: #0a0e17; cursor: pointer; }
-    .modal-box .modal-actions .btn-cancel { background: #1e2a3a; border: none; border-radius: 40px; padding: 10px 24px; font-weight: 700; color: #b0c4de; cursor: pointer; }
+    .modal-box .modal-title {
+      color: #f0f6fc;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .modal-box .modal-body {
+      color: #c9d1d9;
+      font-size: 15px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .modal-box .modal-body .highlight { color: #58c4a0; font-weight: 600; }
+    .modal-box .modal-body .warning { color: #d29922; font-weight: 600; }
+    .modal-box .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    .modal-box .modal-actions .btn-confirm {
+      background: #00c49a;
+      border: none;
+      border-radius: 40px;
+      padding: 10px 28px;
+      font-weight: 700;
+      color: #0d1117;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .modal-box .modal-actions .btn-confirm:active { background: #00a88a; }
+    .modal-box .modal-actions .btn-cancel {
+      background: #30363d;
+      border: none;
+      border-radius: 40px;
+      padding: 10px 28px;
+      font-weight: 700;
+      color: #c9d1d9;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .modal-box .modal-actions .btn-cancel:active { background: #484f58; }
 
-    /* ===== BOTTOM NAV ===== */
+    /* ============================================================
+       BOTTOM NAV
+       ============================================================ */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: #0e1625;
-      border-top: 1px solid #1e2a3a;
+      background: #0f131a;
+      border-top: 1px solid #30363d;
       display: flex;
       justify-content: space-around;
       padding: 8px 0 12px;
@@ -394,7 +459,7 @@
       align-items: center;
       background: none;
       border: none;
-      color: #4a5a72;
+      color: #484f58;
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
@@ -403,9 +468,12 @@
       padding: 0 8px;
     }
     .bottom-nav .nav-item .icon { font-size: 22px; line-height: 1; }
-    .bottom-nav .nav-item.active { color: #00d4aa; }
+    .bottom-nav .nav-item.active { color: #00c49a; }
     .bottom-nav .nav-item:active { transform: scale(0.92); }
 
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
     @media (max-width: 420px) {
       .app-container { padding: 14px 12px 16px; border-radius: 20px; }
       .token-card .left .amount { font-size: 26px; }
@@ -413,13 +481,17 @@
       .pkg-card .right { text-align: right; }
       .stats-row { flex-wrap: wrap; }
       .stats-row .stat-box { min-width: calc(50% - 6px); flex: none; }
-      .upi-display .upi-id { font-size: 20px; flex-wrap: wrap; }
+      .upi-display .upi-id { font-size: 20px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ============================================================
+       APP
+       ============================================================ -->
   <div class="app-container" id="app">
+
     <!-- ===== HOME TAB ===== -->
     <div class="tab-content active" id="tab-home">
       <div class="page-header">
@@ -451,7 +523,6 @@
         <div class="qa-btn" id="qaSellHistory">📤 Sell History</div>
         <div class="qa-btn" id="qaWithdraw">💸 Withdraw</div>
       </div>
-      <!-- Notices & News (tappable) -->
       <div class="notice-box" id="noticeOfficial">
         <div class="title">📢 Official Notice <span class="more">More ></span></div>
         <div class="desc" id="noticeDesc">New investment plans available with 8% daily profit.</div>
@@ -495,7 +566,7 @@
         </div>
         <button class="btn-primary" id="depositSubmitBtn">Submit Deposit Request</button>
       </div>
-      <div style="font-weight:600;color:#fff;font-size:16px;margin:10px 0 8px;">📋 Deposit History</div>
+      <div style="font-weight:600;color:#f0f6fc;font-size:16px;margin:10px 0 8px;">📋 Deposit History</div>
       <div id="depositHistoryList"></div>
     </div>
 
@@ -513,7 +584,7 @@
         </div>
         <button class="btn-primary" id="withdrawSubmitBtn">Submit Withdrawal Request</button>
       </div>
-      <div style="font-weight:600;color:#fff;font-size:16px;margin:10px 0 8px;">📤 Withdrawal History</div>
+      <div style="font-weight:600;color:#f0f6fc;font-size:16px;margin:10px 0 8px;">📤 Withdrawal History</div>
       <div id="withdrawHistoryList"></div>
     </div>
 
@@ -533,9 +604,9 @@
           <div class="stat-value green" id="mineTodayProfit">0.00</div>
         </div>
       </div>
-      <div style="font-weight:600;color:#fff;font-size:15px;margin:12px 0 8px;">📌 Active Investments</div>
+      <div style="font-weight:600;color:#f0f6fc;font-size:15px;margin:12px 0 8px;">📌 Active Investments</div>
       <div id="activeInvestmentsList"></div>
-      <div style="font-weight:600;color:#fff;font-size:15px;margin:16px 0 8px;">⚙️ Settings</div>
+      <div style="font-weight:600;color:#f0f6fc;font-size:15px;margin:16px 0 8px;">⚙️ Settings</div>
       <div class="mine-item" id="mineBuyHistory"><span class="label">📋 Buy History</span><span class="arrow">›</span></div>
       <div class="mine-item" id="mineSellHistory"><span class="label">📤 Sell History</span><span class="arrow">›</span></div>
       <div class="mine-item" id="mineTransferHistory"><span class="label">🔄 Transfer History</span><span class="arrow">›</span></div>
@@ -556,7 +627,9 @@
     </div>
   </div>
 
-  <!-- ===== MODAL ===== -->
+  <!-- ============================================================
+       CUSTOM MODAL
+       ============================================================ -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
       <div class="modal-title" id="modalTitle">Confirm</div>
@@ -568,9 +641,9 @@
     </div>
   </div>
 
-  <!-- ========================================================== -->
-  <!-- JAVASCRIPT -->
-  <!-- ========================================================== -->
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================ -->
   <script>
     (function() {
       'use strict';
@@ -585,7 +658,7 @@
       };
       const navItems = document.querySelectorAll('.nav-item');
 
-      // ---- Modal ----
+      // ---- Custom Modal ----
       const modalOverlay = document.getElementById('modalOverlay');
       const modalTitle = document.getElementById('modalTitle');
       const modalBody = document.getElementById('modalBody');
@@ -593,22 +666,49 @@
       const modalCancel = document.getElementById('modalCancel');
       let modalResolve = null;
 
-      function showModal(title, message) {
+      // Show modal – returns Promise that resolves with true/false
+      function showModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
         return new Promise((resolve) => {
           modalTitle.textContent = title;
           modalBody.innerHTML = message;
+          modalConfirm.textContent = confirmText;
+          modalCancel.textContent = cancelText;
           modalOverlay.classList.add('show');
           modalResolve = resolve;
         });
       }
+
+      // Simple alert-style modal (no cancel)
+      function showAlert(title, message) {
+        return new Promise((resolve) => {
+          modalTitle.textContent = title;
+          modalBody.innerHTML = message;
+          modalConfirm.textContent = 'OK';
+          modalCancel.style.display = 'none';
+          modalOverlay.classList.add('show');
+          modalResolve = resolve;
+          // Auto-resolve on confirm
+        });
+      }
+
       modalCancel.addEventListener('click', () => {
         modalOverlay.classList.remove('show');
         if (modalResolve) modalResolve(false);
+        modalCancel.style.display = ''; // reset
       });
       modalConfirm.addEventListener('click', () => {
         modalOverlay.classList.remove('show');
         if (modalResolve) modalResolve(true);
+        modalCancel.style.display = ''; // reset
       });
+
+      // Override native alert/confirm with custom ones (optional)
+      window.alert = function(msg) {
+        showAlert('Notice', msg).then(() => {});
+      };
+      window.confirm = function(msg) {
+        return showModal('Confirm', msg);
+      };
 
       // ---- switch tab ----
       function switchTab(tabId) {
@@ -737,7 +837,6 @@
       // ---- Buy Investment with confirmation ----
       async function handleInvestBuy(pkgId, price, name, profitPercent) {
         if (!currentUser) { alert('Please login.'); return; }
-        // Show confirmation with profit summary (30 days)
         const dailyProfit = price * profitPercent / 100;
         const totalProfit30 = dailyProfit * 30;
         const message = `
@@ -745,7 +844,7 @@
           Price: ₹${price}<br/>
           Daily Profit: ₹${dailyProfit.toFixed(2)} (${profitPercent}%)<br/>
           Total profit (30 days): <span class="highlight">₹${totalProfit30.toFixed(2)}</span><br/><br/>
-          <span style="color:#fbbf24;">⚠️ You cannot sell before 48 hours.</span>
+          <span class="warning">⚠️ You cannot sell before 48 hours.</span>
         `;
         const confirmed = await showModal('Confirm Purchase', message);
         if (!confirmed) return;
@@ -846,7 +945,6 @@
         navigator.clipboard.writeText('7878674198@omni').then(() => {
           alert('UPI ID copied!');
         }).catch(() => {
-          // fallback
           const ta = document.createElement('textarea');
           ta.value = '7878674198@omni';
           document.body.appendChild(ta);
@@ -1062,5 +1160,6 @@
 
     })();
   </script>
+
 </body>
-  </html>
+</html>
