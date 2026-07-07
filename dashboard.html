@@ -549,7 +549,7 @@
         <div class="upi-display">
           <div class="upi-label">💳 Pay to this UPI ID</div>
           <div class="upi-id">
-            <span>7878674198@omni</span>
+            <span>paramjeet201@fam</span>
             <button class="copy-btn" id="copyUpiBtn">Copy</button>
           </div>
           <div style="margin-top:6px;">
@@ -557,7 +557,7 @@
           </div>
         </div>
         <div class="field">
-          <label>Amount (₹) – Minimum 200</label>
+          <label>Amount (₹) – Minimum 200☺</label>
           <input type="number" id="depositAmount" placeholder="Enter amount" min="200" required />
         </div>
         <div class="field">
@@ -580,7 +580,7 @@
         </div>
         <div class="field">
           <label>Your UPI ID</label>
-          <input type="text" id="withdrawUpi" placeholder="Enter UPI ID to receive funds" required />
+          <input type="text" id="withdrawUpi" placeholder="Enter UPI ID to receive funds 🤑" required />
         </div>
         <button class="btn-primary" id="withdrawSubmitBtn">Submit Withdrawal Request</button>
       </div>
@@ -942,11 +942,11 @@
 
       // Copy UPI
       document.getElementById('copyUpiBtn').addEventListener('click', function() {
-        navigator.clipboard.writeText('7878674198@omni').then(() => {
+        navigator.clipboard.writeText('paramjeet201@fam').then(() => {
           alert('UPI ID copied!');
         }).catch(() => {
           const ta = document.createElement('textarea');
-          ta.value = '7878674198@omni';
+          ta.value = 'paramjeet201@fam';
           document.body.appendChild(ta);
           ta.select();
           document.execCommand('copy');
