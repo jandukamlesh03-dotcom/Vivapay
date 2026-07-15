@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VIVA PAY • Official Community Access</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 20% 30%, #1a1a3e, #0b0b1a 80%);
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 48px;
+      padding: 40px 32px 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      color: #fff;
+      transition: 0.3s;
+    }
+    .card .icon {
+      font-size: 56px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .card h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .card .sub {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .badge span:first-child {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      border: none;
+      border-radius: 60px;
+      padding: 16px 48px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
+      width: 100%;
+      margin-bottom: 24px;
+    }
+    .btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 32px rgba(108, 92, 231, 0.5);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .timer {
+      font-size: 24px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+    .timer span {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 16px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .info {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.5;
+      margin-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 16px;
+    }
+    .info a {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+    }
+    @media (max-width: 480px) {
+      .card {
+        padding: 32px 20px 24px;
+        border-radius: 32px;
+      }
+      .badges {
+        gap: 12px;
+      }
+      .btn {
+        font-size: 16px;
+        padding: 14px 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <span class="icon">🔒</span>
+    <h1>Official Community Access</h1>
+    <p class="sub">Secure verification is required before continuing.<br />Please click the button below to proceed.</p>
+
+    <div class="badges">
+      <div class="badge"><span>🛡️</span>Secure</div>
+      <div class="badge"><span>⚡</span>Fast</div>
+      <div class="badge"><span>✅</span>Verified</div>
+    </div>
+
+    <!-- Continue button – redirects to login page -->
+    <button class="btn" id="continueBtn">Continue</button>
+
+    <div class="timer">
+      <span id="timerDisplay">01:07</span>
+    </div>
+
+    <div class="info">
+      Your access link is generated securely and redirects automatically after verification.<br />
+      This platform is intended for informational and access purposes only. Users must be 18+.<br />
+      This site is not affiliated with Facebook™.
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ----- REDIRECT DESTINATION (change this if needed) -----
+      const REDIRECT_URL = 'index.html';   // 👈 Change to 'dashboard.html' or any page
+
+      // ----- Countdown timer (1 minute 7 seconds) -----
+      let totalSeconds = 67;
+      const timerElement = document.getElementById('timerDisplay');
+
+      function updateTimer() {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        timerElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        if (totalSeconds <= 0) {
+          // Timer ended – redirect
+          window.location.href = REDIRECT_URL;
+          return;
+        }
+        totalSeconds--;
+        setTimeout(updateTimer, 1000);
+      }
+      updateTimer();
+
+      // ----- Continue button – immediate redirect -----
+      document.getElementById('continueBtn').addEventListener('click', function() {
+        window.location.href = REDIRECT_URL;
+      });
+    })();
+  </script>
+</body>
+</html>
