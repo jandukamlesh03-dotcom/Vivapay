@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>VIVI PAY – Login</title>
+    <link rel="manifest" href="manifest.json">
     <!-- Supabase JS Client (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <!-- Our Supabase client setup -->
     <script src="supabaseClient.js"></script>
     <style>
-        /* --- same styles as in the previous version --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
         body { background: #0a0e17; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .app-card { background: #131a2b; border-radius: 28px; padding: 32px 24px 28px; width: 100%; max-width: 400px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #1e2a3a; }
+        .app-card { background: #131a2b; border-radius: 28px; padding: 32px 24px 28px; width: 100%; max-width: 400px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #1e2a3a; position: relative; }
         .app-header { text-align: center; margin-bottom: 28px; }
         .app-header h1 { font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 1px; }
         .app-header h1 span { color: #00d4aa; }
@@ -23,35 +23,109 @@
         .tab-btn:active { transform: scale(0.96); }
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: #b0c4de; margin-bottom: 5px; letter-spacing: 0.3px; }
-        .form-group input { width: 100%; padding: 14px 16px; background: #0e1625; border: 1.5px solid #1e2a3a; border-radius: 14px; color: #ffffff; font-size: 15px; outline: none; transition: border 0.2s; }
+        .form-group input { width: 100%; padding: 14px 16px; background: #0e1625; border: 1.5px solid #1e2a3a; border-radius: 14px; color: #ffffff; font-size: 15px; outline: none; transition: border 0.2s; letter-spacing: 0.5px; }
         .form-group input:focus { border-color: #00d4aa; }
         .form-group input::placeholder { color: #4a5a72; font-size: 14px; }
+        .otp-input { text-align: center; font-size: 24px; letter-spacing: 10px !important; font-weight: 700; }
         .btn-primary { width: 100%; padding: 14px; background: #00d4aa; border: none; border-radius: 40px; color: #0a0e17; font-size: 17px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 6px; letter-spacing: 0.5px; }
         .btn-primary:active { transform: scale(0.97); }
         .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
         .toggle-link { text-align: center; margin-top: 18px; color: #8a9bb5; font-size: 14px; }
         .toggle-link button { background: none; border: none; color: #00d4aa; font-weight: 700; font-size: 14px; cursor: pointer; padding: 0 4px; }
         .toggle-link button:active { opacity: 0.7; }
+        .forgot-link { text-align: right; margin-top: -10px; margin-bottom: 18px; }
+        .forgot-link button { background: none; border: none; color: #8a9bb5; font-size: 13px; cursor: pointer; text-decoration: underline; }
+        .back-link { text-align: center; margin-top: 14px; }
+        .back-link button { background: none; border: none; color: #8a9bb5; font-size: 14px; cursor: pointer; }
         .msg { text-align: center; font-size: 14px; padding: 8px 0; border-radius: 10px; margin-bottom: 12px; display: none; }
         .msg.error { display: block; color: #f87171; background: #1f0f12; border: 1px solid #4a1a22; }
         .msg.success { display: block; color: #6ee7b7; background: #0f1f18; border: 1px solid #1a3a2a; }
+        .msg.info { display: block; color: #7dd3fc; background: #0c1a24; border: 1px solid #164e63; }
         .hidden { display: none !important; }
+        .otp-note { text-align: center; color: #8a9bb5; font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
+        .otp-note strong { color: #fff; }
+
+        /* ---------- HELP / SUPPORT LINK ---------- */
+        .help-link-wrap { text-align: center; margin-top: 22px; padding-top: 16px; border-top: 1px solid #1e2a3a; }
+        .help-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #0e1625; border: 1px solid #1e2a3a; color: #8a9bb5;
+            font-size: 13px; font-weight: 600; padding: 9px 18px; border-radius: 40px;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .help-link:active { background: #1e2a3a; color: #00d4aa; }
+        .help-link svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+        /* ---------- TOAST NOTIFICATION ---------- */
+        #toastContainer {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 0 16px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            max-width: 380px;
+            width: 100%;
+            background: #131a2b;
+            border: 1px solid #00d4aa;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,170,0.08);
+            border-radius: 16px;
+            padding: 13px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(-16px) scale(0.96);
+            transition: opacity 0.28s ease, transform 0.28s ease;
+        }
+        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+        .toast.hide { opacity: 0; transform: translateY(-10px) scale(0.97); }
+        .toast .toast-icon {
+            width: 34px; height: 34px; flex-shrink: 0;
+            background: rgba(0,212,170,0.12);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .toast .toast-icon svg { width: 18px; height: 18px; }
+        .toast .toast-text { flex: 1; }
+        .toast .toast-title { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .toast .toast-sub { color: #8a9bb5; font-size: 12.5px; line-height: 1.4; }
+        .toast.toast-error { border-color: #f87171; }
+        .toast.toast-error .toast-icon { background: rgba(248,113,113,0.12); }
+
         @media (max-width: 420px) { .app-card { padding: 20px 16px; } }
     </style>
 </head>
 <body>
+
+    <!-- ===== TOAST NOTIFICATIONS ===== -->
+    <div id="toastContainer"></div>
+
     <div id="app" class="app-card">
+
         <div class="app-header">
             <h1>VIVI <span>PAY</span></h1>
             <p>Secure · Fast · Reliable</p>
         </div>
-        <div class="tab-bar">
+
+        <div id="msgBox" class="msg"></div>
+
+        <!-- ===== TAB BAR (Login/Register) ===== -->
+        <div class="tab-bar" id="tabBar">
             <button class="tab-btn active" data-tab="login">Login</button>
             <button class="tab-btn" data-tab="register">Register</button>
         </div>
-        <div id="msgBox" class="msg"></div>
 
-        <!-- Login Form -->
+        <!-- ======== LOGIN FORM ======== -->
         <form id="loginForm">
             <div class="form-group">
                 <label>Email</label>
@@ -61,125 +135,314 @@
                 <label>Password</label>
                 <input type="password" id="loginPassword" placeholder="Enter password" required />
             </div>
+            <div class="forgot-link">
+                <button type="button" id="gotoForgot">Forgot password?</button>
+            </div>
             <button type="submit" class="btn-primary" id="loginBtn">Log In</button>
             <div class="toggle-link">
                 Don't have an account? <button type="button" id="gotoRegister">Register</button>
             </div>
         </form>
 
-        <!-- Register Form -->
+        <!-- ======== REGISTER FORM ======== -->
         <form id="registerForm" class="hidden">
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" id="regEmail" placeholder="Enter your email" required />
             </div>
             <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="regPhone" placeholder="Enter phone number" required />
+            </div>
+            <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="regPassword" placeholder="Enter password" required />
+                <input type="password" id="regPassword" placeholder="Enter password (min 6 chars)" required />
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
                 <input type="password" id="regConfirm" placeholder="Confirm password" required />
             </div>
-            <div class="form-group">
-                <label>Inviter Code (optional)</label>
-                <input type="text" id="regInvite" placeholder="Enter inviter code" />
-            </div>
-            <button type="submit" class="btn-primary" id="registerBtn">Register</button>
+            <button type="submit" class="btn-primary" id="registerBtn">Send Verification Code</button>
             <div class="toggle-link">
                 Already have an account? <button type="button" id="gotoLogin">Go login</button>
             </div>
         </form>
+
+        <!-- ======== VERIFY SIGNUP OTP ======== -->
+        <form id="verifyForm" class="hidden">
+            <p class="otp-note">We sent a 6-digit code to<br><strong id="verifyEmailLabel"></strong></p>
+            <div class="form-group">
+                <label>Verification Code</label>
+                <input type="text" id="verifyOtp" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" required />
+            </div>
+            <button type="submit" class="btn-primary" id="verifyBtn">Verify & Continue</button>
+            <div class="back-link">
+                <button type="button" id="resendOtp">Resend code</button>
+            </div>
+        </form>
+
+        <!-- ======== FORGOT PASSWORD - STEP 1: REQUEST OTP ======== -->
+        <form id="forgotForm" class="hidden">
+            <p class="otp-note">Enter your email to receive a password reset code</p>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="forgotEmail" placeholder="Enter your email" required />
+            </div>
+            <button type="submit" class="btn-primary" id="forgotBtn">Send Reset Code</button>
+            <div class="back-link">
+                <button type="button" id="backToLoginFromForgot">Back to login</button>
+            </div>
+        </form>
+
+        <!-- ======== FORGOT PASSWORD - STEP 2: ENTER OTP + NEW PASSWORD ======== -->
+        <form id="resetForm" class="hidden">
+            <p class="otp-note">Enter the code sent to<br><strong id="resetEmailLabel"></strong></p>
+            <div class="form-group">
+                <label>Reset Code</label>
+                <input type="text" id="resetOtp" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" required />
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="resetNewPassword" placeholder="Enter new password (min 6 chars)" required />
+            </div>
+            <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="resetConfirmPassword" placeholder="Confirm new password" required />
+            </div>
+            <button type="submit" class="btn-primary" id="resetBtn">Reset Password</button>
+        </form>
+
+        <!-- ======== HELP / SUPPORT LINK (always visible) ======== -->
+        <div class="help-link-wrap">
+            <a href="https://t.me/vivapay009" target="_blank" class="help-link">
+                <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="120" cy="120" r="120" fill="#8a9bb5"/>
+                    <path d="M170 72L54 117c-8 3-8 8-1 10l30 9 12 37c1 4 3 5 6 5s5-1 7-3l17-16 35 26c6 4 11 2 12-6l22-104c2-9-4-13-11-10z" fill="#131a2b"/>
+                </svg>
+                Difficult to register? Get help
+            </a>
+        </div>
+
     </div>
 
     <script>
         (function() {
             'use strict';
 
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
+            // ---- DOM refs ----
+            const tabBar = document.getElementById('tabBar');
             const tabBtns = document.querySelectorAll('.tab-btn');
             const msgBox = document.getElementById('msgBox');
+            const toastContainer = document.getElementById('toastContainer');
+
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const verifyForm = document.getElementById('verifyForm');
+            const forgotForm = document.getElementById('forgotForm');
+            const resetForm = document.getElementById('resetForm');
+
             const loginEmail = document.getElementById('loginEmail');
             const loginPassword = document.getElementById('loginPassword');
+
             const regEmail = document.getElementById('regEmail');
+            const regPhone = document.getElementById('regPhone');
             const regPassword = document.getElementById('regPassword');
             const regConfirm = document.getElementById('regConfirm');
-            const regInvite = document.getElementById('regInvite');
+
+            const verifyEmailLabel = document.getElementById('verifyEmailLabel');
+            const verifyOtp = document.getElementById('verifyOtp');
+
+            const forgotEmail = document.getElementById('forgotEmail');
+            const resetEmailLabel = document.getElementById('resetEmailLabel');
+            const resetOtp = document.getElementById('resetOtp');
+            const resetNewPassword = document.getElementById('resetNewPassword');
+            const resetConfirmPassword = document.getElementById('resetConfirmPassword');
+
             const gotoRegister = document.getElementById('gotoRegister');
             const gotoLogin = document.getElementById('gotoLogin');
+            const gotoForgot = document.getElementById('gotoForgot');
+            const backToLoginFromForgot = document.getElementById('backToLoginFromForgot');
+            const resendOtp = document.getElementById('resendOtp');
 
+            let pendingSignupEmail = '';
+            let pendingResetEmail = '';
+
+            // =============================================
+            //  TOAST NOTIFICATION SYSTEM
+            // =============================================
+            function showToast(title, subtitle, type) {
+                type = type || 'success';
+                const toast = document.createElement('div');
+                toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
+
+                const iconSvg = type === 'error'
+                    ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>'
+                    : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#00d4aa" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#00d4aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+                toast.innerHTML =
+                    '<div class="toast-icon">' + iconSvg + '</div>' +
+                    '<div class="toast-text">' +
+                        '<div class="toast-title">' + title + '</div>' +
+                        (subtitle ? '<div class="toast-sub">' + subtitle + '</div>' : '') +
+                    '</div>';
+
+                toastContainer.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4200);
+            }
+
+            // ---- Helper: show inline message (for validation errors that need to stay put) ----
             function showMsg(text, type) {
                 msgBox.textContent = text;
                 msgBox.className = 'msg ' + type;
                 clearTimeout(msgBox._timer);
-                msgBox._timer = setTimeout(() => { msgBox.className = 'msg'; }, 5000);
+                msgBox._timer = setTimeout(() => { msgBox.className = 'msg'; }, 6000);
             }
 
-            function setTab(tab) {
-                tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
-                loginForm.classList.toggle('hidden', tab !== 'login');
-                registerForm.classList.toggle('hidden', tab !== 'register');
+            // ---- Helper: show only one view ----
+            const allForms = [loginForm, registerForm, verifyForm, forgotForm, resetForm];
+            function showView(name) {
+                allForms.forEach(f => f.classList.add('hidden'));
                 msgBox.className = 'msg';
+
+                if (name === 'login') {
+                    loginForm.classList.remove('hidden');
+                    tabBar.classList.remove('hidden');
+                    tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === 'login'));
+                } else if (name === 'register') {
+                    registerForm.classList.remove('hidden');
+                    tabBar.classList.remove('hidden');
+                    tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === 'register'));
+                } else {
+                    tabBar.classList.add('hidden');
+                    if (name === 'verify') verifyForm.classList.remove('hidden');
+                    if (name === 'forgot') forgotForm.classList.remove('hidden');
+                    if (name === 'reset') resetForm.classList.remove('hidden');
+                }
             }
 
             tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() { setTab(this.dataset.tab); });
+                btn.addEventListener('click', function() { showView(this.dataset.tab); });
             });
-            gotoRegister.addEventListener('click', () => setTab('register'));
-            gotoLogin.addEventListener('click', () => setTab('login'));
+            gotoRegister.addEventListener('click', () => showView('register'));
+            gotoLogin.addEventListener('click', () => showView('login'));
+            gotoForgot.addEventListener('click', () => showView('forgot'));
+            backToLoginFromForgot.addEventListener('click', () => showView('login'));
 
-            // Register
+            // =============================================
+            //  REGISTER -> sends OTP email
+            // =============================================
             registerForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const email = regEmail.value.trim();
+                const phone = regPhone.value.trim();
                 const password = regPassword.value;
                 const confirm = regConfirm.value;
-                const invite = regInvite.value.trim();
 
                 if (password.length < 6) { showMsg('Password must be at least 6 characters.', 'error'); return; }
                 if (password !== confirm) { showMsg('Passwords do not match.', 'error'); return; }
+                if (!phone) { showMsg('Please enter your phone number.', 'error'); return; }
 
                 const btn = document.getElementById('registerBtn');
                 btn.disabled = true;
-                btn.textContent = 'Signing up…';
+                btn.textContent = 'Sending code…';
 
                 try {
                     const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
-                        options: { data: { inviter_code: invite || null } }
+                        options: {
+                            data: { phone: phone }
+                        }
                     });
+
+                    if (error) throw error;
+
+                    pendingSignupEmail = email;
+                    verifyEmailLabel.textContent = email;
+                    verifyOtp.value = '';
+                    showView('verify');
+                    showToast('Verification code sent!', 'Check ' + email + ' for your 6-digit OTP.', 'success');
+
+                } catch (err) {
+                    console.error(err);
+                    showMsg(err.message || 'Registration failed. Please try again.', 'error');
+                    showToast('Registration failed', err.message || 'Please try again.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Verification Code';
+                }
+            });
+
+            // =============================================
+            //  VERIFY SIGNUP OTP
+            // =============================================
+            verifyForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const code = verifyOtp.value.trim();
+                if (!code || code.length !== 6) { showMsg('Please enter the 6-digit code.', 'error'); return; }
+
+                const btn = document.getElementById('verifyBtn');
+                btn.disabled = true;
+                btn.textContent = 'Verifying…';
+
+                try {
+                    const { data, error } = await supabaseClient.auth.verifyOtp({
+                        email: pendingSignupEmail,
+                        token: code,
+                        type: 'signup'
+                    });
+
                     if (error) throw error;
 
                     if (data.user) {
                         const userId = data.user.id;
-                        // Create wallet if not exists
                         const { data: existing } = await supabaseClient
                             .from('wallets')
                             .select('id')
                             .eq('user_id', userId)
                             .maybeSingle();
+
                         if (!existing) {
                             await supabaseClient.from('wallets').insert({ user_id: userId, balance: 0 });
                         }
-                        showMsg('Registration successful! Please log in.', 'success');
-                        regEmail.value = '';
-                        regPassword.value = '';
-                        regConfirm.value = '';
-                        regInvite.value = '';
-                        setTab('login');
                     }
+
+                    showToast('Email verified!', 'Redirecting to your dashboard…', 'success');
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+
                 } catch (err) {
                     console.error(err);
-                    showMsg(err.message || 'Registration failed.', 'error');
+                    showMsg(err.message || 'Invalid or expired code. Please try again.', 'error');
+                    showToast('Verification failed', err.message || 'Invalid or expired code.', 'error');
                 } finally {
                     btn.disabled = false;
-                    btn.textContent = 'Register';
+                    btn.textContent = 'Verify & Continue';
                 }
             });
 
-            // Login
+            resendOtp.addEventListener('click', async function() {
+                if (!pendingSignupEmail) return;
+                try {
+                    const { error } = await supabaseClient.auth.resend({
+                        type: 'signup',
+                        email: pendingSignupEmail
+                    });
+                    if (error) throw error;
+                    showToast('Code resent!', 'Check ' + pendingSignupEmail + ' again.', 'success');
+                } catch (err) {
+                    showToast('Could not resend code', err.message || '', 'error');
+                }
+            });
+
+            // =============================================
+            //  LOGIN
+            // =============================================
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const email = loginEmail.value.trim();
@@ -194,12 +457,15 @@
                 try {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
                         email: email,
-                        password: password
+                        password: password,
                     });
+
                     if (error) throw error;
+
                     if (data.user) {
                         window.location.href = 'dashboard.html';
                     }
+
                 } catch (err) {
                     console.error(err);
                     showMsg(err.message || 'Login failed. Check your credentials.', 'error');
@@ -209,14 +475,101 @@
                 }
             });
 
-            // Auto-redirect if already logged in
-            (async function() {
+            // =============================================
+            //  FORGOT PASSWORD - STEP 1: request OTP
+            // =============================================
+            forgotForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = forgotEmail.value.trim();
+                if (!email) { showMsg('Please enter your email.', 'error'); return; }
+
+                const btn = document.getElementById('forgotBtn');
+                btn.disabled = true;
+                btn.textContent = 'Sending code…';
+
+                try {
+                    const { error } = await supabaseClient.auth.signInWithOtp({
+                        email: email,
+                        options: { shouldCreateUser: false }
+                    });
+
+                    if (error) throw error;
+
+                    pendingResetEmail = email;
+                    resetEmailLabel.textContent = email;
+                    resetOtp.value = '';
+                    resetNewPassword.value = '';
+                    resetConfirmPassword.value = '';
+                    showView('reset');
+                    showToast('Reset code sent!', 'Check ' + email + ' for your 6-digit OTP.', 'success');
+
+                } catch (err) {
+                    console.error(err);
+                    showMsg(err.message || 'Could not send reset code.', 'error');
+                    showToast('Could not send code', err.message || '', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Reset Code';
+                }
+            });
+
+            // =============================================
+            //  FORGOT PASSWORD - STEP 2: verify OTP + set new password
+            // =============================================
+            resetForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const code = resetOtp.value.trim();
+                const newPassword = resetNewPassword.value;
+                const confirmPassword = resetConfirmPassword.value;
+
+                if (!code || code.length !== 6) { showMsg('Please enter the 6-digit code.', 'error'); return; }
+                if (newPassword.length < 6) { showMsg('Password must be at least 6 characters.', 'error'); return; }
+                if (newPassword !== confirmPassword) { showMsg('Passwords do not match.', 'error'); return; }
+
+                const btn = document.getElementById('resetBtn');
+                btn.disabled = true;
+                btn.textContent = 'Resetting…';
+
+                try {
+                    const { error: verifyError } = await supabaseClient.auth.verifyOtp({
+                        email: pendingResetEmail,
+                        token: code,
+                        type: 'email'
+                    });
+
+                    if (verifyError) throw verifyError;
+
+                    const { error: updateError } = await supabaseClient.auth.updateUser({
+                        password: newPassword
+                    });
+
+                    if (updateError) throw updateError;
+
+                    showToast('Password reset!', 'Redirecting to your dashboard…', 'success');
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+
+                } catch (err) {
+                    console.error(err);
+                    showMsg(err.message || 'Invalid or expired code. Please try again.', 'error');
+                    showToast('Reset failed', err.message || 'Invalid or expired code.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Reset Password';
+                }
+            });
+
+            // ---- If user is already logged in, redirect to dashboard ----
+            (async function checkSession() {
                 try {
                     const { data } = await supabaseClient.auth.getSession();
-                    if (data.session) window.location.href = 'dashboard.html';
-                } catch (_) {}
+                    if (data.session) {
+                        window.location.href = 'dashboard.html';
+                    }
+                } catch (_) { /* ignore */ }
             })();
+
         })();
     </script>
+
 </body>
 </html>
