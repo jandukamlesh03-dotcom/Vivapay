@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Referral – VIVI PAY</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabaseClient.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        body {
+            background: #0a1628;
+            min-height: 100vh;
+            padding: 20px 16px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: #111d33;
+            border-radius: 28px;
+            padding: 24px 16px 20px;
+            border: 1px solid #1a3a6b;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1a3a6b;
+        }
+        .header .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .header .logo span { color: #f5b342; }
+        .header .back-btn {
+            background: none;
+            border: none;
+            color: #4a6a8a;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .header .back-btn:active { color: #f5b342; }
+
+        .stat-box {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #1a3a6b;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .stat-box .label { color: #4a6a8a; font-size: 13px; }
+        .stat-box .value { color: #f5b342; font-size: 28px; font-weight: 700; margin-top: 4px; }
+
+        .referral-link-box {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 12px 16px;
+            border: 1px solid #1a3a6b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .referral-link-box .link {
+            color: #a0b4c8;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+        .referral-link-box .copy-btn {
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-weight: 600;
+            color: #0a1628;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .referral-link-box .copy-btn:active { background: #d49a2a; }
+
+        .history-item {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 12px 16px;
+            border: 1px solid #1a3a6b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .history-item .left .amount { color: #ffffff; font-weight: 600; font-size: 16px; }
+        .history-item .left .date { color: #4a6a8a; font-size: 12px; }
+        .history-item .left .ref-name { color: #a0b4c8; font-size: 13px; }
+        .status-credited {
+            background: #0f2a1f;
+            color: #58c4a0;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #58c4a0;
+        }
+        .status-pending {
+            background: #1a2a3a;
+            color: #f5b342;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #f5b342;
+        }
+        .empty-state { color: #4a6a8a; text-align: center; padding: 20px 0; font-size: 14px; }
+        .footer { text-align: center; color: #4a6a8a; font-size: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #1a3a6b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">👥 <span>REFERRAL</span></div>
+            <a href="dashboard.html" class="back-btn">← Back</a>
+        </div>
+
+        <!-- Stats -->
+        <div style="display:flex; gap:12px; margin-bottom:16px;">
+            <div class="stat-box" style="flex:1;">
+                <div class="label">💰 Total Commission</div>
+                <div class="value" id="totalCommission">0.00</div>
+            </div>
+            <div class="stat-box" style="flex:1;">
+                <div class="label">👤 Referred Users</div>
+                <div class="value" id="referredCount">0</div>
+            </div>
+        </div>
+
+        <!-- Referral Link -->
+        <div class="referral-link-box">
+            <span class="link" id="refLink">Loading...</span>
+            <button class="copy-btn" id="copyRefLink">Copy</button>
+        </div>
+
+        <div style="font-weight:600;color:#ffffff;font-size:16px;margin:12px 0 8px;">📋 Commission History</div>
+        <div id="historyList"></div>
+        <div class="footer">VIVI PAY &bull; Refer & Earn 15%</div>
+    </div>
+    <script>
+        (function() {
+            const linkEl = document.getElementById('refLink');
+            const copyBtn = document.getElementById('copyRefLink');
+            const totalCommission = document.getElementById('totalCommission');
+            const referredCount = document.getElementById('referredCount');
+            const historyList = document.getElementById('historyList');
+
+            async function loadReferralData() {
+                try {
+                    const { data: { user }, error } = await supabaseClient.auth.getUser();
+                    if (error || !user) {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+
+                    // Build referral link
+                    const userId = user.id;
+                    const refCode = userId.slice(0, 8); // short code
+                    const baseUrl = window.location.origin;
+                    const refLink = `${baseUrl}/register?ref=${refCode}`;
+                    linkEl.textContent = refLink;
+
+                    // Copy link
+                    copyBtn.addEventListener('click', function() {
+                        navigator.clipboard.writeText(refLink).then(() => {
+                            alert('Referral link copied!');
+                        }).catch(() => {
+                            const ta = document.createElement('textarea');
+                            ta.value = refLink;
+                            document.body.appendChild(ta);
+                            ta.select();
+                            document.execCommand('copy');
+                            ta.remove();
+                            alert('Referral link copied!');
+                        });
+                    });
+
+                    // Fetch referrals
+                    const { data: referrals, error: refError } = await supabaseClient
+                        .from('referrals')
+                        .select('*')
+                        .eq('referrer_id', user.id)
+                        .order('created_at', { ascending: false });
+
+                    if (refError) throw refError;
+
+                    let total = 0;
+                    let count = 0;
+                    let html = '';
+                    if (referrals && referrals.length > 0) {
+                        referrals.forEach(r => {
+                            total += parseFloat(r.amount || 0);
+                            count++;
+                            const statusClass = r.status === 'credited' ? 'status-credited' : 'status-pending';
+                            const date = new Date(r.created_at);
+                            const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            html += `
+                                <div class="history-item">
+                                    <div class="left">
+                                        <div class="amount">₹ ${parseFloat(r.amount).toFixed(2)}</div>
+                                        <div class="ref-name">User: ${r.referred_id ? r.referred_id.slice(0, 8) : 'Unknown'}</div>
+                                        <div class="date">${dateStr}</div>
+                                    </div>
+                                    <span class="${statusClass}">${r.status || 'pending'}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html = '<div class="empty-state">No referrals yet. Share your link!</div>';
+                    }
+
+                    historyList.innerHTML = html;
+                    totalCommission.textContent = total.toFixed(2);
+                    referredCount.textContent = count;
+
+                } catch (err) {
+                    console.error(err);
+                    historyList.innerHTML = '<div class="empty-state">Error loading referral data.</div>';
+                }
+            }
+
+            loadReferralData();
+        })();
+    </script>
+</body>
+</html>
