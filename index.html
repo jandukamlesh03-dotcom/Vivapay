@@ -32,7 +32,6 @@
             transition: height 0.3s ease;
         }
 
-        /* ----- HEADER ----- */
         .app-header {
             text-align: center;
             margin-bottom: 28px;
@@ -50,7 +49,6 @@
             margin-top: 4px;
         }
 
-        /* ----- TAB BAR ----- */
         .tab-bar {
             display: flex;
             background: #0a1628;
@@ -78,7 +76,6 @@
         }
         .tab-btn:active { transform: scale(0.96); }
 
-        /* ----- FORM CONTAINER ----- */
         .form-container {
             position: relative;
             overflow: hidden;
@@ -99,7 +96,6 @@
             display: none !important;
         }
 
-        /* ----- FORM FIELDS ----- */
         .form-group {
             margin-bottom: 18px;
             position: relative;
@@ -140,7 +136,6 @@
         }
         .toggle-pwd:hover { color: #f5b342; }
 
-        /* ----- BUTTONS ----- */
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -178,7 +173,6 @@
             transition: background 0.2s, transform 0.1s;
         }
         .btn-google:active { transform: scale(0.97); }
-        .btn-google img { width: 20px; height: 20px; }
 
         .divider {
             display: flex;
@@ -238,7 +232,6 @@
             cursor: pointer;
         }
 
-        /* ----- MESSAGES ----- */
         .msg {
             text-align: center;
             font-size: 14px;
@@ -266,7 +259,6 @@
             border: 1px solid #164e63;
         }
 
-        /* ----- PRIVACY & HELP ----- */
         .privacy-wrap {
             text-align: center;
             margin-top: 22px;
@@ -281,6 +273,7 @@
             color: #4a6a8a;
             font-size: 13px;
             text-decoration: none;
+            cursor: pointer;
             transition: color 0.2s;
         }
         .privacy-wrap a:hover,
@@ -390,14 +383,110 @@
             background: rgba(248,113,113,0.12);
         }
 
+        /* ----- PRIVACY MODAL ----- */
+        #privacyModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #privacyModal.show {
+            display: flex;
+        }
+        .privacy-modal-content {
+            background: #111d33;
+            border: 1px solid #1a3a6b;
+            border-radius: 28px;
+            padding: 28px 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.8);
+        }
+        .privacy-modal-content .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .privacy-modal-content .modal-header h2 {
+            color: #ffffff;
+            font-size: 22px;
+            margin: 0;
+        }
+        .privacy-modal-content .modal-header h2 span {
+            color: #f5b342;
+        }
+        .privacy-modal-content .modal-close {
+            background: none;
+            border: none;
+            color: #4a6a8a;
+            font-size: 28px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .privacy-modal-content .modal-close:hover {
+            color: #f5b342;
+        }
+        .privacy-modal-content .modal-body {
+            color: #a0b4c8;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        .privacy-modal-content .modal-body h3 {
+            color: #ffffff;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+        .privacy-modal-content .modal-body ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        .privacy-modal-content .modal-body ul li {
+            margin-bottom: 4px;
+        }
+        .privacy-modal-content .modal-body .highlight {
+            color: #f5b342;
+        }
+        .privacy-modal-content .modal-body a {
+            color: #f5b342;
+            text-decoration: none;
+        }
+        .privacy-modal-content .modal-close-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px;
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #0a1628;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .privacy-modal-content .modal-close-btn:active {
+            background: #d49a2a;
+        }
+
         @media (max-width: 420px) {
             .app-card { padding: 20px 16px; }
+            .privacy-modal-content { padding: 20px 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Toast container -->
     <div id="toastContainer"></div>
 
     <div id="app" class="app-card">
@@ -408,15 +497,11 @@
 
         <div id="msgBox" class="msg"></div>
 
-        <!-- Tab Bar -->
         <div class="tab-bar" id="tabBar">
             <button class="tab-btn active" data-tab="login">Login</button>
             <button class="tab-btn" data-tab="register">Register</button>
         </div>
 
-        <!-- ======================================================== -->
-        <!--  FORM CONTAINER                                          -->
-        <!-- ======================================================== -->
         <div class="form-container">
 
             <!-- ======== LOGIN FORM ======== -->
@@ -496,8 +581,8 @@
 
         <!-- ======== PRIVACY POLICY + HELP ======== -->
         <div class="privacy-wrap">
-            <a href="privacy.html" id="privacyLink">Privacy Policy</a>
-            <a href="#" id="termsLink">Terms of Service</a>
+            <a onclick="openPrivacyModal(); return false;">Privacy Policy</a>
+            <a onclick="showTerms(); return false;">Terms of Service</a>
         </div>
 
         <div class="help-link-wrap">
@@ -508,6 +593,53 @@
                 </svg>
                 Difficult to register? Get help
             </a>
+        </div>
+    </div>
+
+    <!-- ======== PRIVACY MODAL ======== -->
+    <div id="privacyModal">
+        <div class="privacy-modal-content">
+            <div class="modal-header">
+                <h2>Privacy <span>Policy</span></h2>
+                <button class="modal-close" onclick="closePrivacyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Effective Date:</strong> 20 July 2026</p>
+                <p>VIVI PAY ("we", "our", or "us") is committed to protecting your privacy. This policy explains how we handle your information.</p>
+
+                <h3>1. Information We Collect</h3>
+                <ul>
+                    <li>Personal details (name, email, phone number)</li>
+                    <li>Transaction data (processed via secure third-party providers)</li>
+                    <li>Device and usage data (IP address, app activity)</li>
+                </ul>
+
+                <h3>2. How We Use Information</h3>
+                <ul>
+                    <li>Provide and improve services</li>
+                    <li>Process transactions</li>
+                    <li>Ensure security and prevent fraud</li>
+                    <li>Communicate updates and support</li>
+                </ul>
+
+                <h3>3. Legal Compliance</h3>
+                <p><span class="highlight">India (IT Laws):</span> We comply with the Information Technology Act, 2000 and applicable rules.</p>
+                <p><span class="highlight">GDPR (EU Users):</span> If you are in the EU, your data is processed under lawful bases such as consent or legitimate interest.</p>
+
+                <h3>4. Data Sharing</h3>
+                <p>We do not sell your data. We may share it with trusted service providers or legal authorities if required.</p>
+
+                <h3>5. Data Security</h3>
+                <p>We use appropriate safeguards to protect your data, but no system is completely secure.</p>
+
+                <h3>6. Your Rights</h3>
+                <p>You can request access, correction, or deletion of your data by contacting us.</p>
+
+                <h3>7. Contact</h3>
+                <p>📱 Telegram: <a href="https://t.me/vivapay009" target="_blank">@vivapay009</a></p>
+                <p style="margin-top:16px; font-size:14px; color:#4a6a8a;">By using VIVI PAY, you agree to this Privacy Policy.</p>
+            </div>
+            <button class="modal-close-btn" onclick="closePrivacyModal()">Close</button>
         </div>
     </div>
 
@@ -615,6 +747,23 @@
                 input.type = input.type === 'password' ? 'text' : 'password';
             };
 
+            // ---- Privacy Modal ----
+            window.openPrivacyModal = function() {
+                document.getElementById('privacyModal').classList.add('show');
+                document.body.style.overflow = 'hidden';
+            };
+            window.closePrivacyModal = function() {
+                document.getElementById('privacyModal').classList.remove('show');
+                document.body.style.overflow = 'auto';
+            };
+            document.getElementById('privacyModal').addEventListener('click', function(e) {
+                if (e.target === this) closePrivacyModal();
+            });
+
+            window.showTerms = function() {
+                showToast('Terms of Service', 'By using VIVI PAY you agree to our terms.', 'info');
+            };
+
             // ---- REGISTER ----
             document.getElementById('registerBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
@@ -703,6 +852,31 @@
                 }
             });
 
+            // ---- GOOGLE LOGIN (FIXED) ----
+            async function signInWithGoogle() {
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: window.location.origin + '/dashboard.html',
+                            queryParams: {
+                                access_type: 'offline',
+                                prompt: 'consent',
+                            }
+                        }
+                    });
+                    if (error) throw error;
+                    // The user will be redirected to Google, then back to the redirectTo URL
+                    // No need to handle anything else here
+                } catch (err) {
+                    console.error('Google login error:', err);
+                    showToast('Google login failed', err.message || 'Please try again.', 'error');
+                }
+            }
+
+            document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
+            document.getElementById('googleRegisterBtn').addEventListener('click', signInWithGoogle);
+
             // ---- FORGOT PASSWORD ----
             document.getElementById('forgotBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
@@ -733,39 +907,18 @@
                 }
             });
 
-            // ---- GOOGLE LOGIN ----
-            async function signInWithGoogle() {
-                try {
-                    const { error } = await supabaseClient.auth.signInWithOAuth({
-                        provider: 'google',
-                        options: {
-                            redirectTo: window.location.origin + '/dashboard.html'
-                        }
-                    });
-                    if (error) throw error;
-                } catch (err) {
-                    console.error(err);
-                    showToast('Google login failed', err.message || '', 'error');
-                }
-            }
-
-            document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
-            document.getElementById('googleRegisterBtn').addEventListener('click', signInWithGoogle);
-
-            // ---- Privacy Policy ----
-            document.getElementById('privacyLink').addEventListener('click', function(e) {
-                // Link to privacy.html
-            });
-            document.getElementById('termsLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                showToast('Terms of Service', 'By using VIVI PAY you agree to our terms.', 'info');
-            });
-
-            // ---- Auto-redirect ----
+            // ---- Auto-redirect if logged in ----
             (async function checkSession() {
                 try {
                     const { data } = await supabaseClient.auth.getSession();
                     if (data.session) {
+                        // Check if we came from Google OAuth redirect
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('code')) {
+                            // This is a redirect from Google – the session is already set
+                            window.location.href = 'dashboard.html';
+                            return;
+                        }
                         window.location.href = 'dashboard.html';
                     }
                 } catch (_) { /* ignore */ }
