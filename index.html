@@ -8,50 +8,315 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabaseClient.js"></script>
     <style>
+        /* ============================================================
+           BANKER'S TRUST THEME – Navy Blue + Gold
+           ============================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
-        body { background: #0a0e17; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .app-card { background: #131a2b; border-radius: 28px; padding: 32px 24px 28px; width: 100%; max-width: 400px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #1e2a3a; }
-        .app-header { text-align: center; margin-bottom: 28px; }
-        .app-header h1 { font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 1px; }
-        .app-header h1 span { color: #00d4aa; }
-        .app-header p { color: #8a9bb5; font-size: 14px; margin-top: 4px; }
-        .tab-bar { display: flex; background: #0e1625; border-radius: 40px; padding: 4px; margin-bottom: 28px; border: 1px solid #1e2a3a; }
-        .tab-btn { flex: 1; border: none; background: transparent; color: #8a9bb5; font-size: 16px; font-weight: 600; padding: 10px 0; border-radius: 40px; cursor: pointer; transition: all 0.25s; }
-        .tab-btn.active { background: #00d4aa; color: #0a0e17; box-shadow: 0 4px 14px rgba(0,212,170,0.25); }
-        .tab-btn:active { transform: scale(0.96); }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #b0c4de; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 14px 16px; background: #0e1625; border: 1.5px solid #1e2a3a; border-radius: 14px; color: #ffffff; font-size: 15px; outline: none; transition: border 0.2s; }
-        .form-group input:focus { border-color: #00d4aa; }
-        .form-group input::placeholder { color: #4a5a72; font-size: 14px; }
-        .btn-primary { width: 100%; padding: 14px; background: #00d4aa; border: none; border-radius: 40px; color: #0a0e17; font-size: 17px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 6px; }
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
-        .toggle-link { text-align: center; margin-top: 18px; color: #8a9bb5; font-size: 14px; }
-        .toggle-link button { background: none; border: none; color: #00d4aa; font-weight: 700; font-size: 14px; cursor: pointer; padding: 0 4px; }
-        .toggle-link button:active { opacity: 0.7; }
-        .forgot-link { text-align: right; margin-top: -10px; margin-bottom: 18px; }
-        .forgot-link button { background: none; border: none; color: #8a9bb5; font-size: 13px; cursor: pointer; text-decoration: underline; }
-        .back-link { text-align: center; margin-top: 14px; }
-        .back-link button { background: none; border: none; color: #8a9bb5; font-size: 14px; cursor: pointer; }
-        .msg { text-align: center; font-size: 14px; padding: 8px 0; border-radius: 10px; margin-bottom: 12px; display: none; }
-        .msg.error { display: block; color: #f87171; background: #1f0f12; border: 1px solid #4a1a22; }
-        .msg.success { display: block; color: #6ee7b7; background: #0f1f18; border: 1px solid #1a3a2a; }
-        .msg.info { display: block; color: #7dd3fc; background: #0c1a24; border: 1px solid #164e63; }
-        .hidden { display: none !important; }
-
-        /* Help link */
-        .help-link-wrap { text-align: center; margin-top: 22px; padding-top: 16px; border-top: 1px solid #1e2a3a; }
-        .help-link {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #0e1625; border: 1px solid #1e2a3a; color: #8a9bb5;
-            font-size: 13px; font-weight: 600; padding: 9px 18px; border-radius: 40px;
-            text-decoration: none; transition: all 0.2s;
+        body {
+            background: #0a1628;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
-        .help-link:active { background: #1e2a3a; color: #00d4aa; }
-        .help-link svg { width: 15px; height: 15px; flex-shrink: 0; }
+        .app-card {
+            background: #111d33;
+            border-radius: 28px;
+            padding: 32px 24px 28px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+            border: 1px solid #1a3a6b;
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
 
-        /* Toast */
+        /* ----- HEADER ----- */
+        .app-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .app-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+        .app-header h1 span { color: #f5b342; }
+        .app-header p {
+            color: #a0b4c8;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ----- TAB BAR ----- */
+        .tab-bar {
+            display: flex;
+            background: #0a1628;
+            border-radius: 40px;
+            padding: 4px;
+            margin-bottom: 28px;
+            border: 1px solid #1a3a6b;
+        }
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #4a6a8a;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 0;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .tab-btn.active {
+            background: #f5b342;
+            color: #0a1628;
+            box-shadow: 0 4px 14px rgba(245, 179, 66, 0.3);
+        }
+        .tab-btn:active { transform: scale(0.96); }
+
+        /* ----- FORM CONTAINER ----- */
+        .form-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .form-slide {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            display: block;
+        }
+        .form-slide.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .form-slide.hidden {
+            display: none !important;
+        }
+
+        /* ----- FORM FIELDS ----- */
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #a0b4c8;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #0a1628;
+            border: 1.5px solid #1a3a6b;
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .form-group input:focus {
+            border-color: #f5b342;
+        }
+        .form-group input::placeholder {
+            color: #4a6a8a;
+            font-size: 14px;
+        }
+        .toggle-pwd {
+            position: absolute;
+            right: 16px;
+            top: 44px;
+            cursor: pointer;
+            color: #4a6a8a;
+            font-size: 18px;
+            user-select: none;
+        }
+        .toggle-pwd:hover { color: #f5b342; }
+
+        /* ----- BUTTONS ----- */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            color: #0a1628;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 6px;
+        }
+        .btn-primary:active {
+            background: #d49a2a;
+            transform: scale(0.97);
+        }
+        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+
+        .btn-google {
+            width: 100%;
+            padding: 14px;
+            background: #ffffff;
+            border: none;
+            border-radius: 40px;
+            color: #0a1628;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-google:active { transform: scale(0.97); }
+        .btn-google img { width: 20px; height: 20px; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0 14px;
+            color: #4a6a8a;
+            font-size: 13px;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #1a3a6b;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 18px;
+            color: #a0b4c8;
+            font-size: 14px;
+        }
+        .toggle-link button {
+            background: none;
+            border: none;
+            color: #f5b342;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+        .toggle-link button:active { opacity: 0.7; }
+
+        .forgot-link {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 18px;
+        }
+        .forgot-link button {
+            background: none;
+            border: none;
+            color: #4a6a8a;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 14px;
+        }
+        .back-link button {
+            background: none;
+            border: none;
+            color: #a0b4c8;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* ----- MESSAGES ----- */
+        .msg {
+            text-align: center;
+            font-size: 14px;
+            padding: 8px 0;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .msg.error {
+            display: block;
+            color: #f87171;
+            background: #1f0f12;
+            border: 1px solid #4a1a22;
+        }
+        .msg.success {
+            display: block;
+            color: #f5b342;
+            background: #1f1f0f;
+            border: 1px solid #4a3a1a;
+        }
+        .msg.info {
+            display: block;
+            color: #7dd3fc;
+            background: #0c1a24;
+            border: 1px solid #164e63;
+        }
+
+        /* ----- PRIVACY & HELP ----- */
+        .privacy-wrap {
+            text-align: center;
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid #1a3a6b;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .privacy-wrap a {
+            color: #4a6a8a;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .privacy-wrap a:hover,
+        .privacy-wrap a:active {
+            color: #f5b342;
+        }
+
+        .help-link-wrap {
+            text-align: center;
+            margin-top: 14px;
+        }
+        .help-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #0a1628;
+            border: 1px solid #1a3a6b;
+            color: #4a6a8a;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 9px 18px;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .help-link:active {
+            background: #1a3a6b;
+            color: #f5b342;
+        }
+        .help-link svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        /* ----- TOAST ----- */
         #toastContainer {
             position: fixed;
             top: 18px;
@@ -70,8 +335,8 @@
             pointer-events: auto;
             max-width: 380px;
             width: 100%;
-            background: #131a2b;
-            border: 1px solid #00d4aa;
+            background: #111d33;
+            border: 1px solid #f5b342;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-radius: 16px;
             padding: 13px 16px;
@@ -82,29 +347,60 @@
             transform: translateY(-16px) scale(0.96);
             transition: opacity 0.28s ease, transform 0.28s ease;
         }
-        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
-        .toast.hide { opacity: 0; transform: translateY(-10px) scale(0.97); }
-        .toast .toast-icon {
-            width: 34px; height: 34px; flex-shrink: 0;
-            background: rgba(0,212,170,0.12);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
-        .toast .toast-icon svg { width: 18px; height: 18px; }
-        .toast .toast-text { flex: 1; }
-        .toast .toast-title { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-        .toast .toast-sub { color: #8a9bb5; font-size: 12.5px; line-height: 1.4; }
-        .toast.toast-error { border-color: #f87171; }
-        .toast.toast-error .toast-icon { background: rgba(248,113,113,0.12); }
-        @media (max-width: 420px) { .app-card { padding: 20px 16px; } }
+        .toast.hide {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.97);
+        }
+        .toast .toast-icon {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            background: rgba(245, 179, 66, 0.12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toast .toast-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        .toast .toast-text {
+            flex: 1;
+        }
+        .toast .toast-title {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .toast .toast-sub {
+            color: #a0b4c8;
+            font-size: 12.5px;
+            line-height: 1.4;
+        }
+        .toast.toast-error {
+            border-color: #f87171;
+        }
+        .toast.toast-error .toast-icon {
+            background: rgba(248,113,113,0.12);
+        }
+
+        @media (max-width: 420px) {
+            .app-card { padding: 20px 16px; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Toast container -->
     <div id="toastContainer"></div>
 
     <div id="app" class="app-card">
-
         <div class="app-header">
             <h1>VIVI <span>PAY</span></h1>
             <p>Secure · Fast · Reliable</p>
@@ -118,70 +414,97 @@
             <button class="tab-btn" data-tab="register">Register</button>
         </div>
 
-        <!-- ======== LOGIN ======== -->
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="loginEmail" placeholder="Enter your email" required />
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter password" required />
-            </div>
-            <div class="forgot-link">
-                <button type="button" id="gotoForgot">Forgot password?</button>
-            </div>
-            <button type="submit" class="btn-primary" id="loginBtn">Log In</button>
-            <div class="toggle-link">
-                Don't have an account? <button type="button" id="gotoRegister">Register</button>
-            </div>
-        </form>
+        <!-- ======================================================== -->
+        <!--  FORM CONTAINER                                          -->
+        <!-- ======================================================== -->
+        <div class="form-container">
 
-        <!-- ======== REGISTER ======== -->
-        <form id="registerForm">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="regEmail" placeholder="Enter your email" required />
-            </div>
-            <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" id="regPhone" placeholder="Enter phone number" required />
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="regPassword" placeholder="Enter password (min 6 chars)" required />
-            </div>
-            <div class="form-group">
-                <label>Confirm Password</label>
-                <input type="password" id="regConfirm" placeholder="Confirm password" required />
-            </div>
-            <button type="submit" class="btn-primary" id="registerBtn">Register</button>
-            <div class="toggle-link">
-                Already have an account? <button type="button" id="gotoLogin">Go login</button>
-            </div>
-        </form>
+            <!-- ======== LOGIN FORM ======== -->
+            <div id="loginForm" class="form-slide active">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required />
+                    <span class="toggle-pwd" onclick="togglePwd('loginPassword')">👁️</span>
+                </div>
+                <div class="forgot-link">
+                    <button type="button" id="gotoForgot">Forgot password?</button>
+                </div>
+                <button type="submit" class="btn-primary" id="loginBtn">Log In</button>
 
-        <!-- ======== FORGOT PASSWORD (simple email) ======== -->
-        <form id="forgotForm" class="hidden">
-            <p style="color:#8a9bb5; text-align:center; margin-bottom:18px; line-height:1.6;">
-                Enter your email address and we'll send you a link to reset your password.
-            </p>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="forgotEmail" placeholder="Enter your email" required />
-            </div>
-            <button type="submit" class="btn-primary" id="forgotBtn">Send Reset Link</button>
-            <div class="back-link">
-                <button type="button" id="backToLoginFromForgot">Back to login</button>
-            </div>
-        </form>
+                <div class="divider">or</div>
+                <button class="btn-google" id="googleLoginBtn">
+                    <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                    Sign in with Google
+                </button>
 
-        <!-- Help -->
+                <div class="toggle-link">
+                    Don't have an account? <button type="button" id="gotoRegister">Register</button>
+                </div>
+            </div>
+
+            <!-- ======== REGISTER FORM ======== -->
+            <div id="registerForm" class="form-slide">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email" required />
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="Enter phone number" required />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Enter password (min 6 chars)" required />
+                    <span class="toggle-pwd" onclick="togglePwd('regPassword')">👁️</span>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="regConfirm" placeholder="Confirm password" required />
+                </div>
+                <button type="submit" class="btn-primary" id="registerBtn">Register</button>
+
+                <div class="divider">or</div>
+                <button class="btn-google" id="googleRegisterBtn">
+                    <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                    Sign up with Google
+                </button>
+
+                <div class="toggle-link">
+                    Already have an account? <button type="button" id="gotoLogin">Go login</button>
+                </div>
+            </div>
+
+            <!-- ======== FORGOT PASSWORD ======== -->
+            <div id="forgotForm" class="form-slide">
+                <p style="color:#a0b4c8; text-align:center; margin-bottom:18px; line-height:1.6;">
+                    Enter your email address and we'll send you a link to reset your password.
+                </p>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="forgotEmail" placeholder="Enter your email" required />
+                </div>
+                <button type="submit" class="btn-primary" id="forgotBtn">Send Reset Link</button>
+                <div class="back-link">
+                    <button type="button" id="backToLoginFromForgot">Back to login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== PRIVACY POLICY + HELP ======== -->
+        <div class="privacy-wrap">
+            <a href="privacy.html" id="privacyLink">Privacy Policy</a>
+            <a href="#" id="termsLink">Terms of Service</a>
+        </div>
+
         <div class="help-link-wrap">
             <a href="https://t.me/vivapay009" target="_blank" class="help-link">
                 <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="120" cy="120" r="120" fill="#8a9bb5"/>
-                    <path d="M170 72L54 117c-8 3-8 8-1 10l30 9 12 37c1 4 3 5 6 5s5-1 7-3l17-16 35 26c6 4 11 2 12-6l22-104c2-9-4-13-11-10z" fill="#131a2b"/>
+                    <circle cx="120" cy="120" r="120" fill="#4a6a8a"/>
+                    <path d="M170 72L54 117c-8 3-8 8-1 10l30 9 12 37c1 4 3 5 6 5s5-1 7-3l17-16 35 26c6 4 11 2 12-6l22-104c2-9-4-13-11-10z" fill="#111d33"/>
                 </svg>
                 Difficult to register? Get help
             </a>
@@ -222,7 +545,7 @@
                 toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
                 const iconSvg = type === 'error'
                     ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>'
-                    : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#00d4aa" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#00d4aa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f5b342" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#f5b342" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
                 toast.innerHTML =
                     '<div class="toast-icon">' + iconSvg + '</div>' +
                     '<div class="toast-text">' +
@@ -245,35 +568,55 @@
                 msgBox._timer = setTimeout(() => { msgBox.className = 'msg'; }, 6000);
             }
 
-            // ---- View switcher ----
-            const allForms = [loginForm, registerForm, forgotForm];
+            // ---- Form switcher ----
             function showView(name) {
-                allForms.forEach(f => f.classList.add('hidden'));
-                msgBox.className = 'msg';
-                if (name === 'login') {
-                    loginForm.classList.remove('hidden');
+                const forms = [loginForm, registerForm, forgotForm];
+                forms.forEach(f => {
+                    f.classList.remove('active');
+                    f.classList.add('hidden');
+                });
+
+                let targetForm = null;
+                if (name === 'login') targetForm = loginForm;
+                else if (name === 'register') targetForm = registerForm;
+                else if (name === 'forgot') targetForm = forgotForm;
+
+                if (targetForm) {
+                    targetForm.classList.remove('hidden');
+                    void targetForm.offsetWidth;
+                    targetForm.classList.add('active');
+                }
+
+                if (name === 'login' || name === 'register') {
                     tabBar.classList.remove('hidden');
-                    tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === 'login'));
-                } else if (name === 'register') {
-                    registerForm.classList.remove('hidden');
-                    tabBar.classList.remove('hidden');
-                    tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === 'register'));
+                    tabBtns.forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.tab === name);
+                    });
                 } else {
                     tabBar.classList.add('hidden');
-                    if (name === 'forgot') forgotForm.classList.remove('hidden');
                 }
+                msgBox.className = 'msg';
             }
 
             tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() { showView(this.dataset.tab); });
+                btn.addEventListener('click', function() {
+                    showView(this.dataset.tab);
+                });
             });
+
             gotoRegister.addEventListener('click', () => showView('register'));
             gotoLogin.addEventListener('click', () => showView('login'));
             gotoForgot.addEventListener('click', () => showView('forgot'));
             backToLoginFromForgot.addEventListener('click', () => showView('login'));
 
+            window.togglePwd = function(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
+                input.type = input.type === 'password' ? 'text' : 'password';
+            };
+
             // ---- REGISTER ----
-            registerForm.addEventListener('submit', async function(e) {
+            document.getElementById('registerBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
                 const email = regEmail.value.trim();
                 const phone = regPhone.value.trim();
@@ -284,9 +627,8 @@
                 if (password !== confirm) { showMsg('Passwords do not match.', 'error'); return; }
                 if (!phone) { showMsg('Please enter your phone number.', 'error'); return; }
 
-                const btn = document.getElementById('registerBtn');
-                btn.disabled = true;
-                btn.textContent = 'Registering…';
+                this.disabled = true;
+                this.textContent = 'Registering…';
 
                 try {
                     const { data, error } = await supabaseClient.auth.signUp({
@@ -299,7 +641,6 @@
 
                     if (error) throw error;
 
-                    // If signup successful, create wallet (optional but good)
                     if (data.user) {
                         const userId = data.user.id;
                         const { data: existing } = await supabaseClient
@@ -324,22 +665,21 @@
                     showMsg(err.message || 'Registration failed. Please try again.', 'error');
                     showToast('Registration failed', err.message || '', 'error');
                 } finally {
-                    btn.disabled = false;
-                    btn.textContent = 'Register';
+                    this.disabled = false;
+                    this.textContent = 'Register';
                 }
             });
 
             // ---- LOGIN ----
-            loginForm.addEventListener('submit', async function(e) {
+            document.getElementById('loginBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
 
                 if (!email || !password) { showMsg('Please fill in all fields.', 'error'); return; }
 
-                const btn = document.getElementById('loginBtn');
-                btn.disabled = true;
-                btn.textContent = 'Logging in…';
+                this.disabled = true;
+                this.textContent = 'Logging in…';
 
                 try {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -358,20 +698,19 @@
                     showMsg(err.message || 'Login failed. Check your credentials.', 'error');
                     showToast('Login failed', err.message || '', 'error');
                 } finally {
-                    btn.disabled = false;
-                    btn.textContent = 'Log In';
+                    this.disabled = false;
+                    this.textContent = 'Log In';
                 }
             });
 
             // ---- FORGOT PASSWORD ----
-            forgotForm.addEventListener('submit', async function(e) {
+            document.getElementById('forgotBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
                 const email = forgotEmail.value.trim();
                 if (!email) { showMsg('Please enter your email.', 'error'); return; }
 
-                const btn = document.getElementById('forgotBtn');
-                btn.disabled = true;
-                btn.textContent = 'Sending…';
+                this.disabled = true;
+                this.textContent = 'Sending…';
 
                 try {
                     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
@@ -389,12 +728,40 @@
                     showMsg(err.message || 'Could not send reset link.', 'error');
                     showToast('Error', err.message || '', 'error');
                 } finally {
-                    btn.disabled = false;
-                    btn.textContent = 'Send Reset Link';
+                    this.disabled = false;
+                    this.textContent = 'Send Reset Link';
                 }
             });
 
-            // ---- Auto-login check ----
+            // ---- GOOGLE LOGIN ----
+            async function signInWithGoogle() {
+                try {
+                    const { error } = await supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: window.location.origin + '/dashboard.html'
+                        }
+                    });
+                    if (error) throw error;
+                } catch (err) {
+                    console.error(err);
+                    showToast('Google login failed', err.message || '', 'error');
+                }
+            }
+
+            document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
+            document.getElementById('googleRegisterBtn').addEventListener('click', signInWithGoogle);
+
+            // ---- Privacy Policy ----
+            document.getElementById('privacyLink').addEventListener('click', function(e) {
+                // Link to privacy.html
+            });
+            document.getElementById('termsLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                showToast('Terms of Service', 'By using VIVI PAY you agree to our terms.', 'info');
+            });
+
+            // ---- Auto-redirect ----
             (async function checkSession() {
                 try {
                     const { data } = await supabaseClient.auth.getSession();
@@ -403,6 +770,8 @@
                     }
                 } catch (_) { /* ignore */ }
             })();
+
+            showView('login');
 
         })();
     </script>
