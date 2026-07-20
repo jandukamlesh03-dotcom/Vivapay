@@ -3,186 +3,1349 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Privacy Policy – VIVI PAY</title>
+    <title>VIVI PAY</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabaseClient.js"></script>
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        }
+        /* ============================================================
+           BANKER'S TRUST THEME – Navy Blue + Gold
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
         body {
             background: #0a1628;
             min-height: 100vh;
-            padding: 20px 16px;
             display: flex;
             justify-content: center;
+            padding: 12px 12px 80px;
         }
-        .container {
-            max-width: 700px;
+        .app-container {
+            max-width: 420px;
             width: 100%;
             background: #111d33;
             border-radius: 28px;
-            padding: 32px 24px 28px;
+            padding: 18px 16px 20px;
             border: 1px solid #1a3a6b;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-            color: #f0f6fc;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            position: relative;
+            min-height: 600px;
         }
-        .back-link {
-            display: inline-flex;
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity:0; transform:translateY(8px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            color: #f5b342;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 20px;
-            transition: color 0.2s;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1a3a6b;
         }
-        .back-link:active {
-            color: #d49a2a;
-        }
-        h1 {
-            font-size: 26px;
+        .page-header .logo {
+            font-size: 22px;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
-        h1 span {
-            color: #f5b342;
-        }
-        .effective-date {
-            color: #4a6a8a;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-        h2 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffffff;
-            margin-top: 24px;
-            margin-bottom: 10px;
-        }
-        p {
+        .page-header .logo span { color: #f5b342; }
+        .page-header .user-badge {
+            background: #0a1628;
+            padding: 4px 12px;
+            border-radius: 40px;
             color: #a0b4c8;
-            font-size: 15px;
-            line-height: 1.7;
-            margin-bottom: 10px;
+            font-size: 11px;
+            border: 1px solid #1a3a6b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        ul {
-            color: #a0b4c8;
-            font-size: 15px;
-            line-height: 1.7;
-            padding-left: 20px;
-            margin-bottom: 10px;
+
+        .stat-box {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid #1a3a6b;
+            text-align: center;
+            flex: 1;
         }
-        ul li {
-            margin-bottom: 4px;
-        }
-        .highlight {
-            color: #f5b342;
-        }
-        .divider {
+        .stat-box .stat-label { color: #4a6a8a; font-size: 13px; font-weight: 500; }
+        .stat-box .stat-value { color: #ffffff; font-size: 20px; font-weight: 700; margin-top: 4px; }
+        .stat-box .stat-value.gold { color: #f5b342; }
+
+        .btn-primary {
+            background: #f5b342;
             border: none;
-            border-top: 1px solid #1a3a6b;
-            margin: 24px 0 16px;
+            border-radius: 40px;
+            padding: 10px 24px;
+            font-weight: 700;
+            color: #0a1628;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
         }
-        .contact-box {
+        .btn-primary:active { background: #d49a2a; transform: scale(0.97); }
+
+        .btn-danger {
+            background: #f87171;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .btn-danger:active { opacity: 0.7; }
+
+        .btn-secondary {
+            background: #1a3a6b;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 600;
+            color: #a0b4c8;
+            cursor: pointer;
+        }
+        .btn-secondary:active { background: #2a4a7b; }
+
+        .empty-state { color: #4a6a8a; text-align: center; padding: 20px 0; font-size: 14px; }
+
+        /* ----- HOME TAB ----- */
+        .token-card {
+            background: linear-gradient(145deg, #0a1628, #1a3a6b);
+            border-radius: 24px;
+            padding: 18px 20px;
+            border: 1px solid #1a3a6b;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .token-card .left .label { color: #4a6a8a; font-size: 14px; font-weight: 500; }
+        .token-card .left .amount { color: #ffffff; font-size: 32px; font-weight: 700; }
+        .token-card .left .amount span { color: #f5b342; }
+        .token-card .left .sub { color: #4a6a8a; font-size: 12px; margin-top: 2px; }
+
+        .stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .quick-actions .qa-btn {
+            flex: 1;
+            background: #0a1628;
+            border: 1px solid #1a3a6b;
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            color: #a0b4c8;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quick-actions .qa-btn:active { background: #1a3a6b; border-color: #f5b342; }
+
+        .notice-box {
             background: #0a1628;
             border-radius: 16px;
-            padding: 16px 20px;
+            padding: 14px 16px;
             border: 1px solid #1a3a6b;
-            margin-top: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .contact-box a {
-            color: #f5b342;
-            text-decoration: none;
-            font-weight: 600;
+        .notice-box:active { border-color: #f5b342; }
+        .notice-box .title { color: #ffffff; font-weight: 600; font-size: 15px; }
+        .notice-box .desc { color: #4a6a8a; font-size: 13px; margin-top: 4px; }
+        .notice-box .more { color: #f5b342; font-size: 13px; float: right; }
+
+        /* ----- BUY TAB ----- */
+        .pkg-card {
+            background: #0a1628;
+            border-radius: 16px;
+            padding: 18px 16px;
+            border: 1px solid #1a3a6b;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .contact-box a:active {
-            color: #d49a2a;
+        .pkg-card .left .pkg-name { color: #ffffff; font-size: 18px; font-weight: 600; }
+        .pkg-card .left .pkg-detail { color: #4a6a8a; font-size: 14px; margin-top: 2px; }
+        .pkg-card .left .pkg-profit { color: #f5b342; font-size: 14px; font-weight: 600; }
+        .pkg-card .right .btn-invest {
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 24px;
+            font-weight: 700;
+            color: #0a1628;
+            font-size: 15px;
+            cursor: pointer;
         }
-        .footer-note {
+        .pkg-card .right .btn-invest:active { background: #d49a2a; }
+
+        /* ----- DEPOSIT WITH QR ----- */
+        .deposit-form, .withdraw-form {
+            background: #0a1628;
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #1a3a6b;
+            margin-bottom: 20px;
+        }
+        .upi-display {
+            background: #1a3a6b;
+            border-radius: 12px;
+            padding: 14px;
             text-align: center;
+            margin-bottom: 16px;
+            border: 1px solid #1a3a6b;
+        }
+        .upi-display .upi-label { color: #a0b4c8; font-size: 14px; }
+        .upi-display .upi-id {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 4px 0;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .upi-display .copy-btn {
+            background: #0a1628;
+            border: 1px solid #f5b342;
+            border-radius: 40px;
+            padding: 4px 16px;
+            font-weight: 600;
+            color: #f5b342;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .upi-display .copy-btn:active { background: #1a3a6b; }
+        .upi-display .telegram-link { color: #f5b342; text-decoration: none; font-weight: 600; }
+
+        .qr-container {
+            text-align: center;
+            padding: 16px 0;
+            margin: 12px 0;
+            background: #0a1628;
+            border-radius: 16px;
+            border: 1px solid #1a3a6b;
+        }
+        .qr-container #qrcode {
+            display: inline-block;
+        }
+        .qr-container .qr-label {
             color: #4a6a8a;
             font-size: 13px;
-            margin-top: 24px;
+            margin-top: 8px;
+        }
+        .qr-container .qr-expiry {
+            color: #f87171;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .warning-box {
+            background: #1f0f12;
+            border: 1px solid #f87171;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin: 12px 0;
+            color: #f87171;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .warning-box strong { color: #ffffff; }
+
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 13px; color: #4a6a8a; margin-bottom: 4px; }
+        .field input, .field select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0a1628;
+            border: 1.5px solid #1a3a6b;
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+        }
+        .field input:focus, .field select:focus { border-color: #f5b342; }
+        .field input::placeholder { color: #4a6a8a; }
+        .field select option { background: #111d33; color: #ffffff; }
+
+        .btn-primary-full {
+            width: 100%;
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            padding: 12px;
+            font-weight: 700;
+            color: #0a1628;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-primary-full:active { background: #d49a2a; }
+
+        /* ----- HISTORY ----- */
+        .history-item {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 12px 16px;
+            border: 1px solid #1a3a6b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .history-item .left .amount { color: #ffffff; font-weight: 600; font-size: 16px; }
+        .history-item .left .date { color: #4a6a8a; font-size: 12px; }
+        .status-pending {
+            background: #1a2a3a;
+            color: #f5b342;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            border: 1px solid #f5b342;
+        }
+        .status-accepted {
+            background: #0f2a1f;
+            color: #58c4a0;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            border: 1px solid #58c4a0;
+        }
+        .status-rejected {
+            background: #2a1118;
+            color: #f87171;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            border: 1px solid #f87171;
+        }
+
+        /* ----- MINE ----- */
+        .mine-item {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid #1a3a6b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .mine-item:active { background: #1a3a6b; border-color: #f5b342; }
+        .mine-item .label { color: #a0b4c8; font-size: 15px; }
+        .mine-item .arrow { color: #4a6a8a; font-size: 18px; }
+
+        .inv-item {
+            background: #0a1628;
+            border-radius: 14px;
+            padding: 12px 16px;
+            border: 1px solid #1a3a6b;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .inv-item .left .pkg { color: #ffffff; font-weight: 600; }
+        .inv-item .left .detail { color: #4a6a8a; font-size: 12px; }
+        .inv-item .btn-sell {
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            padding: 4px 16px;
+            font-weight: 600;
+            color: #0a1628;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .inv-item .btn-sell:active { background: #d49a2a; }
+
+        .mine-footer {
+            margin-top: 20px;
             padding-top: 16px;
             border-top: 1px solid #1a3a6b;
+            text-align: center;
         }
+        .mine-footer .version { color: #4a6a8a; font-size: 12px; }
+        .mine-footer .signout-btn {
+            background: #f87171;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .mine-footer .signout-btn:active { opacity: 0.7; }
+
+        /* ----- MODAL ----- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #111d33;
+            border-radius: 28px;
+            padding: 28px 24px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid #1a3a6b;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.8);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-box .modal-title { color: #f5b342; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        .modal-box .modal-body { color: #a0b4c8; font-size: 15px; margin-bottom: 20px; line-height: 1.6; }
+        .modal-box .modal-body .highlight { color: #f5b342; font-weight: 600; }
+        .modal-box .modal-body .warning { color: #f5b342; font-weight: 600; }
+        .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+        .modal-box .modal-actions .btn-confirm {
+            background: #f5b342;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 28px;
+            font-weight: 700;
+            color: #0a1628;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .modal-box .modal-actions .btn-confirm:active { background: #d49a2a; }
+        .modal-box .modal-actions .btn-cancel {
+            background: #1a3a6b;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 28px;
+            font-weight: 700;
+            color: #a0b4c8;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .modal-box .modal-actions .btn-cancel:active { background: #2a4a7b; }
+
+        /* ----- BOTTOM NAV ----- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a1628;
+            border-top: 1px solid #1a3a6b;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            max-width: 420px;
+            margin: 0 auto;
+            border-radius: 28px 28px 0 0;
+            z-index: 100;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #4a6a8a;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            gap: 2px;
+            transition: 0.2s;
+            padding: 0 8px;
+        }
+        .bottom-nav .nav-item .icon { font-size: 22px; line-height: 1; }
+        .bottom-nav .nav-item.active { color: #f5b342; }
+        .bottom-nav .nav-item:active { transform: scale(0.92); }
+
+        /* ----- WITHDRAW TABS ----- */
+        .withdraw-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .withdraw-tabs .wt-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 40px;
+            border: 1px solid #1a3a6b;
+            background: #0a1628;
+            color: #4a6a8a;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .withdraw-tabs .wt-btn.active {
+            background: #f5b342;
+            color: #0a1628;
+            border-color: #f5b342;
+        }
+        .withdraw-tabs .wt-btn:active { transform: scale(0.97); }
+        .withdraw-panel { display: none; }
+        .withdraw-panel.active { display: block; }
+
         @media (max-width: 420px) {
-            .container {
-                padding: 20px 16px;
-            }
-            h1 {
-                font-size: 22px;
-            }
+            .app-container { padding: 14px 12px 16px; border-radius: 20px; }
+            .token-card .left .amount { font-size: 26px; }
+            .pkg-card { flex-direction: column; align-items: stretch; gap: 10px; }
+            .pkg-card .right { text-align: right; }
+            .stats-row { flex-wrap: wrap; }
+            .stats-row .stat-box { min-width: calc(50% - 6px); flex: none; }
+            .upi-display .upi-id { font-size: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="app-container" id="app">
 
-        <a href="index.html" class="back-link">
-            ← Back to VIVI PAY
-        </a>
-
-        <h1>Privacy <span>Policy</span></h1>
-        <p class="effective-date">Effective Date: 20 July 2026</p>
-
-        <p>VIVI PAY ("we", "our", or "us") is committed to protecting your privacy. This policy explains how we handle your information.</p>
-
-        <hr class="divider" />
-
-        <h2>1. Information We Collect</h2>
-        <p>We may collect:</p>
-        <ul>
-            <li>Personal details (name, email, phone number)</li>
-            <li>Transaction data (processed via secure third-party providers)</li>
-            <li>Device and usage data (IP address, app activity)</li>
-        </ul>
-
-        <h2>2. How We Use Information</h2>
-        <p>We use your data to:</p>
-        <ul>
-            <li>Provide and improve services</li>
-            <li>Process transactions</li>
-            <li>Ensure security and prevent fraud</li>
-            <li>Communicate updates and support</li>
-        </ul>
-
-        <h2>3. Legal Compliance</h2>
-        <p><span class="highlight">India (IT Laws):</span> We comply with the Information Technology Act, 2000 and applicable rules, including reasonable security practices and protection of sensitive personal data.</p>
-        <p><span class="highlight">GDPR (EU Users):</span> If you are in the EU, your data is processed under lawful bases such as consent or legitimate interest. You have rights to access, correct, delete, and restrict your data.</p>
-
-        <h2>4. Data Sharing</h2>
-        <p>We do not sell your data. We may share it with:</p>
-        <ul>
-            <li>Trusted service providers</li>
-            <li>Legal authorities if required</li>
-        </ul>
-
-        <h2>5. Data Security</h2>
-        <p>We use appropriate safeguards to protect your data, but no system is completely secure.</p>
-
-        <h2>6. Your Rights</h2>
-        <p>You can request access, correction, or deletion of your data by contacting us.</p>
-
-        <h2>7. Contact</h2>
-        <div class="contact-box">
-            <p style="margin-bottom:0;">📱 <strong>Telegram:</strong> <a href="https://t.me/vivapay009" target="_blank">@vivapay009</a></p>
+        <!-- HOME -->
+        <div class="tab-content active" id="tab-home">
+            <div class="page-header">
+                <div class="logo">VIVI <span>PAY</span></div>
+                <div class="user-badge">ID: <span id="homeUserId">---</span></div>
+            </div>
+            <div class="token-card">
+                <div class="left">
+                    <div class="label">💰 My IToken</div>
+                    <div class="amount"><span id="homeBalance">0.00</span></div>
+                    <div class="sub">1 Rs = 1 IToken</div>
+                </div>
+                <div class="right">
+                    <button class="btn-primary" id="homeBuyBtn">Buy</button>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-label">📈 Today Profit</div>
+                    <div class="stat-value gold" id="homeTodayProfit">0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">🎁 Reward</div>
+                    <div class="stat-value" id="homeReward">3.5%</div>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <div class="qa-btn" id="qaBuyHistory">📋 Buy History</div>
+                <div class="qa-btn" id="qaSellHistory">📤 Sell History</div>
+                <div class="qa-btn" id="qaWithdraw">💸 Withdraw</div>
+            </div>
+            <div class="notice-box" id="noticeOfficial">
+                <div class="title">📢 Official Notice <span class="more">More ></span></div>
+                <div class="desc" id="noticeDesc">New investment plans available with 8% daily profit.</div>
+            </div>
+            <div class="notice-box" id="noticeNews">
+                <div class="title">📰 News <span class="more">More ></span></div>
+                <div class="desc" id="newsDesc">Tips To Sell Tokens · 2026-01-23</div>
+            </div>
         </div>
 
-        <hr class="divider" />
+        <!-- BUY -->
+        <div class="tab-content" id="tab-buy">
+            <div class="page-header">
+                <div class="logo">BUY</div>
+                <div class="user-badge">Balance: <span id="buyBalance">0.00</span></div>
+            </div>
+            <div id="packageList"></div>
+        </div>
 
-        <p style="font-size:14px; color:#4a6a8a;">By using VIVI PAY, you agree to this Privacy Policy.</p>
+        <!-- DEPOSIT -->
+        <div class="tab-content" id="tab-deposit">
+            <div class="page-header"><div class="logo">DEPOSIT</div></div>
+            <div class="deposit-form">
+                <div class="upi-display">
+                    <div class="upi-label">💳 Pay to this UPI ID</div>
+                    <div class="upi-id">
+                        <span>7878674198@omni</span>
+                        <button class="copy-btn" id="copyUpiBtn">Copy</button>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <a href="https://t.me/vivapay009" target="_blank" class="telegram-link">📱 Telegram Support</a>
+                    </div>
+                </div>
 
-        <div class="footer-note">
-            VIVI PAY &bull; Invest. Earn. Grow.
+                <!-- Amount Input -->
+                <div class="field">
+                    <label>Amount (₹) – Minimum 200</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount" min="200" required />
+                </div>
+
+                <!-- Generate QR Button -->
+                <button class="btn-primary-full" id="generateQRBtn" style="margin-bottom:12px;">Generate QR Code</button>
+
+                <!-- QR Code Display -->
+                <div class="qr-container" id="qrContainer" style="display:none;">
+                    <div id="qrcode"></div>
+                    <div class="qr-label">Scan to pay</div>
+                    <div class="qr-expiry" id="qrExpiry">⏳ Expires in: <span id="timerDisplay">05:00</span></div>
+                </div>
+
+                <!-- Warning Box -->
+                <div class="warning-box">
+                    <strong>⚠️ WARNING:</strong> If you didn't make the payment and still submit a request, you may get banned.
+                    <br /><br />
+                    After payment, wait <strong>5-10 minutes</strong> before submitting. If you face any problem, contact <strong>@vivapay009</strong> on Telegram.
+                </div>
+
+                <!-- UTR & Screenshot -->
+                <div class="field">
+                    <label>UTR ID (mandatory after payment)</label>
+                    <input type="text" id="depositUtr" placeholder="Enter UTR number" required />
+                </div>
+                <div class="field">
+                    <label>Payment Screenshot (optional but recommended)</label>
+                    <input type="file" id="depositScreenshot" accept="image/*" />
+                </div>
+
+                <button class="btn-primary-full" id="depositSubmitBtn">Submit Deposit Request</button>
+            </div>
+            <div style="font-weight:600;color:#ffffff;font-size:16px;margin:10px 0 8px;">📋 Deposit History</div>
+            <div id="depositHistoryList"></div>
+        </div>
+
+        <!-- WITHDRAW -->
+        <div class="tab-content" id="tab-withdraw">
+            <div class="page-header"><div class="logo">WITHDRAW</div></div>
+            <div class="withdraw-form">
+                <p style="color:#4a6a8a;font-size:13px;margin-bottom:12px;">⏳ Withdrawals take up to 2 hours to process. Minimum ₹500.</p>
+
+                <div class="withdraw-tabs" id="withdrawTabs">
+                    <button class="wt-btn active" data-method="upi">UPI ID</button>
+                    <button class="wt-btn" data-method="bank">Bank Account</button>
+                </div>
+
+                <!-- UPI Panel -->
+                <div class="withdraw-panel active" id="upiPanel">
+                    <div class="field">
+                        <label>Amount (₹) – Minimum 500</label>
+                        <input type="number" id="withdrawAmountUPI" placeholder="Enter amount" min="500" required />
+                    </div>
+                    <div class="field">
+                        <label>Your UPI ID</label>
+                        <input type="text" id="withdrawUpi" placeholder="Enter UPI ID to receive funds" required />
+                    </div>
+                    <button class="btn-primary-full" id="withdrawUPIBtn">Submit UPI Withdrawal</button>
+                </div>
+
+                <!-- Bank Panel -->
+                <div class="withdraw-panel" id="bankPanel">
+                    <div class="field">
+                        <label>Amount (₹) – Minimum 500</label>
+                        <input type="number" id="withdrawAmountBank" placeholder="Enter amount" min="500" required />
+                    </div>
+                    <div class="field">
+                        <label>Account Holder Name</label>
+                        <input type="text" id="withdrawBankName" placeholder="Enter account holder name" required />
+                    </div>
+                    <div class="field">
+                        <label>Bank Account Number</label>
+                        <input type="text" id="withdrawAccountNumber" placeholder="Enter account number" required />
+                    </div>
+                    <div class="field">
+                        <label>IFSC Code</label>
+                        <input type="text" id="withdrawIfsc" placeholder="Enter IFSC code" required />
+                    </div>
+                    <button class="btn-primary-full" id="withdrawBankBtn">Submit Bank Withdrawal</button>
+                </div>
+
+                <p style="color:#4a6a8a;font-size:12px;margin-top:12px;text-align:center;">📱 For support: <a href="https://t.me/vivapay009" target="_blank" style="color:#f5b342;text-decoration:none;">@vivapay009</a></p>
+            </div>
+            <div style="font-weight:600;color:#ffffff;font-size:16px;margin:10px 0 8px;">📤 Withdrawal History</div>
+            <div id="withdrawHistoryList"></div>
+        </div>
+
+        <!-- MINE -->
+        <div class="tab-content" id="tab-mine">
+            <div class="page-header">
+                <div class="logo">MINE</div>
+                <div class="user-badge">ID: <span id="mineUserId">---</span></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-bottom:16px;">
+                <div class="stat-box" style="flex:1;">
+                    <div class="stat-label">🪙 Token</div>
+                    <div class="stat-value" id="mineBalance">0.00</div>
+                </div>
+                <div class="stat-box" style="flex:1;">
+                    <div class="stat-label">📈 Today Profit</div>
+                    <div class="stat-value gold" id="mineTodayProfit">0.00</div>
+                </div>
+            </div>
+            <div style="font-weight:600;color:#ffffff;font-size:15px;margin:12px 0 8px;">📌 Active Investments</div>
+            <div id="activeInvestmentsList"></div>
+            <div style="font-weight:600;color:#ffffff;font-size:15px;margin:16px 0 8px;">⚙️ Settings</div>
+            <div class="mine-item" id="mineBuyHistory"><span class="label">📋 Buy History</span><span class="arrow">›</span></div>
+            <div class="mine-item" id="mineSellHistory"><span class="label">📤 Sell History</span><span class="arrow">›</span></div>
+            <div class="mine-item" id="mineTransferHistory"><span class="label">🔄 Transfer History</span><span class="arrow">›</span></div>
+            <div class="mine-item" id="mineModifyPassword"><span class="label">🔑 Modify Password</span><span class="arrow">›</span></div>
+            <div class="mine-footer">
+                <div class="version">APP Version: 2.0.0</div>
+                <button class="signout-btn" id="signOutBtn">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div class="bottom-nav">
+            <button class="nav-item active" data-tab="home"><span class="icon">🏠</span>Home</button>
+            <button class="nav-item" data-tab="buy"><span class="icon">🛒</span>Buy</button>
+            <button class="nav-item" data-tab="deposit"><span class="icon">📥</span>Deposit</button>
+            <button class="nav-item" data-tab="withdraw"><span class="icon">💸</span>Withdraw</button>
+            <button class="nav-item" data-tab="mine"><span class="icon">👤</span>Mine</button>
         </div>
     </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <div class="modal-title" id="modalTitle">Confirm</div>
+            <div class="modal-body" id="modalBody">Are you sure?</div>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="modalCancel">Cancel</button>
+                <button class="btn-confirm" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---- DOM refs ----
+            const tabs = {
+                home: document.getElementById('tab-home'),
+                buy: document.getElementById('tab-buy'),
+                deposit: document.getElementById('tab-deposit'),
+                withdraw: document.getElementById('tab-withdraw'),
+                mine: document.getElementById('tab-mine')
+            };
+            const navItems = document.querySelectorAll('.nav-item');
+
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalConfirm = document.getElementById('modalConfirm');
+            const modalCancel = document.getElementById('modalCancel');
+            let modalResolve = null;
+
+            function showModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
+                return new Promise((resolve) => {
+                    modalTitle.textContent = title;
+                    modalBody.innerHTML = message;
+                    modalConfirm.textContent = confirmText;
+                    modalCancel.textContent = cancelText;
+                    modalOverlay.classList.add('show');
+                    modalResolve = resolve;
+                });
+            }
+
+            modalCancel.addEventListener('click', () => {
+                modalOverlay.classList.remove('show');
+                if (modalResolve) modalResolve(false);
+                modalCancel.style.display = '';
+            });
+            modalConfirm.addEventListener('click', () => {
+                modalOverlay.classList.remove('show');
+                if (modalResolve) modalResolve(true);
+                modalCancel.style.display = '';
+            });
+
+            // ---- switch tab ----
+            function switchTab(tabId) {
+                Object.keys(tabs).forEach(key => {
+                    tabs[key].classList.toggle('active', key === tabId);
+                });
+                navItems.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+                if (tabId === 'home' || tabId === 'mine') loadDashboard();
+                if (tabId === 'buy') loadPackages();
+                if (tabId === 'deposit') loadDepositHistory();
+                if (tabId === 'withdraw') loadWithdrawHistory();
+                if (tabId === 'mine') loadActiveInvestments();
+            }
+
+            navItems.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            document.getElementById('homeBuyBtn').addEventListener('click', () => switchTab('buy'));
+            document.getElementById('qaBuyHistory').addEventListener('click', () => {
+                window.location.href = 'buy-history.html';
+            });
+            document.getElementById('qaSellHistory').addEventListener('click', () => {
+                window.location.href = 'sell-history.html';
+            });
+            document.getElementById('qaWithdraw').addEventListener('click', () => switchTab('withdraw'));
+
+            document.getElementById('signOutBtn').addEventListener('click', async function() {
+                await supabaseClient.auth.signOut();
+                window.location.href = 'index.html';
+            });
+
+            // ---- Helper ----
+            function formatDate(iso) {
+                if (!iso) return '';
+                const d = new Date(iso);
+                return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            let currentUser = null;
+            let qrTimer = null;
+            let qrExpiryTime = 0;
+
+            // ---- Dashboard ----
+            async function loadDashboard() {
+                try {
+                    const { data: { user }, error } = await supabaseClient.auth.getUser();
+                    if (error || !user) { window.location.href = 'index.html'; return; }
+                    currentUser = user;
+                    const userId = user.id.slice(0, 8);
+                    document.getElementById('homeUserId').textContent = userId;
+                    document.getElementById('mineUserId').textContent = userId;
+
+                    const { data: wallet } = await supabaseClient
+                        .from('wallets')
+                        .select('balance')
+                        .eq('user_id', user.id)
+                        .maybeSingle();
+                    const bal = wallet ? Number(wallet.balance).toFixed(2) : '0.00';
+                    document.getElementById('homeBalance').textContent = bal;
+                    document.getElementById('mineBalance').textContent = bal;
+                    document.getElementById('buyBalance').textContent = bal;
+
+                    const { data: investments } = await supabaseClient
+                        .from('investments')
+                        .select('daily_profit')
+                        .eq('user_id', user.id)
+                        .eq('status', 'active');
+                    let profit = 0;
+                    if (investments) investments.forEach(inv => { profit += parseFloat(inv.daily_profit); });
+                    document.getElementById('homeTodayProfit').textContent = profit.toFixed(2);
+                    document.getElementById('mineTodayProfit').textContent = profit.toFixed(2);
+
+                    // Update withdrawal max hint
+                    const wdInputUPI = document.getElementById('withdrawAmountUPI');
+                    const wdInputBank = document.getElementById('withdrawAmountBank');
+                    if (wdInputUPI) wdInputUPI.max = bal;
+                    if (wdInputBank) wdInputBank.max = bal;
+                } catch (err) { console.error(err); }
+            }
+
+            // ---- Packages ----
+            async function loadPackages() {
+                const container = document.getElementById('packageList');
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('packages')
+                        .select('*')
+                        .order('price', { ascending: true });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="empty-state">No packages available</div>';
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(pkg => {
+                        const dailyProfitAmount = (pkg.price * pkg.daily_profit_percent / 100);
+                        html += `
+                            <div class="pkg-card">
+                                <div class="left">
+                                    <div class="pkg-name">${pkg.name}</div>
+                                    <div class="pkg-detail">₹${pkg.price} + <span style="color:#f5b342;">₹${dailyProfitAmount.toFixed(2)} daily profit</span></div>
+                                    <div class="pkg-profit">📈 ${pkg.daily_profit_percent}% daily = ₹${dailyProfitAmount.toFixed(2)}/day</div>
+                                </div>
+                                <div class="right">
+                                    <button class="btn-invest" data-pkg-id="${pkg.id}" data-price="${pkg.price}" data-name="${pkg.name}" data-profit="${pkg.daily_profit_percent}">Buy</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+
+                    container.querySelectorAll('.btn-invest').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const pkgId = this.dataset.pkgId;
+                            const price = parseInt(this.dataset.price);
+                            const name = this.dataset.name;
+                            const profitPercent = parseFloat(this.dataset.profit);
+                            handleInvestBuy(pkgId, price, name, profitPercent);
+                        });
+                    });
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = '<div class="empty-state">Error loading packages</div>';
+                }
+            }
+
+            async function handleInvestBuy(pkgId, price, name, profitPercent) {
+                if (!currentUser) { alert('Please login.'); return; }
+                const dailyProfit = price * profitPercent / 100;
+                const totalProfit30 = dailyProfit * 30;
+                const message = `
+                    <strong>${name}</strong><br/>
+                    Price: ₹${price}<br/>
+                    Daily Profit: ₹${dailyProfit.toFixed(2)} (${profitPercent}%)<br/>
+                    Total profit (30 days): <span class="highlight">₹${totalProfit30.toFixed(2)}</span>
+                `;
+                const confirmed = await showModal('Confirm Purchase', message);
+                if (!confirmed) return;
+
+                try {
+                    const { data, error } = await supabaseClient.rpc('purchase_investment', { p_package_id: pkgId });
+                    if (error) throw error;
+                    if (data && data.success === false) {
+                        alert('❌ ' + data.message + ' Please deposit first.');
+                        switchTab('deposit');
+                        return;
+                    }
+                    alert('✅ ' + data.message);
+                    loadDashboard();
+                    loadPackages();
+                    loadActiveInvestments();
+                } catch (err) {
+                    console.error(err);
+                    if (err.message && err.message.includes('Insufficient balance')) {
+                        alert('❌ Insufficient balance. Please deposit.');
+                        switchTab('deposit');
+                    } else {
+                        alert('❌ Failed to purchase.');
+                    }
+                }
+            }
+
+            // ---- QR CODE GENERATOR ----
+            document.getElementById('generateQRBtn').addEventListener('click', function() {
+                const amount = document.getElementById('depositAmount').value;
+                if (!amount || parseFloat(amount) < 200) {
+                    alert('Minimum deposit is ₹200.');
+                    return;
+                }
+
+                const upiId = '7878674198@omni';
+                const upiString = `upi://pay?pa=${upiId}&am=${amount}&cu=INR`;
+
+                // Clear previous QR
+                document.getElementById('qrcode').innerHTML = '';
+                const qrContainer = document.getElementById('qrContainer');
+                qrContainer.style.display = 'block';
+
+                // Generate QR
+                new QRCode(document.getElementById('qrcode'), {
+                    text: upiString,
+                    width: 180,
+                    height: 180,
+                    colorDark: '#ffffff',
+                    colorLight: '#0a1628',
+                });
+
+                // Start expiry timer (5 minutes)
+                clearInterval(qrTimer);
+                qrExpiryTime = 5 * 60; // 5 minutes in seconds
+                updateTimerDisplay();
+                qrTimer = setInterval(() => {
+                    qrExpiryTime--;
+                    updateTimerDisplay();
+                    if (qrExpiryTime <= 0) {
+                        clearInterval(qrTimer);
+                        qrContainer.style.display = 'none';
+                        alert('QR code expired. Please generate a new one.');
+                    }
+                }, 1000);
+
+                function updateTimerDisplay() {
+                    const mins = Math.floor(qrExpiryTime / 60);
+                    const secs = qrExpiryTime % 60;
+                    document.getElementById('timerDisplay').textContent =
+                        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                }
+            });
+
+            // ---- Deposit ----
+            async function loadDepositHistory() {
+                const container = document.getElementById('depositHistoryList');
+                if (!currentUser) return;
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('deposit_requests')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="empty-state">No deposits yet.</div>';
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(req => {
+                        const statusClass = 'status-' + (req.status || 'pending');
+                        html += `
+                            <div class="history-item">
+                                <div class="left">
+                                    <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
+                                    <div class="date">${formatDate(req.created_at)}</div>
+                                </div>
+                                <span class="${statusClass}">${req.status || 'pending'}</span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = '<div class="empty-state">Error loading history</div>';
+                }
+            }
+
+            document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
+                const amount = document.getElementById('depositAmount').value;
+                const utr = document.getElementById('depositUtr').value.trim();
+                const screenshot = document.getElementById('depositScreenshot').files[0];
+
+                if (!amount || parseFloat(amount) < 200) { alert('Minimum deposit is ₹200.'); return; }
+                if (!utr) { alert('Please enter UTR ID.'); return; }
+                if (!currentUser) { alert('Please login.'); return; }
+
+                this.disabled = true;
+                this.textContent = 'Submitting...';
+
+                try {
+                    let screenshotUrl = null;
+                    if (screenshot) {
+                        // Upload to Supabase Storage
+                        const fileExt = screenshot.name.split('.').pop();
+                        const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
+                        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                            .from('deposit-proofs')
+                            .upload(fileName, screenshot);
+
+                        if (uploadError) {
+                            console.warn('Screenshot upload failed:', uploadError);
+                        } else {
+                            const { data: urlData } = supabaseClient.storage
+                                .from('deposit-proofs')
+                                .getPublicUrl(fileName);
+                            screenshotUrl = urlData.publicUrl;
+                        }
+                    }
+
+                    const { error } = await supabaseClient
+                        .from('deposit_requests')
+                        .insert({
+                            user_id: currentUser.id,
+                            amount: parseFloat(amount),
+                            proof_url: screenshotUrl,
+                            utr_id: utr,
+                            status: 'pending'
+                        });
+
+                    if (error) throw error;
+
+                    alert('✅ Deposit request submitted! Wait for approval.');
+                    document.getElementById('depositAmount').value = '';
+                    document.getElementById('depositUtr').value = '';
+                    document.getElementById('depositScreenshot').value = '';
+                    document.getElementById('qrContainer').style.display = 'none';
+                    clearInterval(qrTimer);
+                    loadDepositHistory();
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Failed to submit deposit.');
+                } finally {
+                    this.disabled = false;
+                    this.textContent = 'Submit Deposit Request';
+                }
+            });
+
+            document.getElementById('copyUpiBtn').addEventListener('click', function() {
+                navigator.clipboard.writeText('7878674198@omni').then(() => {
+                    alert('UPI ID copied!');
+                }).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = '7878674198@omni';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    ta.remove();
+                    alert('UPI ID copied!');
+                });
+            });
+
+            // ---- Withdrawal ----
+            // Withdraw tabs
+            const wtBtns = document.querySelectorAll('.wt-btn');
+            const upiPanel = document.getElementById('upiPanel');
+            const bankPanel = document.getElementById('bankPanel');
+
+            wtBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    wtBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    if (this.dataset.method === 'upi') {
+                        upiPanel.classList.add('active');
+                        bankPanel.classList.remove('active');
+                    } else {
+                        bankPanel.classList.add('active');
+                        upiPanel.classList.remove('active');
+                    }
+                });
+            });
+
+            async function loadWithdrawHistory() {
+                const container = document.getElementById('withdrawHistoryList');
+                if (!currentUser) return;
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('withdrawal_requests')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="empty-state">No withdrawals yet.</div>';
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(req => {
+                        const statusClass = 'status-' + (req.status || 'pending');
+                        const method = req.account_number ? 'Bank' : 'UPI';
+                        html += `
+                            <div class="history-item">
+                                <div class="left">
+                                    <div class="amount">₹ ${Number(req.amount).toFixed(2)} (${method})</div>
+                                    <div class="date">${formatDate(req.created_at)}</div>
+                                </div>
+                                <span class="${statusClass}">${req.status || 'pending'}</span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = '<div class="empty-state">Error loading history</div>';
+                }
+            }
+
+            async function submitWithdrawal(amount, data) {
+                if (!amount || parseFloat(amount) < 500) { alert('Minimum withdrawal is ₹500.'); return; }
+                if (!currentUser) { alert('Please login.'); return; }
+
+                const { data: wallet } = await supabaseClient
+                    .from('wallets')
+                    .select('balance')
+                    .eq('user_id', currentUser.id)
+                    .maybeSingle();
+                const bal = wallet ? parseFloat(wallet.balance) : 0;
+                if (parseFloat(amount) > bal) {
+                    alert('Insufficient balance. You have ₹' + bal.toFixed(2));
+                    return;
+                }
+
+                const confirmed = await showModal('Confirm Withdrawal',
+                    `Amount: ₹${amount}<br/>Please confirm your withdrawal request.`);
+                if (!confirmed) return;
+
+                try {
+                    const { error } = await supabaseClient
+                        .from('withdrawal_requests')
+                        .insert({
+                            user_id: currentUser.id,
+                            amount: parseFloat(amount),
+                            ...data,
+                            status: 'pending'
+                        });
+
+                    if (error) throw error;
+                    alert('✅ Withdrawal request submitted! Processing may take up to 2 hours.');
+                    loadWithdrawHistory();
+                    loadDashboard();
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Failed to submit withdrawal.');
+                }
+            }
+
+            document.getElementById('withdrawUPIBtn').addEventListener('click', function() {
+                const amount = document.getElementById('withdrawAmountUPI').value;
+                const upi = document.getElementById('withdrawUpi').value.trim();
+                if (!upi) { alert('Please enter your UPI ID.'); return; }
+                submitWithdrawal(amount, { upi_id: upi });
+            });
+
+            document.getElementById('withdrawBankBtn').addEventListener('click', function() {
+                const amount = document.getElementById('withdrawAmountBank').value;
+                const name = document.getElementById('withdrawBankName').value.trim();
+                const account = document.getElementById('withdrawAccountNumber').value.trim();
+                const ifsc = document.getElementById('withdrawIfsc').value.trim();
+                if (!name) { alert('Please enter account holder name.'); return; }
+                if (!account) { alert('Please enter account number.'); return; }
+                if (!ifsc) { alert('Please enter IFSC code.'); return; }
+                submitWithdrawal(amount, {
+                    account_holder: name,
+                    account_number: account,
+                    ifsc_code: ifsc
+                });
+            });
+
+            // ---- Active Investments ----
+            async function loadActiveInvestments() {
+                const container = document.getElementById('activeInvestmentsList');
+                if (!currentUser) return;
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('investments')
+                        .select('*, packages(name)')
+                        .eq('user_id', currentUser.id)
+                        .eq('status', 'active')
+                        .order('start_date', { ascending: false });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="empty-state">No active investments.</div>';
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(inv => {
+                        const pkgName = inv.packages ? inv.packages.name : 'Package';
+                        html += `
+                            <div class="inv-item">
+                                <div class="left">
+                                    <div class="pkg">${pkgName}</div>
+                                    <div class="detail">₹${inv.amount} + ₹${inv.daily_profit}/day profit</div>
+                                </div>
+                                <button class="btn-sell" data-inv-id="${inv.id}">Sell</button>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+
+                    container.querySelectorAll('.btn-sell').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const invId = this.dataset.invId;
+                            handleSellInvestment(invId);
+                        });
+                    });
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = '<div class="empty-state">Error loading investments</div>';
+                }
+            }
+
+            async function handleSellInvestment(invId) {
+                const confirmed = await showModal('Sell Investment', 'Are you sure you want to sell this investment? You will get principal + profit.');
+                if (!confirmed) return;
+
+                try {
+                    const { data, error } = await supabaseClient.rpc('sell_investment', { p_investment_id: invId });
+                    if (error) throw error;
+                    if (data && data.success) {
+                        alert(`✅ ${data.message}. Return: ₹${parseFloat(data.return).toFixed(2)}`);
+                        loadDashboard();
+                        loadActiveInvestments();
+                    } else {
+                        alert('❌ ' + (data ? data.message : 'Failed to sell.'));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ ' + (err.message || 'Failed to sell investment.'));
+                }
+            }
+
+            // ---- Mine options ----
+            document.getElementById('mineBuyHistory').addEventListener('click', () => {
+                window.location.href = 'buy-history.html';
+            });
+            document.getElementById('mineSellHistory').addEventListener('click', () => {
+                window.location.href = 'sell-history.html';
+            });
+            document.getElementById('mineTransferHistory').addEventListener('click', () => {
+                alert('Transfer history will be available soon.');
+            });
+            document.getElementById('mineModifyPassword').addEventListener('click', async function() {
+                if (!currentUser) return;
+                const newPass = prompt('Enter new password (min 6 chars):');
+                if (!newPass || newPass.length < 6) { alert('Password must be at least 6 characters.'); return; }
+                try {
+                    const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+                    if (error) throw error;
+                    alert('✅ Password updated! Please login again.');
+                    await supabaseClient.auth.signOut();
+                    window.location.href = 'index.html';
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Failed to update password: ' + err.message);
+                }
+            });
+
+            // ---- Notices ----
+            const notices = [
+                "🌟 VIVI PAY is the most trusted investment platform. Start earning 8% daily profit now!",
+                "💎 Invest in our premium packages and watch your wealth grow every single day.",
+                "🚀 Join thousands of happy investors who are earning passive income with VIVI PAY.",
+                "💰 Deposit today and get instant profit – your financial freedom starts here!"
+            ];
+            const news = [
+                "📊 VIVI PAY reaches 10,000 active investors – thank you for your trust!",
+                "💡 Tip: Invest early to maximize your daily returns. Every day counts!",
+                "🏆 Our top investor earned ₹50,000 in just 7 days – you can do it too!",
+                "🎉 New investment plans added – check out the 'Buy' tab for more opportunities."
+            ];
+
+            document.getElementById('noticeOfficial').addEventListener('click', function() {
+                const msg = notices.join('\n\n');
+                alert('📢 OFFICIAL NOTICE\n\n' + msg);
+            });
+            document.getElementById('noticeNews').addEventListener('click', function() {
+                const msg = news.join('\n\n');
+                alert('📰 NEWS\n\n' + msg);
+            });
+
+            // ---- Init ----
+            (async function init() {
+                await loadDashboard();
+                loadPackages();
+                loadDepositHistory();
+                loadWithdrawHistory();
+                loadActiveInvestments();
+                switchTab('home');
+            })();
+
+            window.switchTab = switchTab;
+
+        })();
+    </script>
 
 </body>
 </html>
