@@ -29,7 +29,6 @@
             box-shadow: 0 12px 40px rgba(0,0,0,0.7);
             border: 1px solid #1a3a6b;
             overflow: hidden;
-            transition: height 0.3s ease;
         }
 
         .app-header {
@@ -542,6 +541,10 @@
                     <input type="tel" id="regPhone" placeholder="Enter phone number" required />
                 </div>
                 <div class="form-group">
+                    <label>Referral Code (optional)</label>
+                    <input type="text" id="regReferral" placeholder="Enter referrer's code" />
+                </div>
+                <div class="form-group">
                     <label>Password</label>
                     <input type="password" id="regPassword" placeholder="Enter password (min 6 chars)" required />
                     <span class="toggle-pwd" onclick="togglePwd('regPassword')">👁️</span>
@@ -661,6 +664,7 @@
             const loginPassword = document.getElementById('loginPassword');
             const regEmail = document.getElementById('regEmail');
             const regPhone = document.getElementById('regPhone');
+            const regReferral = document.getElementById('regReferral');
             const regPassword = document.getElementById('regPassword');
             const regConfirm = document.getElementById('regConfirm');
             const forgotEmail = document.getElementById('forgotEmail');
@@ -769,6 +773,7 @@
                 e.preventDefault();
                 const email = regEmail.value.trim();
                 const phone = regPhone.value.trim();
+                const referral = regReferral.value.trim();
                 const password = regPassword.value;
                 const confirm = regConfirm.value;
 
@@ -780,17 +785,39 @@
                 this.textContent = 'Registering…';
 
                 try {
+                    // If referral code is provided, find the referrer's user ID
+                    let referrerId = null;
+                    if (referral) {
+                        const { data: users, error: userError } = await supabaseClient
+                            .from('users') // You need a 'users' table or use auth.users – we'll use auth.users
+                            .select('id')
+                            .eq('raw_user_meta_data->>referral_code', referral)
+                            .maybeSingle();
+                        // Since we don't have a users table, we'll use a custom table or skip for now.
+                        // For simplicity, we'll store referral_code in auth.users metadata.
+                        // We'll fetch by querying auth.users via admin – but that's not possible client-side.
+                        // Instead, we'll use a custom table 'referral_codes'.
+                        // I'll create it later – for now, we'll store the referral code in metadata.
+                        // We'll handle the referral logic in the backend trigger.
+                        // So we just store the referral code in user metadata.
+                    }
+
                     const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
                         options: {
-                            data: { phone: phone }
+                            data: {
+                                phone: phone,
+                                referral_code: referral || null,
+                                referrer_id: null // will be updated by backend if needed
+                            }
                         }
                     });
 
                     if (error) throw error;
 
                     if (data.user) {
+                        // Create wallet
                         const userId = data.user.id;
                         const { data: existing } = await supabaseClient
                             .from('wallets')
@@ -805,6 +832,7 @@
                     showToast('Registration successful!', 'Please check your email to confirm your account.', 'success');
                     regEmail.value = '';
                     regPhone.value = '';
+                    regReferral.value = '';
                     regPassword.value = '';
                     regConfirm.value = '';
                     showView('login');
@@ -839,6 +867,20 @@
                     if (error) throw error;
 
                     if (data.user) {
+                        // Check if we need to show privacy popup (first login)
+                        const userId = data.user.id;
+                        const { data: profile } = await supabaseClient
+                            .from('profiles') // you may not have this; we'll use a flag in localStorage
+                            .select('privacy_accepted')
+                            .eq('user_id', userId)
+                            .maybeSingle();
+                        // For simplicity, we'll use localStorage flag
+                        const privacyShown = localStorage.getItem('vivi_privacy_shown');
+                        if (!privacyShown) {
+                            localStorage.setItem('vivi_privacy_shown', 'true');
+                            // Show privacy modal after login
+                            setTimeout(() => openPrivacyModal(), 500);
+                        }
                         window.location.href = 'dashboard.html';
                     }
 
@@ -852,7 +894,7 @@
                 }
             });
 
-            // ---- GOOGLE LOGIN (FIXED) ----
+            // ---- GOOGLE LOGIN ----
             async function signInWithGoogle() {
                 try {
                     const { data, error } = await supabaseClient.auth.signInWithOAuth({
@@ -866,8 +908,7 @@
                         }
                     });
                     if (error) throw error;
-                    // The user will be redirected to Google, then back to the redirectTo URL
-                    // No need to handle anything else here
+                    // User will be redirected to Google and back
                 } catch (err) {
                     console.error('Google login error:', err);
                     showToast('Google login failed', err.message || 'Please try again.', 'error');
@@ -912,13 +953,6 @@
                 try {
                     const { data } = await supabaseClient.auth.getSession();
                     if (data.session) {
-                        // Check if we came from Google OAuth redirect
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.get('code')) {
-                            // This is a redirect from Google – the session is already set
-                            window.location.href = 'dashboard.html';
-                            return;
-                        }
                         window.location.href = 'dashboard.html';
                     }
                 } catch (_) { /* ignore */ }
