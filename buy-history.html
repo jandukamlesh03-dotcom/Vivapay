@@ -32,20 +32,9 @@
             padding-bottom: 10px;
             border-bottom: 1px solid #1a3a6b;
         }
-        .header .logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
-        }
+        .header .logo { font-size: 22px; font-weight: 700; color: #ffffff; }
         .header .logo span { color: #f5b342; }
-        .header .back-btn {
-            background: none;
-            border: none;
-            color: #4a6a8a;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-        }
+        .header .back-btn { background: none; border: none; color: #4a6a8a; font-size: 14px; cursor: pointer; text-decoration: none; }
         .header .back-btn:active { color: #f5b342; }
         .history-item {
             background: #0a1628;
@@ -59,37 +48,17 @@
         }
         .history-item .left .amount { color: #ffffff; font-weight: 600; font-size: 16px; }
         .history-item .left .date { color: #4a6a8a; font-size: 12px; }
+        .history-item .left .screenshot-link { color: #f5b342; font-size: 12px; text-decoration: none; }
         .status-pending {
-            background: #1a2a3a;
-            color: #f5b342;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: capitalize;
-            border: 1px solid #f5b342;
+            background: #1a2a3a; color: #f5b342; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #f5b342;
         }
         .status-accepted {
-            background: #0f2a1f;
-            color: #58c4a0;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: capitalize;
-            border: 1px solid #58c4a0;
+            background: #0f2a1f; color: #58c4a0; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #58c4a0;
         }
         .status-rejected {
-            background: #2a1118;
-            color: #f87171;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: capitalize;
-            border: 1px solid #f87171;
+            background: #2a1118; color: #f87171; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #f87171;
         }
-        .empty-state { color: #4a6a8a; text-align: center; padding: 30px 0; font-size: 14px; }
+        .empty-state { color: #4a6a8a; text-align: center; padding: 20px 0; font-size: 14px; }
         .footer { text-align: center; color: #4a6a8a; font-size: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #1a3a6b; }
     </style>
 </head>
@@ -127,11 +96,13 @@
                         const statusClass = 'status-' + (req.status || 'pending');
                         const date = new Date(req.created_at);
                         const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const screenshotLink = req.proof_url ? `<a href="${req.proof_url}" target="_blank" class="screenshot-link">📎 View Screenshot</a>` : '';
                         html += `
                             <div class="history-item">
                                 <div class="left">
                                     <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
                                     <div class="date">${dateStr}</div>
+                                    ${screenshotLink}
                                 </div>
                                 <span class="${statusClass}">${req.status || 'pending'}</span>
                             </div>
