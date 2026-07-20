@@ -6,7 +6,6 @@
     <title>VIVI PAY</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabaseClient.js"></script>
-    <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         /* ============================================================
@@ -31,14 +30,12 @@
             position: relative;
             min-height: 600px;
         }
-
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn {
             from { opacity:0; transform:translateY(8px); }
             to { opacity:1; transform:translateY(0); }
         }
-
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -65,7 +62,6 @@
             align-items: center;
             gap: 6px;
         }
-
         .stat-box {
             background: #0a1628;
             border-radius: 14px;
@@ -90,7 +86,6 @@
             transition: background 0.2s, transform 0.1s;
         }
         .btn-primary:active { background: #d49a2a; transform: scale(0.97); }
-
         .btn-danger {
             background: #f87171;
             border: none;
@@ -101,7 +96,6 @@
             cursor: pointer;
         }
         .btn-danger:active { opacity: 0.7; }
-
         .btn-secondary {
             background: #1a3a6b;
             border: none;
@@ -112,10 +106,8 @@
             cursor: pointer;
         }
         .btn-secondary:active { background: #2a4a7b; }
-
         .empty-state { color: #4a6a8a; text-align: center; padding: 20px 0; font-size: 14px; }
 
-        /* ----- HOME TAB ----- */
         .token-card {
             background: linear-gradient(145deg, #0a1628, #1a3a6b);
             border-radius: 24px;
@@ -132,7 +124,6 @@
         .token-card .left .sub { color: #4a6a8a; font-size: 12px; margin-top: 2px; }
 
         .stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
-
         .quick-actions {
             display: flex;
             gap: 10px;
@@ -152,7 +143,6 @@
             transition: 0.2s;
         }
         .quick-actions .qa-btn:active { background: #1a3a6b; border-color: #f5b342; }
-
         .notice-box {
             background: #0a1628;
             border-radius: 16px;
@@ -167,7 +157,6 @@
         .notice-box .desc { color: #4a6a8a; font-size: 13px; margin-top: 4px; }
         .notice-box .more { color: #f5b342; font-size: 13px; float: right; }
 
-        /* ----- BUY TAB ----- */
         .pkg-card {
             background: #0a1628;
             border-radius: 16px;
@@ -193,7 +182,6 @@
         }
         .pkg-card .right .btn-invest:active { background: #d49a2a; }
 
-        /* ----- DEPOSIT WITH QR ----- */
         .deposit-form, .withdraw-form {
             background: #0a1628;
             border-radius: 20px;
@@ -243,20 +231,9 @@
             border-radius: 16px;
             border: 1px solid #1a3a6b;
         }
-        .qr-container #qrcode {
-            display: inline-block;
-        }
-        .qr-container .qr-label {
-            color: #4a6a8a;
-            font-size: 13px;
-            margin-top: 8px;
-        }
-        .qr-container .qr-expiry {
-            color: #f87171;
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
+        .qr-container #qrcode { display: inline-block; }
+        .qr-container .qr-label { color: #4a6a8a; font-size: 13px; margin-top: 8px; }
+        .qr-container .qr-expiry { color: #f87171; font-size: 13px; font-weight: 600; margin-top: 4px; }
 
         .warning-box {
             background: #1f0f12;
@@ -299,7 +276,6 @@
         }
         .btn-primary-full:active { background: #d49a2a; }
 
-        /* ----- HISTORY ----- */
         .history-item {
             background: #0a1628;
             border-radius: 14px;
@@ -312,6 +288,7 @@
         }
         .history-item .left .amount { color: #ffffff; font-weight: 600; font-size: 16px; }
         .history-item .left .date { color: #4a6a8a; font-size: 12px; }
+        .history-item .left .screenshot-link { color: #f5b342; font-size: 12px; text-decoration: none; }
         .status-pending {
             background: #1a2a3a;
             color: #f5b342;
@@ -343,7 +320,6 @@
             border: 1px solid #f87171;
         }
 
-        /* ----- MINE ----- */
         .mine-item {
             background: #0a1628;
             border-radius: 14px;
@@ -405,7 +381,6 @@
         }
         .mine-footer .signout-btn:active { opacity: 0.7; }
 
-        /* ----- MODAL ----- */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -457,7 +432,6 @@
         }
         .modal-box .modal-actions .btn-cancel:active { background: #2a4a7b; }
 
-        /* ----- BOTTOM NAV ----- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -491,7 +465,6 @@
         .bottom-nav .nav-item.active { color: #f5b342; }
         .bottom-nav .nav-item:active { transform: scale(0.92); }
 
-        /* ----- WITHDRAW TABS ----- */
         .withdraw-tabs {
             display: flex;
             gap: 8px;
@@ -517,6 +490,35 @@
         .withdraw-tabs .wt-btn:active { transform: scale(0.97); }
         .withdraw-panel { display: none; }
         .withdraw-panel.active { display: block; }
+
+        /* ----- REFERRAL PREVIEW (blank area) ----- */
+        .referral-preview {
+            background: #0a1628;
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1px solid #1a3a6b;
+            margin-bottom: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .referral-preview:active { border-color: #f5b342; }
+        .referral-preview .title {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .referral-preview .title span { color: #f5b342; }
+        .referral-preview .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            color: #a0b4c8;
+            font-size: 13px;
+        }
+        .referral-preview .stats .gold { color: #f5b342; font-weight: 600; }
 
         @media (max-width: 420px) {
             .app-container { padding: 14px 12px 16px; border-radius: 20px; }
@@ -564,6 +566,19 @@
                 <div class="qa-btn" id="qaSellHistory">📤 Sell History</div>
                 <div class="qa-btn" id="qaWithdraw">💸 Withdraw</div>
             </div>
+
+            <!-- ===== REFERRAL PREVIEW ===== -->
+            <div class="referral-preview" id="referralPreview">
+                <div class="title">
+                    👥 Referral Program
+                    <span>View Full →</span>
+                </div>
+                <div class="stats">
+                    <span>💰 Commission: <span class="gold" id="refCommission">0.00</span></span>
+                    <span>👤 Referred: <span class="gold" id="refCount">0</span></span>
+                </div>
+            </div>
+
             <div class="notice-box" id="noticeOfficial">
                 <div class="title">📢 Official Notice <span class="more">More ></span></div>
                 <div class="desc" id="noticeDesc">New investment plans available with 8% daily profit.</div>
@@ -590,7 +605,7 @@
                 <div class="upi-display">
                     <div class="upi-label">💳 Pay to this UPI ID</div>
                     <div class="upi-id">
-                        <span>7878674198@omni</span>
+                        <span>paramjeet201@fam</span>
                         <button class="copy-btn" id="copyUpiBtn">Copy</button>
                     </div>
                     <div style="margin-top:6px;">
@@ -598,40 +613,39 @@
                     </div>
                 </div>
 
-                <!-- Amount Input -->
                 <div class="field">
                     <label>Amount (₹) – Minimum 200</label>
                     <input type="number" id="depositAmount" placeholder="Enter amount" min="200" required />
                 </div>
 
-                <!-- Generate QR Button -->
                 <button class="btn-primary-full" id="generateQRBtn" style="margin-bottom:12px;">Generate QR Code</button>
 
-                <!-- QR Code Display -->
+                <!-- QR Container (hidden initially) -->
                 <div class="qr-container" id="qrContainer" style="display:none;">
                     <div id="qrcode"></div>
                     <div class="qr-label">Scan to pay</div>
-                    <div class="qr-expiry" id="qrExpiry">⏳ Expires in: <span id="timerDisplay">05:00</span></div>
+                    <div class="qr-expiry">⏳ Expires in: <span id="timerDisplay">05:00</span></div>
                 </div>
 
-                <!-- Warning Box -->
-                <div class="warning-box">
+                <!-- UTR + Screenshot (hidden initially) -->
+                <div id="depositExtraFields" style="display:none;">
+                    <div class="field">
+                        <label>UTR ID (mandatory after payment)</label>
+                        <input type="text" id="depositUtr" placeholder="Enter UTR number" required />
+                    </div>
+                    <div class="field">
+                        <label>Payment Screenshot (optional but recommended)</label>
+                        <input type="file" id="depositScreenshot" accept="image/*" />
+                    </div>
+                </div>
+
+                <div class="warning-box" id="warningBox" style="display:none;">
                     <strong>⚠️ WARNING:</strong> If you didn't make the payment and still submit a request, you may get banned.
                     <br /><br />
                     After payment, wait <strong>5-10 minutes</strong> before submitting. If you face any problem, contact <strong>@vivapay009</strong> on Telegram.
                 </div>
 
-                <!-- UTR & Screenshot -->
-                <div class="field">
-                    <label>UTR ID (mandatory after payment)</label>
-                    <input type="text" id="depositUtr" placeholder="Enter UTR number" required />
-                </div>
-                <div class="field">
-                    <label>Payment Screenshot (optional but recommended)</label>
-                    <input type="file" id="depositScreenshot" accept="image/*" />
-                </div>
-
-                <button class="btn-primary-full" id="depositSubmitBtn">Submit Deposit Request</button>
+                <button class="btn-primary-full" id="depositSubmitBtn" style="display:none;">Submit Deposit Request</button>
             </div>
             <div style="font-weight:600;color:#ffffff;font-size:16px;margin:10px 0 8px;">📋 Deposit History</div>
             <div id="depositHistoryList"></div>
@@ -812,6 +826,11 @@
             });
             document.getElementById('qaWithdraw').addEventListener('click', () => switchTab('withdraw'));
 
+            // Referral preview click -> go to referral page
+            document.getElementById('referralPreview').addEventListener('click', () => {
+                window.location.href = 'referral.html';
+            });
+
             document.getElementById('signOutBtn').addEventListener('click', async function() {
                 await supabaseClient.auth.signOut();
                 window.location.href = 'index.html';
@@ -848,6 +867,7 @@
                     document.getElementById('mineBalance').textContent = bal;
                     document.getElementById('buyBalance').textContent = bal;
 
+                    // Today profit
                     const { data: investments } = await supabaseClient
                         .from('investments')
                         .select('daily_profit')
@@ -858,11 +878,29 @@
                     document.getElementById('homeTodayProfit').textContent = profit.toFixed(2);
                     document.getElementById('mineTodayProfit').textContent = profit.toFixed(2);
 
-                    // Update withdrawal max hint
+                    // Withdrawal max
                     const wdInputUPI = document.getElementById('withdrawAmountUPI');
                     const wdInputBank = document.getElementById('withdrawAmountBank');
                     if (wdInputUPI) wdInputUPI.max = bal;
                     if (wdInputBank) wdInputBank.max = bal;
+
+                    // ---- Referral stats ----
+                    const { data: referrals } = await supabaseClient
+                        .from('referrals')
+                        .select('amount, status')
+                        .eq('referrer_id', user.id);
+
+                    let totalCommission = 0;
+                    let referredCount = 0;
+                    if (referrals) {
+                        referredCount = referrals.length;
+                        referrals.forEach(r => {
+                            if (r.status === 'credited') totalCommission += parseFloat(r.amount);
+                        });
+                    }
+                    document.getElementById('refCommission').textContent = totalCommission.toFixed(2);
+                    document.getElementById('refCount').textContent = referredCount;
+
                 } catch (err) { console.error(err); }
             }
 
@@ -948,7 +986,7 @@
                 }
             }
 
-            // ---- QR CODE GENERATOR ----
+            // ---- QR CODE ----
             document.getElementById('generateQRBtn').addEventListener('click', function() {
                 const amount = document.getElementById('depositAmount').value;
                 if (!amount || parseFloat(amount) < 200) {
@@ -956,7 +994,7 @@
                     return;
                 }
 
-                const upiId = '7878674198@omni';
+                const upiId = 'paramjeet201@fam';
                 const upiString = `upi://pay?pa=${upiId}&am=${amount}&cu=INR`;
 
                 // Clear previous QR
@@ -973,9 +1011,14 @@
                     colorLight: '#0a1628',
                 });
 
+                // Show extra fields + warning + submit button
+                document.getElementById('depositExtraFields').style.display = 'block';
+                document.getElementById('warningBox').style.display = 'block';
+                document.getElementById('depositSubmitBtn').style.display = 'block';
+
                 // Start expiry timer (5 minutes)
                 clearInterval(qrTimer);
-                qrExpiryTime = 5 * 60; // 5 minutes in seconds
+                qrExpiryTime = 5 * 60;
                 updateTimerDisplay();
                 qrTimer = setInterval(() => {
                     qrExpiryTime--;
@@ -983,6 +1026,9 @@
                     if (qrExpiryTime <= 0) {
                         clearInterval(qrTimer);
                         qrContainer.style.display = 'none';
+                        document.getElementById('depositExtraFields').style.display = 'none';
+                        document.getElementById('warningBox').style.display = 'none';
+                        document.getElementById('depositSubmitBtn').style.display = 'none';
                         alert('QR code expired. Please generate a new one.');
                     }
                 }, 1000);
@@ -1013,11 +1059,13 @@
                     let html = '';
                     data.forEach(req => {
                         const statusClass = 'status-' + (req.status || 'pending');
+                        const screenshotLink = req.proof_url ? `<a href="${req.proof_url}" target="_blank" class="screenshot-link">📎 View Screenshot</a>` : '';
                         html += `
                             <div class="history-item">
                                 <div class="left">
                                     <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
                                     <div class="date">${formatDate(req.created_at)}</div>
+                                    ${screenshotLink}
                                 </div>
                                 <span class="${statusClass}">${req.status || 'pending'}</span>
                             </div>
@@ -1045,7 +1093,6 @@
                 try {
                     let screenshotUrl = null;
                     if (screenshot) {
-                        // Upload to Supabase Storage
                         const fileExt = screenshot.name.split('.').pop();
                         const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
                         const { data: uploadData, error: uploadError } = await supabaseClient.storage
@@ -1079,6 +1126,9 @@
                     document.getElementById('depositUtr').value = '';
                     document.getElementById('depositScreenshot').value = '';
                     document.getElementById('qrContainer').style.display = 'none';
+                    document.getElementById('depositExtraFields').style.display = 'none';
+                    document.getElementById('warningBox').style.display = 'none';
+                    document.getElementById('depositSubmitBtn').style.display = 'none';
                     clearInterval(qrTimer);
                     loadDepositHistory();
                 } catch (err) {
@@ -1091,11 +1141,11 @@
             });
 
             document.getElementById('copyUpiBtn').addEventListener('click', function() {
-                navigator.clipboard.writeText('7878674198@omni').then(() => {
+                navigator.clipboard.writeText('paramjeet201@fam').then(() => {
                     alert('UPI ID copied!');
                 }).catch(() => {
                     const ta = document.createElement('textarea');
-                    ta.value = '7878674198@omni';
+                    ta.value = 'paramjeet201@fam';
                     document.body.appendChild(ta);
                     ta.select();
                     document.execCommand('copy');
@@ -1105,7 +1155,6 @@
             });
 
             // ---- Withdrawal ----
-            // Withdraw tabs
             const wtBtns = document.querySelectorAll('.wt-btn');
             const upiPanel = document.getElementById('upiPanel');
             const bankPanel = document.getElementById('bankPanel');
