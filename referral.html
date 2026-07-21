@@ -7,22 +7,39 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabaseClient.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+        }
         body {
             background: #0a1628;
             min-height: 100vh;
-            padding: 20px 16px;
             display: flex;
             justify-content: center;
+            padding: 20px 16px 40px;
         }
         .container {
             max-width: 420px;
             width: 100%;
-            background: #111d33;
-            border-radius: 28px;
-            padding: 24px 16px 20px;
-            border: 1px solid #1a3a6b;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+            background: linear-gradient(145deg, #1a0e05, #2a1a0a);
+            border-radius: 32px;
+            padding: 24px 16px 28px;
+            border: 2px solid #f5b342;
+            box-shadow: 0 0 60px rgba(245, 179, 66, 0.2), inset 0 0 60px rgba(245, 179, 66, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(245,179,66,0.03) 0%, transparent 70%);
+            animation: glowPulse 6s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
         }
         .header {
             display: flex;
@@ -30,153 +47,218 @@
             align-items: center;
             margin-bottom: 18px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #1a3a6b;
+            border-bottom: 1px solid rgba(245, 179, 66, 0.3);
+            position: relative;
+            z-index: 2;
         }
-        .header .logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
+        .header .title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #f5b342;
+            text-shadow: 0 0 30px rgba(245, 179, 66, 0.5);
+            letter-spacing: 2px;
         }
-        .header .logo span { color: #f5b342; }
         .header .back-btn {
-            background: none;
-            border: none;
-            color: #4a6a8a;
-            font-size: 14px;
+            background: none; border: none;
+            color: #a0b4c8;
+            font-size: 16px;
             cursor: pointer;
             text-decoration: none;
         }
         .header .back-btn:active { color: #f5b342; }
 
-        .stat-box {
-            background: #0a1628;
-            border-radius: 14px;
-            padding: 16px;
-            border: 1px solid #1a3a6b;
+        .highlight-box {
+            background: rgba(0,0,0,0.4);
+            border-radius: 16px;
+            padding: 18px 16px;
+            border: 1px solid rgba(245, 179, 66, 0.3);
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
         }
-        .stat-box .label { color: #4a6a8a; font-size: 13px; }
-        .stat-box .value { color: #f5b342; font-size: 28px; font-weight: 700; margin-top: 4px; }
+        .highlight-box .big {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 40px rgba(255,215,0,0.4);
+            line-height: 1.2;
+        }
+        .highlight-box .sub {
+            color: #d4a373;
+            font-size: 16px;
+            margin-top: 4px;
+        }
 
         .referral-link-box {
-            background: #0a1628;
+            background: rgba(0,0,0,0.5);
             border-radius: 14px;
             padding: 12px 16px;
-            border: 1px solid #1a3a6b;
+            border: 1px solid rgba(245, 179, 66, 0.2);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
         }
         .referral-link-box .link {
+            flex: 1;
             color: #a0b4c8;
             font-size: 13px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            flex: 1;
         }
         .referral-link-box .copy-btn {
             background: #f5b342;
             border: none;
             border-radius: 40px;
             padding: 6px 16px;
-            font-weight: 600;
+            font-weight: 700;
             color: #0a1628;
             cursor: pointer;
-            margin-left: 10px;
+            font-size: 14px;
         }
         .referral-link-box .copy-btn:active { background: #d49a2a; }
 
-        .history-item {
-            background: #0a1628;
+        .step-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        .step-item {
+            background: rgba(0,0,0,0.3);
             border-radius: 14px;
-            padding: 12px 16px;
-            border: 1px solid #1a3a6b;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid rgba(245, 179, 66, 0.1);
+        }
+        .step-item .step-icon { font-size: 28px; }
+        .step-item .step-label {
+            color: #a0b4c8;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .benefits {
+            background: rgba(0,0,0,0.3);
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid rgba(245, 179, 66, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        .benefits .item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            gap: 10px;
+            color: #a0b4c8;
+            font-size: 14px;
+            padding: 4px 0;
         }
-        .history-item .left .amount { color: #ffffff; font-weight: 600; font-size: 16px; }
-        .history-item .left .date { color: #4a6a8a; font-size: 12px; }
-        .history-item .left .ref-name { color: #a0b4c8; font-size: 13px; }
-        .status-credited {
-            background: #0f2a1f;
+        .benefits .item .check {
             color: #58c4a0;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid #58c4a0;
+            font-weight: 700;
         }
-        .status-pending {
-            background: #1a2a3a;
-            color: #f5b342;
-            padding: 4px 14px;
+
+        .btn-wood {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(145deg, #f5b342, #d49a2a);
+            border: none;
             border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid #f5b342;
+            font-weight: 800;
+            color: #0a1628;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 30px rgba(245, 179, 66, 0.3);
+            transition: 0.2s;
+            position: relative;
+            z-index: 2;
         }
-        .empty-state { color: #4a6a8a; text-align: center; padding: 20px 0; font-size: 14px; }
-        .footer { text-align: center; color: #4a6a8a; font-size: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #1a3a6b; }
+        .btn-wood:active { transform: scale(0.96); }
+
+        .footer {
+            text-align: center;
+            color: #4a6a8a;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(245, 179, 66, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+        .footer a { color: #f5b342; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">👥 <span>REFERRAL</span></div>
+            <div class="title">👥 REFERRAL</div>
             <a href="dashboard.html" class="back-btn">← Back</a>
         </div>
 
-        <!-- Stats -->
-        <div style="display:flex; gap:12px; margin-bottom:16px;">
-            <div class="stat-box" style="flex:1;">
-                <div class="label">💰 Total Commission</div>
-                <div class="value" id="totalCommission">0.00</div>
-            </div>
-            <div class="stat-box" style="flex:1;">
-                <div class="label">👤 Referred Users</div>
-                <div class="value" id="referredCount">0</div>
-            </div>
+        <div class="highlight-box">
+            <div class="big">EARN 15%</div>
+            <div class="sub">Commission on every deposit made by your referee</div>
         </div>
 
-        <!-- Referral Link -->
         <div class="referral-link-box">
             <span class="link" id="refLink">Loading...</span>
             <button class="copy-btn" id="copyRefLink">Copy</button>
         </div>
 
-        <div style="font-weight:600;color:#ffffff;font-size:16px;margin:12px 0 8px;">📋 Commission History</div>
-        <div id="historyList"></div>
-        <div class="footer">VIVI PAY &bull; Refer & Earn 15%</div>
+        <div class="step-grid">
+            <div class="step-item">
+                <div class="step-icon">📤</div>
+                <div class="step-label">Share Link</div>
+            </div>
+            <div class="step-item">
+                <div class="step-icon">📝</div>
+                <div class="step-label">Friend Signs Up</div>
+            </div>
+            <div class="step-item">
+                <div class="step-icon">💰</div>
+                <div class="step-label">You Earn 15%</div>
+            </div>
+        </div>
+
+        <div class="benefits">
+            <div class="item"><span class="check">✅</span> Unlimited referrals</div>
+            <div class="item"><span class="check">✅</span> Lifetime commission</div>
+            <div class="item"><span class="check">✅</span> More friends = more earnings</div>
+        </div>
+
+        <button class="btn-wood" id="inviteBtn">📤 Invite Now</button>
+
+        <div class="footer">
+            VIVI PAY &bull; Refer & Earn
+        </div>
     </div>
+
     <script>
         (function() {
             const linkEl = document.getElementById('refLink');
             const copyBtn = document.getElementById('copyRefLink');
-            const totalCommission = document.getElementById('totalCommission');
-            const referredCount = document.getElementById('referredCount');
-            const historyList = document.getElementById('historyList');
+            const inviteBtn = document.getElementById('inviteBtn');
 
-            async function loadReferralData() {
+            async function loadReferral() {
                 try {
                     const { data: { user }, error } = await supabaseClient.auth.getUser();
                     if (error || !user) {
                         window.location.href = 'index.html';
                         return;
                     }
-
-                    // Build referral link
-                    const userId = user.id;
-                    const refCode = userId.slice(0, 8); // short code
+                    const userId = user.id.slice(0, 8);
                     const baseUrl = window.location.origin;
-                    const refLink = `${baseUrl}/register?ref=${refCode}`;
+                    const refLink = baseUrl + '/index.html?ref=' + userId;
                     linkEl.textContent = refLink;
 
-                    // Copy link
                     copyBtn.addEventListener('click', function() {
                         navigator.clipboard.writeText(refLink).then(() => {
                             alert('Referral link copied!');
@@ -191,52 +273,26 @@
                         });
                     });
 
-                    // Fetch referrals
-                    const { data: referrals, error: refError } = await supabaseClient
-                        .from('referrals')
-                        .select('*')
-                        .eq('referrer_id', user.id)
-                        .order('created_at', { ascending: false });
-
-                    if (refError) throw refError;
-
-                    let total = 0;
-                    let count = 0;
-                    let html = '';
-                    if (referrals && referrals.length > 0) {
-                        referrals.forEach(r => {
-                            total += parseFloat(r.amount || 0);
-                            count++;
-                            const statusClass = r.status === 'credited' ? 'status-credited' : 'status-pending';
-                            const date = new Date(r.created_at);
-                            const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            html += `
-                                <div class="history-item">
-                                    <div class="left">
-                                        <div class="amount">₹ ${parseFloat(r.amount).toFixed(2)}</div>
-                                        <div class="ref-name">User: ${r.referred_id ? r.referred_id.slice(0, 8) : 'Unknown'}</div>
-                                        <div class="date">${dateStr}</div>
-                                    </div>
-                                    <span class="${statusClass}">${r.status || 'pending'}</span>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        html = '<div class="empty-state">No referrals yet. Share your link!</div>';
-                    }
-
-                    historyList.innerHTML = html;
-                    totalCommission.textContent = total.toFixed(2);
-                    referredCount.textContent = count;
+                    inviteBtn.addEventListener('click', function() {
+                        if (navigator.share) {
+                            navigator.share({
+                                title: 'Join VIVI PAY and earn 15% commission!',
+                                text: 'Use my referral link to sign up:',
+                                url: refLink
+                            }).catch(() => {});
+                        } else {
+                            copyBtn.click();
+                        }
+                    });
 
                 } catch (err) {
                     console.error(err);
-                    historyList.innerHTML = '<div class="empty-state">Error loading referral data.</div>';
                 }
             }
 
-            loadReferralData();
+            loadReferral();
         })();
     </script>
+
 </body>
 </html>
