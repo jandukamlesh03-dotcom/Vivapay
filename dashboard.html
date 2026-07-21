@@ -1,1138 +1,1165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>VIVI PAY</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="supabaseClient.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
-        body { background: #f5f7fa; min-height: 100vh; display: flex; justify-content: center; padding: 12px 12px 80px; }
-        .app-container {
-            width: 100%; max-width: 480px; background: #ffffff; border-radius: 32px;
-            padding: 18px 16px 20px; border: 1px solid #e0e4e8; box-shadow: 0 8px 40px rgba(0,0,0,0.06);
-        }
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-        .page-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
-            padding-bottom: 10px; border-bottom: 1px solid #e0e4e8;
-        }
-        .page-header .logo { font-size: 22px; font-weight: 700; color: #1a2a4a; }
-        .page-header .logo span { color: #c9a84c; }
-        .page-header .user-badge { background: #f5f7fa; padding: 4px 12px; border-radius: 40px; color: #4a5a6a; font-size: 11px; border: 1px solid #e0e4e8; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VIVI PAY</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabaseClient.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+    body { background: #f5f7fa; min-height: 100vh; display: flex; justify-content: center; padding: 12px 12px 80px; }
+    .app-container {
+      width: 100%; max-width: 480px; background: #ffffff; border-radius: 32px;
+      padding: 18px 16px 20px; border: 1px solid #e0e4e8; box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+    }
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
+      padding-bottom: 10px; border-bottom: 1px solid #e0e4e8;
+    }
+    .page-header .logo { font-size: 22px; font-weight: 700; color: #1a2a4a; }
+    .page-header .logo span { color: #c9a84c; }
+    .page-header .user-badge { background: #f5f7fa; padding: 4px 12px; border-radius: 40px; color: #4a5a6a; font-size: 11px; border: 1px solid #e0e4e8; }
 
-        .stat-box { background: #f5f7fa; border-radius: 14px; padding: 12px; border: 1px solid #e0e4e8; text-align: center; flex: 1; transition: 0.3s; }
-        .stat-box:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-        .stat-box .stat-label { color: #4a5a6a; font-size: 13px; font-weight: 500; }
-        .stat-box .stat-value { color: #1a2a4a; font-size: 20px; font-weight: 700; margin-top: 4px; }
-        .stat-box .stat-value.gold { color: #c9a84c; }
+    .stat-box { background: #f5f7fa; border-radius: 14px; padding: 12px; border: 1px solid #e0e4e8; text-align: center; flex: 1; transition: 0.3s; }
+    .stat-box:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .stat-box .stat-label { color: #4a5a6a; font-size: 13px; font-weight: 500; }
+    .stat-box .stat-value { color: #1a2a4a; font-size: 20px; font-weight: 700; margin-top: 4px; }
+    .stat-box .stat-value.gold { color: #c9a84c; }
 
-        .btn-primary {
-            background: #1a2a4a; border: none; border-radius: 40px; padding: 10px 24px;
-            font-weight: 700; color: #fff; font-size: 15px; cursor: pointer; transition: background 0.3s, transform 0.1s;
-        }
-        .btn-primary:active { background: #0f1d3a; transform: scale(0.95); }
-        .btn-primary-full {
-            width: 100%; background: #1a2a4a; border: none; border-radius: 40px; padding: 12px;
-            font-weight: 700; color: #fff; font-size: 16px; cursor: pointer; transition: background 0.3s;
-        }
-        .btn-primary-full:active { background: #0f1d3a; transform: scale(0.95); }
+    .btn-primary {
+      background: #1a2a4a; border: none; border-radius: 40px; padding: 10px 24px;
+      font-weight: 700; color: #fff; font-size: 15px; cursor: pointer; transition: background 0.3s, transform 0.1s;
+    }
+    .btn-primary:active { background: #0f1d3a; transform: scale(0.95); }
+    .btn-primary-full {
+      width: 100%; background: #1a2a4a; border: none; border-radius: 40px; padding: 12px;
+      font-weight: 700; color: #fff; font-size: 16px; cursor: pointer; transition: background 0.3s;
+    }
+    .btn-primary-full:active { background: #0f1d3a; transform: scale(0.95); }
 
-        .token-card {
-            background: #f5f7fa; border-radius: 24px; padding: 18px 20px; border: 1px solid #e0e4e8;
-            margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .token-card .left .label { color: #4a5a6a; font-size: 14px; font-weight: 500; }
-        .token-card .left .amount { color: #1a2a4a; font-size: 32px; font-weight: 700; }
-        .token-card .left .amount span { color: #c9a84c; }
-        .token-card .left .sub { color: #8a9aaa; font-size: 12px; margin-top: 2px; }
-        .quick-actions { display: flex; gap: 10px; margin-bottom: 18px; }
-        .quick-actions .qa-btn {
-            flex: 1; background: #f5f7fa; border: 1px solid #e0e4e8; border-radius: 14px; padding: 12px;
-            text-align: center; color: #4a5a6a; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.3s;
-        }
-        .quick-actions .qa-btn:active { background: #e0e4e8; }
+    .token-card {
+      background: #f5f7fa; border-radius: 24px; padding: 18px 20px; border: 1px solid #e0e4e8;
+      margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .token-card .left .label { color: #4a5a6a; font-size: 14px; font-weight: 500; }
+    .token-card .left .amount { color: #1a2a4a; font-size: 32px; font-weight: 700; }
+    .token-card .left .amount span { color: #c9a84c; }
+    .token-card .left .sub { color: #8a9aaa; font-size: 12px; margin-top: 2px; }
+    .quick-actions { display: flex; gap: 10px; margin-bottom: 18px; }
+    .quick-actions .qa-btn {
+      flex: 1; background: #f5f7fa; border: 1px solid #e0e4e8; border-radius: 14px; padding: 12px;
+      text-align: center; color: #4a5a6a; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.3s;
+    }
+    .quick-actions .qa-btn:active { background: #e0e4e8; }
 
-        .mystery-progress-box {
-            background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8;
-            margin-bottom: 18px; cursor: pointer; transition: 0.3s;
-        }
-        .mystery-progress-box:hover { border-color: #c9a84c; transform: translateY(-2px); }
-        .mystery-progress-box .title { color: #1a2a4a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; }
-        .mystery-progress-box .title span { color: #c9a84c; }
-        .mystery-progress-box .subtitle { color: #4a5a6a; font-size: 13px; margin-top: 2px; }
-        .mystery-progress-box .progress-track { margin-top: 12px; height: 8px; background: #e0e4e8; border-radius: 8px; overflow: hidden; }
-        .mystery-progress-box .progress-fill { height: 100%; background: #c9a84c; border-radius: 8px; width: 0%; transition: width 0.6s ease; }
-        .mystery-progress-box .milestones { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #8a9aaa; }
-        .mystery-progress-box .milestones .reached { color: #c9a84c; font-weight: 700; }
-        .mystery-progress-box .milestones .completed { color: #2e7d32; }
+    .mystery-progress-box {
+      background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8;
+      margin-bottom: 18px; cursor: pointer; transition: 0.3s;
+    }
+    .mystery-progress-box:hover { border-color: #c9a84c; transform: translateY(-2px); }
+    .mystery-progress-box .title { color: #1a2a4a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; }
+    .mystery-progress-box .title span { color: #c9a84c; }
+    .mystery-progress-box .subtitle { color: #4a5a6a; font-size: 13px; margin-top: 2px; }
+    .mystery-progress-box .progress-track { margin-top: 12px; height: 8px; background: #e0e4e8; border-radius: 8px; overflow: hidden; }
+    .mystery-progress-box .progress-fill { height: 100%; background: #c9a84c; border-radius: 8px; width: 0%; transition: width 0.6s ease; }
+    .mystery-progress-box .milestones { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #8a9aaa; }
+    .mystery-progress-box .milestones .reached { color: #c9a84c; font-weight: 700; }
+    .mystery-progress-box .milestones .completed { color: #2e7d32; }
 
-        .referral-preview {
-            background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8;
-            margin-bottom: 18px; cursor: pointer; transition: 0.3s;
-        }
-        .referral-preview:hover { border-color: #c9a84c; transform: translateY(-2px); }
-        .referral-preview .title { color: #1a2a4a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; }
-        .referral-preview .title span { color: #c9a84c; }
-        .referral-preview .stats { display: flex; justify-content: space-between; margin-top: 8px; color: #4a5a6a; font-size: 13px; }
-        .referral-preview .stats .gold { color: #c9a84c; font-weight: 600; }
+    .referral-preview {
+      background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8;
+      margin-bottom: 18px; cursor: pointer; transition: 0.3s;
+    }
+    .referral-preview:hover { border-color: #c9a84c; transform: translateY(-2px); }
+    .referral-preview .title { color: #1a2a4a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; }
+    .referral-preview .title span { color: #c9a84c; }
+    .referral-preview .stats { display: flex; justify-content: space-between; margin-top: 8px; color: #4a5a6a; font-size: 13px; }
+    .referral-preview .stats .gold { color: #c9a84c; font-weight: 600; }
 
-        .notice-box { background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8; margin-bottom: 12px; cursor: pointer; }
-        .notice-box:hover { border-color: #c9a84c; }
-        .notice-box .title { color: #1a2a4a; font-weight: 600; font-size: 15px; }
-        .notice-box .desc { color: #4a5a6a; font-size: 13px; margin-top: 4px; }
-        .notice-box .more { color: #c9a84c; font-size: 13px; float: right; }
+    .notice-box { background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8; margin-bottom: 12px; cursor: pointer; }
+    .notice-box:hover { border-color: #c9a84c; }
+    .notice-box .title { color: #1a2a4a; font-weight: 600; font-size: 15px; }
+    .notice-box .desc { color: #4a5a6a; font-size: 13px; margin-top: 4px; }
+    .notice-box .more { color: #c9a84c; font-size: 13px; float: right; }
 
-        .pkg-card {
-            background: #f5f7fa; border-radius: 16px; padding: 18px 16px; border: 1px solid #e0e4e8;
-            margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
-        }
-        .pkg-card:hover { border-color: #c9a84c; transform: translateY(-2px); }
-        .pkg-card .left .pkg-name { color: #1a2a4a; font-size: 18px; font-weight: 600; }
-        .pkg-card .left .pkg-detail { color: #4a5a6a; font-size: 14px; margin-top: 2px; }
-        .pkg-card .left .pkg-profit { color: #c9a84c; font-size: 14px; font-weight: 600; }
-        .pkg-card .right .btn-invest { background: #c9a84c; border: none; border-radius: 40px; padding: 10px 24px; font-weight: 700; color: #fff; font-size: 15px; cursor: pointer; transition: 0.3s; }
-        .pkg-card .right .btn-invest:active { transform: scale(0.95); background: #b8943a; }
+    .pkg-card {
+      background: #f5f7fa; border-radius: 16px; padding: 18px 16px; border: 1px solid #e0e4e8;
+      margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
+    }
+    .pkg-card:hover { border-color: #c9a84c; transform: translateY(-2px); }
+    .pkg-card .left .pkg-name { color: #1a2a4a; font-size: 18px; font-weight: 600; }
+    .pkg-card .left .pkg-detail { color: #4a5a6a; font-size: 14px; margin-top: 2px; }
+    .pkg-card .left .pkg-profit { color: #c9a84c; font-size: 14px; font-weight: 600; }
+    .pkg-card .right .btn-invest { background: #c9a84c; border: none; border-radius: 40px; padding: 10px 24px; font-weight: 700; color: #fff; font-size: 15px; cursor: pointer; transition: 0.3s; }
+    .pkg-card .right .btn-invest:active { transform: scale(0.95); background: #b8943a; }
 
-        .deposit-form, .withdraw-form { background: #f5f7fa; border-radius: 20px; padding: 16px; border: 1px solid #e0e4e8; margin-bottom: 20px; }
-        .upi-display { background: #fff; border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 16px; border: 1px solid #e0e4e8; }
-        .upi-display .upi-label { color: #4a5a6a; font-size: 14px; }
-        .upi-display .upi-id { font-size: 24px; font-weight: 700; color: #1a2a4a; margin: 4px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-        .upi-display .copy-btn { background: #1a2a4a; border: none; border-radius: 40px; padding: 4px 16px; font-weight: 600; color: #fff; font-size: 13px; cursor: pointer; }
-        .upi-display .copy-btn:active { background: #0f1d3a; }
-        .upi-display .telegram-link { color: #c9a84c; text-decoration: none; font-weight: 600; }
-        .qr-container { text-align: center; padding: 16px 0; margin: 12px 0; background: #fff; border-radius: 16px; border: 1px solid #e0e4e8; }
-        .qr-container #qrcode { display: inline-block; }
-        .qr-container .qr-label { color: #4a5a6a; font-size: 13px; margin-top: 8px; }
-        .qr-container .qr-expiry { color: #d32f2f; font-size: 13px; font-weight: 600; margin-top: 4px; }
-        .warning-box { background: #fde8e8; border: 1px solid #f5c6c6; border-radius: 12px; padding: 12px 14px; margin: 12px 0; color: #d32f2f; font-size: 14px; line-height: 1.6; }
-        .warning-box strong { color: #1a2a4a; }
-        .field { margin-bottom: 12px; }
-        .field label { display: block; font-size: 13px; color: #4a5a6a; margin-bottom: 4px; }
-        .field input, .field select { width: 100%; padding: 12px 14px; background: #fff; border: 1.5px solid #e0e4e8; border-radius: 14px; color: #1a2a4a; font-size: 15px; outline: none; }
-        .field input:focus, .field select:focus { border-color: #c9a84c; }
-        .field input::placeholder { color: #8a9aaa; }
+    .deposit-form, .withdraw-form { background: #f5f7fa; border-radius: 20px; padding: 16px; border: 1px solid #e0e4e8; margin-bottom: 20px; }
+    .upi-display { background: #fff; border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 16px; border: 1px solid #e0e4e8; }
+    .upi-display .upi-label { color: #4a5a6a; font-size: 14px; }
+    .upi-display .upi-id { font-size: 24px; font-weight: 700; color: #1a2a4a; margin: 4px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .upi-display .copy-btn { background: #1a2a4a; border: none; border-radius: 40px; padding: 4px 16px; font-weight: 600; color: #fff; font-size: 13px; cursor: pointer; }
+    .upi-display .copy-btn:active { background: #0f1d3a; }
+    .upi-display .telegram-link { color: #c9a84c; text-decoration: none; font-weight: 600; }
+    .qr-container { text-align: center; padding: 16px 0; margin: 12px 0; background: #fff; border-radius: 16px; border: 1px solid #e0e4e8; }
+    .qr-container #qrcode { display: inline-block; }
+    .qr-container .qr-label { color: #4a5a6a; font-size: 13px; margin-top: 8px; }
+    .qr-container .qr-expiry { color: #d32f2f; font-size: 13px; font-weight: 600; margin-top: 4px; }
+    .warning-box { background: #fde8e8; border: 1px solid #f5c6c6; border-radius: 12px; padding: 12px 14px; margin: 12px 0; color: #d32f2f; font-size: 14px; line-height: 1.6; }
+    .warning-box strong { color: #1a2a4a; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; color: #4a5a6a; margin-bottom: 4px; }
+    .field input, .field select { width: 100%; padding: 12px 14px; background: #fff; border: 1.5px solid #e0e4e8; border-radius: 14px; color: #1a2a4a; font-size: 15px; outline: none; }
+    .field input:focus, .field select:focus { border-color: #c9a84c; }
+    .field input::placeholder { color: #8a9aaa; }
 
-        .history-item { background: #fff; border-radius: 14px; padding: 12px 16px; border: 1px solid #e0e4e8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .history-item .left .amount { color: #1a2a4a; font-weight: 600; font-size: 16px; }
-        .history-item .left .date { color: #8a9aaa; font-size: 12px; }
-        .history-item .left .screenshot-link { color: #c9a84c; font-size: 12px; text-decoration: none; }
-        .status-pending { background: #fff8e1; color: #c9a84c; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #c9a84c; }
-        .status-accepted { background: #e8f5e9; color: #2e7d32; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #2e7d32; }
-        .status-rejected { background: #fde8e8; color: #d32f2f; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #d32f2f; }
+    .history-item { background: #fff; border-radius: 14px; padding: 12px 16px; border: 1px solid #e0e4e8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .history-item .left .amount { color: #1a2a4a; font-weight: 600; font-size: 16px; }
+    .history-item .left .date { color: #8a9aaa; font-size: 12px; }
+    .history-item .left .screenshot-link { color: #c9a84c; font-size: 12px; text-decoration: none; }
+    .status-pending { background: #fff8e1; color: #c9a84c; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #c9a84c; }
+    .status-accepted { background: #e8f5e9; color: #2e7d32; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #2e7d32; }
+    .status-rejected { background: #fde8e8; color: #d32f2f; padding: 4px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; border: 1px solid #d32f2f; }
 
-        .mine-item { background: #f5f7fa; border-radius: 14px; padding: 14px 16px; border: 1px solid #e0e4e8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
-        .mine-item:hover { border-color: #c9a84c; background: #fff; }
-        .mine-item .label { color: #1a2a4a; font-size: 15px; }
-        .mine-item .arrow { color: #8a9aaa; font-size: 18px; }
-        .inv-item { background: #f5f7fa; border-radius: 14px; padding: 12px 16px; border: 1px solid #e0e4e8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .inv-item .left .pkg { color: #1a2a4a; font-weight: 600; }
-        .inv-item .left .detail { color: #4a5a6a; font-size: 12px; }
-        .inv-item .btn-sell { background: #c9a84c; border: none; border-radius: 40px; padding: 4px 16px; font-weight: 600; color: #fff; font-size: 13px; cursor: pointer; }
-        .inv-item .btn-sell:active { background: #b8943a; }
-        .mine-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e0e4e8; text-align: center; }
-        .mine-footer .version { color: #8a9aaa; font-size: 12px; }
-        .mine-footer .signout-btn { background: #d32f2f; border: none; color: #fff; padding: 10px 20px; border-radius: 40px; font-weight: 600; font-size: 15px; cursor: pointer; width: 100%; margin-top: 10px; }
-        .mine-footer .signout-btn:active { opacity: 0.7; }
+    .mine-item { background: #f5f7fa; border-radius: 14px; padding: 14px 16px; border: 1px solid #e0e4e8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+    .mine-item:hover { border-color: #c9a84c; background: #fff; }
+    .mine-item .label { color: #1a2a4a; font-size: 15px; }
+    .mine-item .arrow { color: #8a9aaa; font-size: 18px; }
+    .inv-item { background: #f5f7fa; border-radius: 14px; padding: 12px 16px; border: 1px solid #e0e4e8; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .inv-item .left .pkg { color: #1a2a4a; font-weight: 600; }
+    .inv-item .left .detail { color: #4a5a6a; font-size: 12px; }
+    .inv-item .btn-sell { background: #c9a84c; border: none; border-radius: 40px; padding: 4px 16px; font-weight: 600; color: #fff; font-size: 13px; cursor: pointer; }
+    .inv-item .btn-sell:active { background: #b8943a; }
+    .mine-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e0e4e8; text-align: center; }
+    .mine-footer .version { color: #8a9aaa; font-size: 12px; }
+    .mine-footer .signout-btn { background: #d32f2f; border: none; color: #fff; padding: 10px 20px; border-radius: 40px; font-weight: 600; font-size: 15px; cursor: pointer; width: 100%; margin-top: 10px; }
+    .mine-footer .signout-btn:active { opacity: 0.7; }
 
-        .withdraw-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-        .withdraw-tabs .wt-btn { flex: 1; padding: 10px; border-radius: 40px; border: 1px solid #e0e4e8; background: #f5f7fa; color: #4a5a6a; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
-        .withdraw-tabs .wt-btn.active { background: #1a2a4a; color: #fff; border-color: #1a2a4a; }
-        .withdraw-tabs .wt-btn:active { transform: scale(0.95); }
-        .withdraw-panel { display: none; }
-        .withdraw-panel.active { display: block; }
+    .withdraw-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .withdraw-tabs .wt-btn { flex: 1; padding: 10px; border-radius: 40px; border: 1px solid #e0e4e8; background: #f5f7fa; color: #4a5a6a; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
+    .withdraw-tabs .wt-btn.active { background: #1a2a4a; color: #fff; border-color: #1a2a4a; }
+    .withdraw-tabs .wt-btn:active { transform: scale(0.95); }
+    .withdraw-panel { display: none; }
+    .withdraw-panel.active { display: block; }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-            display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-box {
-            background: #fff; border-radius: 28px; padding: 28px 24px; max-width: 400px; width: 100%;
-            border: 1px solid #e0e4e8; box-shadow: 0 16px 48px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
-        }
-        .modal-box .modal-title { color: #1a2a4a; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
-        .modal-box .modal-body { color: #4a5a6a; font-size: 15px; margin-bottom: 20px; line-height: 1.6; }
-        .modal-box .modal-body .highlight { color: #c9a84c; font-weight: 600; }
-        .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
-        .modal-box .modal-actions .btn-confirm { background: #1a2a4a; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #fff; cursor: pointer; font-size: 15px; }
-        .modal-box .modal-actions .btn-confirm:active { background: #0f1d3a; }
-        .modal-box .modal-actions .btn-cancel { background: #e0e4e8; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #1a2a4a; cursor: pointer; font-size: 15px; }
-        .modal-box .modal-actions .btn-cancel:active { background: #c8d0d8; }
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 28px; padding: 28px 24px; max-width: 400px; width: 100%;
+      border: 1px solid #e0e4e8; box-shadow: 0 16px 48px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
+    }
+    .modal-box .modal-title { color: #1a2a4a; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+    .modal-box .modal-body { color: #4a5a6a; font-size: 15px; margin-bottom: 20px; line-height: 1.6; }
+    .modal-box .modal-body .highlight { color: #c9a84c; font-weight: 600; }
+    .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+    .modal-box .modal-actions .btn-confirm { background: #1a2a4a; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #fff; cursor: pointer; font-size: 15px; }
+    .modal-box .modal-actions .btn-confirm:active { background: #0f1d3a; }
+    .modal-box .modal-actions .btn-cancel { background: #e0e4e8; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #1a2a4a; cursor: pointer; font-size: 15px; }
+    .modal-box .modal-actions .btn-cancel:active { background: #c8d0d8; }
 
-        #mysteryPopup {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 99999;
-            align-items: center; justify-content: center; padding: 20px;
-        }
-        #mysteryPopup.show { display: flex; }
-        .mystery-popup-content {
-            max-width: 380px; width: 100%; background: #fff; border-radius: 32px;
-            padding: 28px 20px 24px; box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-            text-align: center; border: 1px solid #e0e4e8; position: relative;
-        }
-        .mystery-popup-content .close-btn {
-            position: absolute; top: 12px; right: 16px;
-            background: none; border: none; color: #8a9aaa; font-size: 24px; cursor: pointer;
-        }
-        .mystery-popup-content .close-btn:hover { color: #1a2a4a; }
-        .mystery-popup-content .popup-title { font-size: 26px; font-weight: 900; color: #1a2a4a; margin-bottom: 8px; letter-spacing: 2px; }
-        .mystery-popup-content .popup-sub { color: #4a5a6a; font-size: 15px; margin-bottom: 16px; }
-        .mystery-popup-content .gift-box { font-size: 64px; margin: 8px 0; animation: bounceGift 1.2s ease infinite; }
-        @keyframes bounceGift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-12px) scale(1.05); } }
-        .mystery-popup-content .bonus-amount { font-size: 32px; font-weight: 800; color: #c9a84c; margin: 6px 0 12px; }
-        .mystery-popup-content .popup-btn { background: #1a2a4a; border: none; border-radius: 40px; padding: 12px 28px; font-weight: 700; color: #fff; font-size: 16px; cursor: pointer; transition: background 0.3s; }
-        .mystery-popup-content .popup-btn:active { background: #0f1d3a; }
-        .mystery-popup-content .dont-show { background: none; border: none; color: #8a9aaa; font-size: 13px; margin-top: 12px; cursor: pointer; text-decoration: underline; }
-        .mystery-popup-content .dont-show:hover { color: #1a2a4a; }
+    #mysteryPopup {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 99999;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    #mysteryPopup.show { display: flex; }
+    .mystery-popup-content {
+      max-width: 380px; width: 100%; background: #fff; border-radius: 32px;
+      padding: 28px 20px 24px; box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+      text-align: center; border: 1px solid #e0e4e8; position: relative;
+    }
+    .mystery-popup-content .close-btn {
+      position: absolute; top: 12px; right: 16px;
+      background: none; border: none; color: #8a9aaa; font-size: 24px; cursor: pointer;
+    }
+    .mystery-popup-content .close-btn:hover { color: #1a2a4a; }
+    .mystery-popup-content .popup-title { font-size: 26px; font-weight: 900; color: #1a2a4a; margin-bottom: 8px; letter-spacing: 2px; }
+    .mystery-popup-content .popup-sub { color: #4a5a6a; font-size: 15px; margin-bottom: 16px; }
+    .mystery-popup-content .gift-box { font-size: 64px; margin: 8px 0; animation: bounceGift 1.2s ease infinite; }
+    @keyframes bounceGift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-12px) scale(1.05); } }
+    .mystery-popup-content .bonus-amount { font-size: 32px; font-weight: 800; color: #c9a84c; margin: 6px 0 12px; }
+    .mystery-popup-content .popup-btn { background: #1a2a4a; border: none; border-radius: 40px; padding: 12px 28px; font-weight: 700; color: #fff; font-size: 16px; cursor: pointer; transition: background 0.3s; }
+    .mystery-popup-content .popup-btn:active { background: #0f1d3a; }
+    .mystery-popup-content .dont-show { background: none; border: none; color: #8a9aaa; font-size: 13px; margin-top: 12px; cursor: pointer; text-decoration: underline; }
+    .mystery-popup-content .dont-show:hover { color: #1a2a4a; }
 
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #fff; border-top: 1px solid #e0e4e8;
-            display: flex; justify-content: space-around; padding: 8px 0 12px;
-            max-width: 480px; margin: 0 auto; border-radius: 28px 28px 0 0;
-            z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
-        }
-        .bottom-nav .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            background: none; border: none; color: #8a9aaa; font-size: 12px; font-weight: 500;
-            cursor: pointer; gap: 2px; transition: 0.3s; padding: 0 8px;
-        }
-        .bottom-nav .nav-item .icon { font-size: 22px; line-height: 1; }
-        .bottom-nav .nav-item.active { color: #1a2a4a; font-weight: 600; }
-        .bottom-nav .nav-item:active { transform: scale(0.9); }
-        .bottom-nav .nav-item.active .icon { color: #c9a84c; }
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #fff; border-top: 1px solid #e0e4e8;
+      display: flex; justify-content: space-around; padding: 8px 0 12px;
+      max-width: 480px; margin: 0 auto; border-radius: 28px 28px 0 0;
+      z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
+    }
+    .bottom-nav .nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      background: none; border: none; color: #8a9aaa; font-size: 12px; font-weight: 500;
+      cursor: pointer; gap: 2px; transition: 0.3s; padding: 0 8px;
+    }
+    .bottom-nav .nav-item .icon { font-size: 22px; line-height: 1; }
+    .bottom-nav .nav-item.active { color: #1a2a4a; font-weight: 600; }
+    .bottom-nav .nav-item:active { transform: scale(0.9); }
+    .bottom-nav .nav-item.active .icon { color: #c9a84c; }
 
-        @media (max-width: 480px) { .app-container { padding: 14px 12px 16px; border-radius: 20px; } .token-card .left .amount { font-size: 26px; } }
-    </style>
+    @media (max-width: 480px) { .app-container { padding: 14px 12px 16px; border-radius: 20px; } .token-card .left .amount { font-size: 26px; } }
+  </style>
 </head>
 <body>
 
-    <div class="app-container" id="app">
-        <!-- HOME -->
-        <div class="tab-content active" id="tab-home">
-            <div class="page-header">
-                <div class="logo">VIVI <span>PAY</span></div>
-                <div class="user-badge">ID: <span id="homeUserId">---</span></div>
-            </div>
-            <div class="token-card">
+  <div class="app-container" id="app">
+    <!-- HOME -->
+    <div class="tab-content active" id="tab-home">
+      <div class="page-header">
+        <div class="logo">VIVI <span>PAY</span></div>
+        <div class="user-badge">ID: <span id="homeUserId">---</span></div>
+      </div>
+      <div class="token-card">
+        <div class="left">
+          <div class="label">💰 My IToken</div>
+          <div class="amount"><span id="homeBalance">0.00</span></div>
+          <div class="sub">1 Rs = 1 IToken</div>
+        </div>
+        <div class="right">
+          <button class="btn-primary" id="homeBuyBtn">Buy</button>
+        </div>
+      </div>
+      <div class="stats-row" style="display:flex; gap:12px; margin-bottom:16px;">
+        <div class="stat-box"><div class="stat-label">📈 Today Profit</div><div class="stat-value gold" id="homeTodayProfit">0.00</div></div>
+        <div class="stat-box"><div class="stat-label">🎁 Reward</div><div class="stat-value" id="homeReward">3.5%</div></div>
+      </div>
+      <div class="quick-actions">
+        <div class="qa-btn" id="qaBuyHistory">📋 Buy History</div>
+        <div class="qa-btn" id="qaSellHistory">📤 Sell History</div>
+        <div class="qa-btn" id="qaWithdraw">💸 Withdraw</div>
+      </div>
+
+      <div class="mystery-progress-box" id="mysteryPreview">
+        <div class="title">🎁 Mystery Box Progress <span>View Details →</span></div>
+        <div class="subtitle" id="mysterySub">Deposit ₹500 to unlock Silver Mystery Box</div>
+        <div class="progress-track"><div class="progress-fill" id="mysteryFill" style="width:0%;"></div></div>
+        <div class="milestones" id="milestoneLabels">
+          <span data-val="500">₹500</span>
+          <span data-val="1000">₹1000</span>
+          <span data-val="1500">₹1500</span>
+          <span data-val="2000">₹2000</span>
+          <span data-val="5000">₹5000</span>
+        </div>
+      </div>
+
+      <div class="referral-preview" id="referralPreview">
+        <div class="title">👥 Referral Program <span>View Full →</span></div>
+        <div class="stats"><span>💰 Commission: <span class="gold" id="refCommission">0.00</span></span><span>👤 Referred: <span class="gold" id="refCount">0</span></span></div>
+      </div>
+
+      <div class="notice-box" id="noticeOfficial"><div class="title">📢 Official Notice <span class="more">More ></span></div><div class="desc" id="noticeDesc">New investment plans available with 8% daily profit.</div></div>
+      <div class="notice-box" id="noticeNews"><div class="title">📰 News <span class="more">More ></span></div><div class="desc" id="newsDesc">Tips To Sell Tokens · 2026-01-23</div></div>
+    </div>
+
+    <!-- BUY -->
+    <div class="tab-content" id="tab-buy">
+      <div class="page-header"><div class="logo">BUY</div><div class="user-badge">Balance: <span id="buyBalance">0.00</span></div></div>
+      <div id="packageList"></div>
+    </div>
+
+    <!-- DEPOSIT -->
+    <div class="tab-content" id="tab-deposit">
+      <div class="page-header"><div class="logo">DEPOSIT</div></div>
+      <div class="deposit-form">
+        <div class="upi-display">
+          <div class="upi-label">💳 Pay to this UPI ID</div>
+          <div class="upi-id">
+            <span>paramjeet201@fam</span>
+            <button class="copy-btn" id="copyUpiBtn">Copy</button>
+          </div>
+          <div style="margin-top:6px;"><a href="https://t.me/vivapay009" target="_blank" class="telegram-link">📱 Telegram Support</a></div>
+        </div>
+        <div class="field"><label>Amount (₹) – Minimum 200</label><input type="number" id="depositAmount" placeholder="Enter amount" min="200" required /></div>
+        <button class="btn-primary-full" id="generateQRBtn" style="margin-bottom:12px;">Generate QR Code</button>
+        <div class="qr-container" id="qrContainer" style="display:none;">
+          <div id="qrcode"></div>
+          <div class="qr-label">Scan to pay</div>
+          <div class="qr-expiry">⏳ Expires in: <span id="timerDisplay">05:00</span></div>
+        </div>
+        <div id="depositExtraFields" style="display:none;">
+          <div class="field"><label>UTR ID (mandatory after payment)</label><input type="text" id="depositUtr" placeholder="Enter UTR number" required /></div>
+          <div class="field"><label>Payment Screenshot (optional)</label><input type="file" id="depositScreenshot" accept="image/*" /></div>
+        </div>
+        <div class="warning-box" id="warningBox" style="display:none;">
+          <strong>⚠️ WARNING:</strong> If you didn't make the payment and still submit a request, you may get banned.
+          <br /><br />After payment, wait <strong>5-10 minutes</strong> before submitting. If you face any problem, contact <strong>@vivapay009</strong> on Telegram.
+        </div>
+        <button class="btn-primary-full" id="depositSubmitBtn" style="display:none;">Submit Deposit Request</button>
+      </div>
+      <div style="font-weight:600;color:#1a2a4a;font-size:16px;margin:10px 0 8px;">📋 Deposit History</div>
+      <div id="depositHistoryList"></div>
+    </div>
+
+    <!-- WITHDRAW -->
+    <div class="tab-content" id="tab-withdraw">
+      <div class="page-header"><div class="logo">WITHDRAW</div></div>
+      <div class="withdraw-form">
+        <p style="color:#4a5a6a;font-size:13px;margin-bottom:12px;">⏳ Withdrawals take up to 2 hours to process. Minimum ₹500.</p>
+        <div class="withdraw-tabs" id="withdrawTabs">
+          <button class="wt-btn active" data-method="upi">UPI ID</button>
+          <button class="wt-btn" data-method="bank">Bank Account</button>
+        </div>
+        <div class="withdraw-panel active" id="upiPanel">
+          <div class="field"><label>Amount (₹) – Minimum 500</label><input type="number" id="withdrawAmountUPI" placeholder="Enter amount" min="500" required /></div>
+          <div class="field"><label>Your UPI ID</label><input type="text" id="withdrawUpi" placeholder="Enter UPI ID to receive funds" required /></div>
+          <button class="btn-primary-full" id="withdrawUPIBtn">Submit UPI Withdrawal</button>
+        </div>
+        <div class="withdraw-panel" id="bankPanel">
+          <div class="field"><label>Amount (₹) – Minimum 500</label><input type="number" id="withdrawAmountBank" placeholder="Enter amount" min="500" required /></div>
+          <div class="field"><label>Account Holder Name</label><input type="text" id="withdrawBankName" placeholder="Enter account holder name" required /></div>
+          <div class="field"><label>Bank Account Number</label><input type="text" id="withdrawAccountNumber" placeholder="Enter account number" required /></div>
+          <div class="field"><label>IFSC Code</label><input type="text" id="withdrawIfsc" placeholder="Enter IFSC code" required /></div>
+          <button class="btn-primary-full" id="withdrawBankBtn">Submit Bank Withdrawal</button>
+        </div>
+        <p style="color:#8a9aaa;font-size:12px;margin-top:12px;text-align:center;">📱 For support: <a href="https://t.me/vivapay009" target="_blank" style="color:#c9a84c;text-decoration:none;">@vivapay009</a></p>
+      </div>
+      <div style="font-weight:600;color:#1a2a4a;font-size:16px;margin:10px 0 8px;">📤 Withdrawal History</div>
+      <div id="withdrawHistoryList"></div>
+    </div>
+
+    <!-- MINE -->
+    <div class="tab-content" id="tab-mine">
+      <div class="page-header"><div class="logo">MINE</div><div class="user-badge">ID: <span id="mineUserId">---</span></div></div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div class="stat-box" style="flex:1;"><div class="stat-label">🪙 Token</div><div class="stat-value" id="mineBalance">0.00</div></div>
+        <div class="stat-box" style="flex:1;"><div class="stat-label">📈 Today Profit</div><div class="stat-value gold" id="mineTodayProfit">0.00</div></div>
+      </div>
+      <div style="font-weight:600;color:#1a2a4a;font-size:15px;margin:12px 0 8px;">📌 Active Investments</div>
+      <div id="activeInvestmentsList"></div>
+      <div style="font-weight:600;color:#1a2a4a;font-size:15px;margin:16px 0 8px;">⚙️ Settings</div>
+      <div class="mine-item" id="mineBuyHistory"><span class="label">📋 Buy History</span><span class="arrow">›</span></div>
+      <div class="mine-item" id="mineSellHistory"><span class="label">📤 Sell History</span><span class="arrow">›</span></div>
+      <div class="mine-item" id="mineTransferHistory"><span class="label">🔄 Transfer History</span><span class="arrow">›</span></div>
+      <div class="mine-item" id="mineModifyPassword"><span class="label">🔑 Modify Password</span><span class="arrow">›</span></div>
+      <div class="mine-footer"><div class="version">APP Version: 2.0.0</div><button class="signout-btn" id="signOutBtn">Sign Out</button></div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+      <button class="nav-item active" data-tab="home"><span class="icon">🏠</span>Home</button>
+      <button class="nav-item" data-tab="buy"><span class="icon">🛒</span>Buy</button>
+      <button class="nav-item" data-tab="deposit"><span class="icon">📥</span>Deposit</button>
+      <button class="nav-item" data-tab="withdraw"><span class="icon">💸</span>Withdraw</button>
+      <button class="nav-item" data-tab="mine"><span class="icon">👤</span>Mine</button>
+    </div>
+  </div>
+
+  <!-- MYSTERY POPUP -->
+  <div id="mysteryPopup">
+    <div class="mystery-popup-content">
+      <button class="close-btn" id="mysteryCloseBtn">&times;</button>
+      <div class="popup-title">🎁 MYSTERY GIFT</div>
+      <div class="popup-sub">You've unlocked a surprise reward!</div>
+      <div class="gift-box">🎁</div>
+      <div class="bonus-amount">+₹<span id="popupBonus">0</span></div>
+      <button class="popup-btn" id="popupClaimBtn">Claim Now</button>
+      <button class="dont-show" id="dontShowToday">Don't show for today</button>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <div class="modal-title" id="modalTitle">Confirm</div>
+      <div class="modal-body" id="modalBody">Are you sure?</div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="modalCancel">Cancel</button>
+        <button class="btn-confirm" id="modalConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ---- DOM refs ----
+      const tabs = {
+        home: document.getElementById('tab-home'),
+        buy: document.getElementById('tab-buy'),
+        deposit: document.getElementById('tab-deposit'),
+        withdraw: document.getElementById('tab-withdraw'),
+        mine: document.getElementById('tab-mine')
+      };
+      const navItems = document.querySelectorAll('.nav-item');
+
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      const modalConfirm = document.getElementById('modalConfirm');
+      const modalCancel = document.getElementById('modalCancel');
+      let modalResolve = null;
+
+      // ---- Toast system (already exists in the HTML but we'll re-declare it) ----
+      function showToast(title, subtitle, type = 'success') {
+        const container = document.getElementById('toastContainer') || document.body;
+        const toast = document.createElement('div');
+        toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
+        const iconSvg = type === 'error'
+          ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#d32f2f" stroke-width="2"/><path d="M12 8v5" stroke="#d32f2f" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#d32f2f"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#1a2a4a" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#1a2a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        toast.innerHTML =
+          '<div class="toast-icon">' + iconSvg + '</div>' +
+          '<div class="toast-text"><div class="toast-title">' + title + '</div>' +
+          (subtitle ? '<div class="toast-sub">' + subtitle + '</div>' : '') + '</div>';
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+          toast.classList.remove('show');
+          toast.classList.add('hide');
+          setTimeout(() => toast.remove(), 300);
+        }, 4200);
+      }
+
+      function showModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
+        return new Promise((resolve) => {
+          modalTitle.textContent = title;
+          modalBody.innerHTML = message;
+          modalConfirm.textContent = confirmText;
+          modalCancel.textContent = cancelText;
+          modalOverlay.classList.add('show');
+          modalResolve = resolve;
+        });
+      }
+      modalCancel.addEventListener('click', () => {
+        modalOverlay.classList.remove('show');
+        if (modalResolve) modalResolve(false);
+      });
+      modalConfirm.addEventListener('click', () => {
+        modalOverlay.classList.remove('show');
+        if (modalResolve) modalResolve(true);
+      });
+
+      // ---- switch tab ----
+      function switchTab(tabId) {
+        Object.keys(tabs).forEach(key => {
+          tabs[key].classList.toggle('active', key === tabId);
+        });
+        navItems.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.tab === tabId);
+        });
+        if (tabId === 'home' || tabId === 'mine') loadDashboard();
+        if (tabId === 'buy') loadPackages();
+        if (tabId === 'deposit') {
+          loadDepositHistory();
+          const prefillAmount = sessionStorage.getItem('prefill_deposit');
+          if (prefillAmount) {
+            setTimeout(() => {
+              const depositInput = document.getElementById('depositAmount');
+              if (depositInput) {
+                depositInput.value = prefillAmount;
+                const qrBtn = document.getElementById('generateQRBtn');
+                if (qrBtn) qrBtn.click();
+              }
+              sessionStorage.removeItem('prefill_deposit');
+            }, 300);
+          }
+        }
+        if (tabId === 'withdraw') loadWithdrawHistory();
+        if (tabId === 'mine') loadActiveInvestments();
+      }
+
+      navItems.forEach(btn => {
+        btn.addEventListener('click', function() {
+          switchTab(this.dataset.tab);
+        });
+      });
+
+      document.getElementById('homeBuyBtn').addEventListener('click', () => switchTab('buy'));
+      document.getElementById('qaBuyHistory').addEventListener('click', () => window.location.href = 'buy-history.html');
+      document.getElementById('qaSellHistory').addEventListener('click', () => window.location.href = 'sell-history.html');
+      document.getElementById('qaWithdraw').addEventListener('click', () => switchTab('withdraw'));
+
+      document.getElementById('mysteryPreview').addEventListener('click', () => window.location.href = 'mystery-box.html');
+      document.getElementById('referralPreview').addEventListener('click', () => window.location.href = 'referral.html');
+
+      document.getElementById('signOutBtn').addEventListener('click', async function() {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'index.html';
+      });
+
+      function formatDate(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      let currentUser = null;
+      let qrTimer = null;
+      let qrExpiryTime = 0;
+
+      // ---- Dashboard ----
+      async function loadDashboard() {
+        try {
+          const { data: { user }, error } = await supabaseClient.auth.getUser();
+          if (error || !user) { window.location.href = 'index.html'; return; }
+          currentUser = user;
+          const userId = user.id.slice(0, 8);
+          document.getElementById('homeUserId').textContent = userId;
+          document.getElementById('mineUserId').textContent = userId;
+
+          const { data: wallet } = await supabaseClient
+            .from('wallets')
+            .select('balance')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          const bal = wallet ? Number(wallet.balance).toFixed(2) : '0.00';
+          document.getElementById('homeBalance').textContent = bal;
+          document.getElementById('mineBalance').textContent = bal;
+          document.getElementById('buyBalance').textContent = bal;
+
+          const { data: investments } = await supabaseClient
+            .from('investments')
+            .select('daily_profit')
+            .eq('user_id', user.id)
+            .eq('status', 'active');
+          let profit = 0;
+          if (investments) investments.forEach(inv => { profit += parseFloat(inv.daily_profit); });
+          document.getElementById('homeTodayProfit').textContent = profit.toFixed(2);
+          document.getElementById('mineTodayProfit').textContent = profit.toFixed(2);
+
+          const wdInputUPI = document.getElementById('withdrawAmountUPI');
+          const wdInputBank = document.getElementById('withdrawAmountBank');
+          if (wdInputUPI) wdInputUPI.max = bal;
+          if (wdInputBank) wdInputBank.max = bal;
+
+          // ---- Mystery Box ----
+          const { data: statusData, error: statusError } = await supabaseClient
+            .rpc('get_mystery_box_status', { p_user_id: user.id });
+
+          if (!statusError && statusData) {
+            const totalDeposits = parseFloat(statusData.total_deposits) || 0;
+            const tiers = statusData.tiers || [];
+            const progress = Math.min((totalDeposits / 5000) * 100, 100);
+            document.getElementById('mysteryFill').style.width = progress + '%';
+
+            let nextTarget = 500;
+            for (let i = 0; i < tiers.length; i++) {
+              if (!tiers[i].milestone_reached && !tiers[i].claimed) {
+                nextTarget = tiers[i].threshold;
+                break;
+              }
+            }
+            document.getElementById('mysterySub').textContent =
+              `Deposit ₹${nextTarget} to unlock next Mystery Box`;
+
+            const labels = document.querySelectorAll('#milestoneLabels span');
+            labels.forEach((el, idx) => {
+              const val = parseInt(el.dataset.val);
+              if (tiers[idx]) {
+                if (tiers[idx].claimed) {
+                  el.className = 'completed';
+                  el.textContent = '✅ ₹' + val;
+                } else if (tiers[idx].milestone_reached) {
+                  el.className = 'reached';
+                  el.textContent = '🔓 ₹' + val;
+                } else {
+                  el.className = '';
+                  el.textContent = '🔒 ₹' + val;
+                }
+              }
+            });
+          }
+
+          // ---- Referral ----
+          const { data: referrals } = await supabaseClient
+            .from('referrals')
+            .select('amount, status')
+            .eq('referrer_id', user.id);
+
+          let totalCommission = 0;
+          let referredCount = 0;
+          if (referrals) {
+            referredCount = referrals.length;
+            referrals.forEach(r => {
+              if (r.status === 'credited') totalCommission += parseFloat(r.amount);
+            });
+          }
+          document.getElementById('refCommission').textContent = totalCommission.toFixed(2);
+          document.getElementById('refCount').textContent = referredCount;
+
+        } catch (err) { console.error(err); }
+      }
+
+      // ---- Packages ----
+      async function loadPackages() {
+        const container = document.getElementById('packageList');
+        try {
+          const { data, error } = await supabaseClient
+            .from('packages')
+            .select('*')
+            .order('price', { ascending: true });
+          if (error) throw error;
+          if (!data || data.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No packages available</div>';
+            return;
+          }
+          let html = '';
+          data.forEach(pkg => {
+            const dailyProfitAmount = (pkg.price * pkg.daily_profit_percent / 100);
+            html += `
+              <div class="pkg-card">
                 <div class="left">
-                    <div class="label">💰 My IToken</div>
-                    <div class="amount"><span id="homeBalance">0.00</span></div>
-                    <div class="sub">1 Rs = 1 IToken</div>
+                  <div class="pkg-name">${pkg.name}</div>
+                  <div class="pkg-detail">₹${pkg.price} + <span style="color:#c9a84c;">₹${dailyProfitAmount.toFixed(2)} daily profit</span></div>
+                  <div class="pkg-profit">📈 ${pkg.daily_profit_percent}% daily = ₹${dailyProfitAmount.toFixed(2)}/day</div>
                 </div>
                 <div class="right">
-                    <button class="btn-primary" id="homeBuyBtn">Buy</button>
+                  <button class="btn-invest" data-pkg-id="${pkg.id}" data-price="${pkg.price}" data-name="${pkg.name}" data-profit="${pkg.daily_profit_percent}">Buy</button>
                 </div>
-            </div>
-            <div class="stats-row" style="display:flex; gap:12px; margin-bottom:16px;">
-                <div class="stat-box"><div class="stat-label">📈 Today Profit</div><div class="stat-value gold" id="homeTodayProfit">0.00</div></div>
-                <div class="stat-box"><div class="stat-label">🎁 Reward</div><div class="stat-value" id="homeReward">3.5%</div></div>
-            </div>
-            <div class="quick-actions">
-                <div class="qa-btn" id="qaBuyHistory">📋 Buy History</div>
-                <div class="qa-btn" id="qaSellHistory">📤 Sell History</div>
-                <div class="qa-btn" id="qaWithdraw">💸 Withdraw</div>
-            </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
 
-            <div class="mystery-progress-box" id="mysteryPreview">
-                <div class="title">🎁 Mystery Box Progress <span>View Details →</span></div>
-                <div class="subtitle" id="mysterySub">Deposit ₹500 to unlock Silver Mystery Box</div>
-                <div class="progress-track"><div class="progress-fill" id="mysteryFill" style="width:0%;"></div></div>
-                <div class="milestones" id="milestoneLabels">
-                    <span data-val="500">₹500</span>
-                    <span data-val="1000">₹1000</span>
-                    <span data-val="1500">₹1500</span>
-                    <span data-val="2000">₹2000</span>
-                    <span data-val="5000">₹5000</span>
+          container.querySelectorAll('.btn-invest').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const pkgId = this.dataset.pkgId;
+              const price = parseInt(this.dataset.price);
+              const name = this.dataset.name;
+              const profitPercent = parseFloat(this.dataset.profit);
+              handleInvestBuy(pkgId, price, name, profitPercent);
+            });
+          });
+        } catch (err) {
+          console.error(err);
+          container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading packages</div>';
+        }
+      }
+
+      async function handleInvestBuy(pkgId, price, name, profitPercent) {
+        if (!currentUser) { 
+          showToast('Login Required', 'Please login first.', 'error');
+          return; 
+        }
+        const dailyProfit = price * profitPercent / 100;
+        const totalProfit30 = dailyProfit * 30;
+        const message = `
+          <strong>${name}</strong><br/>
+          Price: ₹${price}<br/>
+          Daily Profit: ₹${dailyProfit.toFixed(2)} (${profitPercent}%)<br/>
+          Total profit (30 days): <span class="highlight">₹${totalProfit30.toFixed(2)}</span>
+        `;
+        const confirmed = await showModal('Confirm Purchase', message);
+        if (!confirmed) return;
+
+        try {
+          const { data, error } = await supabaseClient.rpc('purchase_investment', { p_package_id: pkgId });
+          if (error) {
+            console.error('RPC error:', error);
+            showToast('Purchase Failed', error.message || 'Please try again.', 'error');
+            return;
+          }
+          if (data && data.success === false) {
+            showToast('Purchase Failed', data.message || 'Please deposit first.', 'error');
+            if (data.message && data.message.includes('Insufficient balance')) {
+              switchTab('deposit');
+            }
+            return;
+          }
+          if (data && data.success) {
+            showToast('Purchase Successful', data.message, 'success');
+            loadDashboard();
+            loadPackages();
+            loadActiveInvestments();
+          } else {
+            showToast('Purchase Failed', 'Unknown error occurred.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Purchase Failed', err.message || 'Please try again.', 'error');
+        }
+      }
+
+      // ---- QR ----
+      document.getElementById('generateQRBtn').addEventListener('click', function() {
+        const amount = document.getElementById('depositAmount').value;
+        if (!amount || parseFloat(amount) < 200) {
+          showToast('Invalid Amount', 'Minimum deposit is ₹200.', 'error');
+          return;
+        }
+        const upiId = 'paramjeet201@fam';
+        const upiString = `upi://pay?pa=${upiId}&am=${amount}&cu=INR`;
+        document.getElementById('qrcode').innerHTML = '';
+        const qrContainer = document.getElementById('qrContainer');
+        qrContainer.style.display = 'block';
+        new QRCode(document.getElementById('qrcode'), {
+          text: upiString,
+          width: 180,
+          height: 180,
+          colorDark: '#1a2a4a',
+          colorLight: '#ffffff',
+        });
+        document.getElementById('depositExtraFields').style.display = 'block';
+        document.getElementById('warningBox').style.display = 'block';
+        document.getElementById('depositSubmitBtn').style.display = 'block';
+
+        clearInterval(qrTimer);
+        qrExpiryTime = 5 * 60;
+        updateTimerDisplay();
+        qrTimer = setInterval(() => {
+          qrExpiryTime--;
+          updateTimerDisplay();
+          if (qrExpiryTime <= 0) {
+            clearInterval(qrTimer);
+            qrContainer.style.display = 'none';
+            document.getElementById('depositExtraFields').style.display = 'none';
+            document.getElementById('warningBox').style.display = 'none';
+            document.getElementById('depositSubmitBtn').style.display = 'none';
+            showToast('QR Expired', 'Please generate a new QR code.', 'error');
+          }
+        }, 1000);
+
+        function updateTimerDisplay() {
+          const mins = Math.floor(qrExpiryTime / 60);
+          const secs = qrExpiryTime % 60;
+          document.getElementById('timerDisplay').textContent =
+            `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+      });
+
+      // ---- Deposit ----
+      async function loadDepositHistory() {
+        const container = document.getElementById('depositHistoryList');
+        if (!currentUser) return;
+        try {
+          const { data, error } = await supabaseClient
+            .from('deposit_requests')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          if (!data || data.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No deposits yet.</div>';
+            return;
+          }
+          let html = '';
+          data.forEach(req => {
+            const statusClass = 'status-' + (req.status || 'pending');
+            const screenshotLink = req.proof_url ? `<a href="${req.proof_url}" target="_blank" class="screenshot-link">📎 View Screenshot</a>` : '';
+            html += `
+              <div class="history-item">
+                <div class="left">
+                  <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
+                  <div class="date">${formatDate(req.created_at)}</div>
+                  ${screenshotLink}
                 </div>
-            </div>
+                <span class="${statusClass}">${req.status || 'pending'}</span>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading history</div>';
+        }
+      }
 
-            <div class="referral-preview" id="referralPreview">
-                <div class="title">👥 Referral Program <span>View Full →</span></div>
-                <div class="stats"><span>💰 Commission: <span class="gold" id="refCommission">0.00</span></span><span>👤 Referred: <span class="gold" id="refCount">0</span></span></div>
-            </div>
+      document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
+        const amount = document.getElementById('depositAmount').value;
+        const utr = document.getElementById('depositUtr').value.trim();
+        const screenshot = document.getElementById('depositScreenshot').files[0];
 
-            <div class="notice-box" id="noticeOfficial"><div class="title">📢 Official Notice <span class="more">More ></span></div><div class="desc" id="noticeDesc">New investment plans available with 8% daily profit.</div></div>
-            <div class="notice-box" id="noticeNews"><div class="title">📰 News <span class="more">More ></span></div><div class="desc" id="newsDesc">Tips To Sell Tokens · 2026-01-23</div></div>
-        </div>
+        if (!amount || parseFloat(amount) < 200) { showToast('Invalid Amount', 'Minimum deposit is ₹200.', 'error'); return; }
+        if (!utr) { showToast('UTR Required', 'Please enter UTR ID.', 'error'); return; }
+        if (!currentUser) { showToast('Login Required', 'Please login.', 'error'); return; }
 
-        <!-- BUY -->
-        <div class="tab-content" id="tab-buy">
-            <div class="page-header"><div class="logo">BUY</div><div class="user-badge">Balance: <span id="buyBalance">0.00</span></div></div>
-            <div id="packageList"></div>
-        </div>
+        this.disabled = true;
+        this.textContent = 'Submitting...';
 
-        <!-- DEPOSIT -->
-        <div class="tab-content" id="tab-deposit">
-            <div class="page-header"><div class="logo">DEPOSIT</div></div>
-            <div class="deposit-form">
-                <div class="upi-display">
-                    <div class="upi-label">💳 Pay to this UPI ID</div>
-                    <div class="upi-id">
-                        <span>paramjeet201@fam</span>
-                        <button class="copy-btn" id="copyUpiBtn">Copy</button>
-                    </div>
-                    <div style="margin-top:6px;"><a href="https://t.me/vivapay009" target="_blank" class="telegram-link">📱 Telegram Support</a></div>
+        try {
+          let screenshotUrl = null;
+          if (screenshot) {
+            const fileExt = screenshot.name.split('.').pop();
+            const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
+            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+              .from('deposit-proofs')
+              .upload(fileName, screenshot);
+            if (uploadError) {
+              console.warn('Screenshot upload failed:', uploadError);
+            } else {
+              const { data: urlData } = supabaseClient.storage
+                .from('deposit-proofs')
+                .getPublicUrl(fileName);
+              screenshotUrl = urlData.publicUrl;
+            }
+          }
+
+          const { error } = await supabaseClient
+            .from('deposit_requests')
+            .insert({
+              user_id: currentUser.id,
+              amount: parseFloat(amount),
+              proof_url: screenshotUrl,
+              utr_id: utr,
+              status: 'pending'
+            });
+
+          if (error) throw error;
+
+          showToast('Deposit Submitted', 'Your deposit request is pending approval.', 'success');
+          document.getElementById('depositAmount').value = '';
+          document.getElementById('depositUtr').value = '';
+          document.getElementById('depositScreenshot').value = '';
+          document.getElementById('qrContainer').style.display = 'none';
+          document.getElementById('depositExtraFields').style.display = 'none';
+          document.getElementById('warningBox').style.display = 'none';
+          document.getElementById('depositSubmitBtn').style.display = 'none';
+          clearInterval(qrTimer);
+          loadDepositHistory();
+        } catch (err) {
+          console.error(err);
+          showToast('Submission Failed', err.message || 'Please try again.', 'error');
+        } finally {
+          this.disabled = false;
+          this.textContent = 'Submit Deposit Request';
+        }
+      });
+
+      document.getElementById('copyUpiBtn').addEventListener('click', function() {
+        navigator.clipboard.writeText('paramjeet201@fam').then(() => {
+          showToast('Copied', 'UPI ID copied to clipboard.', 'success');
+        }).catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = 'paramjeet201@fam';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          showToast('Copied', 'UPI ID copied.', 'success');
+        });
+      });
+
+      // ---- Withdrawal ----
+      const wtBtns = document.querySelectorAll('.wt-btn');
+      const upiPanel = document.getElementById('upiPanel');
+      const bankPanel = document.getElementById('bankPanel');
+
+      wtBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          wtBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          if (this.dataset.method === 'upi') {
+            upiPanel.classList.add('active');
+            bankPanel.classList.remove('active');
+          } else {
+            bankPanel.classList.add('active');
+            upiPanel.classList.remove('active');
+          }
+        });
+      });
+
+      async function loadWithdrawHistory() {
+        const container = document.getElementById('withdrawHistoryList');
+        if (!currentUser) return;
+        try {
+          const { data, error } = await supabaseClient
+            .from('withdrawal_requests')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          if (!data || data.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No withdrawals yet.</div>';
+            return;
+          }
+          let html = '';
+          data.forEach(req => {
+            const statusClass = 'status-' + (req.status || 'pending');
+            const method = req.account_number ? 'Bank' : 'UPI';
+            html += `
+              <div class="history-item">
+                <div class="left">
+                  <div class="amount">₹ ${Number(req.amount).toFixed(2)} (${method})</div>
+                  <div class="date">${formatDate(req.created_at)}</div>
                 </div>
-                <div class="field"><label>Amount (₹) – Minimum 200</label><input type="number" id="depositAmount" placeholder="Enter amount" min="200" required /></div>
-                <button class="btn-primary-full" id="generateQRBtn" style="margin-bottom:12px;">Generate QR Code</button>
-                <div class="qr-container" id="qrContainer" style="display:none;">
-                    <div id="qrcode"></div>
-                    <div class="qr-label">Scan to pay</div>
-                    <div class="qr-expiry">⏳ Expires in: <span id="timerDisplay">05:00</span></div>
+                <span class="${statusClass}">${req.status || 'pending'}</span>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading history</div>';
+        }
+      }
+
+      async function submitWithdrawal(amount, data) {
+        if (!amount || parseFloat(amount) < 500) { showToast('Invalid Amount', 'Minimum withdrawal is ₹500.', 'error'); return; }
+        if (!currentUser) { showToast('Login Required', 'Please login.', 'error'); return; }
+        const { data: wallet } = await supabaseClient
+          .from('wallets')
+          .select('balance')
+          .eq('user_id', currentUser.id)
+          .maybeSingle();
+        const bal = wallet ? parseFloat(wallet.balance) : 0;
+        if (parseFloat(amount) > bal) {
+          showToast('Insufficient Balance', 'You have ₹' + bal.toFixed(2), 'error');
+          return;
+        }
+        const confirmed = await showModal('Confirm Withdrawal',
+          `Amount: ₹${amount}<br/>Please confirm your withdrawal request.`);
+        if (!confirmed) return;
+
+        try {
+          const { error } = await supabaseClient
+            .from('withdrawal_requests')
+            .insert({
+              user_id: currentUser.id,
+              amount: parseFloat(amount),
+              ...data,
+              status: 'pending'
+            });
+          if (error) throw error;
+          showToast('Withdrawal Submitted', 'Processing may take up to 2 hours.', 'success');
+          loadWithdrawHistory();
+          loadDashboard();
+        } catch (err) {
+          console.error(err);
+          showToast('Submission Failed', err.message || 'Please try again.', 'error');
+        }
+      }
+
+      document.getElementById('withdrawUPIBtn').addEventListener('click', function() {
+        const amount = document.getElementById('withdrawAmountUPI').value;
+        const upi = document.getElementById('withdrawUpi').value.trim();
+        if (!upi) { showToast('UPI Required', 'Please enter your UPI ID.', 'error'); return; }
+        submitWithdrawal(amount, { upi_id: upi });
+      });
+
+      document.getElementById('withdrawBankBtn').addEventListener('click', function() {
+        const amount = document.getElementById('withdrawAmountBank').value;
+        const name = document.getElementById('withdrawBankName').value.trim();
+        const account = document.getElementById('withdrawAccountNumber').value.trim();
+        const ifsc = document.getElementById('withdrawIfsc').value.trim();
+        if (!name) { showToast('Name Required', 'Please enter account holder name.', 'error'); return; }
+        if (!account) { showToast('Account Number Required', 'Please enter account number.', 'error'); return; }
+        if (!ifsc) { showToast('IFSC Required', 'Please enter IFSC code.', 'error'); return; }
+        submitWithdrawal(amount, {
+          account_holder: name,
+          account_number: account,
+          ifsc_code: ifsc
+        });
+      });
+
+      // ---- Active Investments ----
+      async function loadActiveInvestments() {
+        const container = document.getElementById('activeInvestmentsList');
+        if (!currentUser) return;
+        try {
+          const { data, error } = await supabaseClient
+            .from('investments')
+            .select('*, packages(name)')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'active')
+            .order('start_date', { ascending: false });
+          if (error) throw error;
+          if (!data || data.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No active investments.</div>';
+            return;
+          }
+          let html = '';
+          data.forEach(inv => {
+            const pkgName = inv.packages ? inv.packages.name : 'Package';
+            html += `
+              <div class="inv-item">
+                <div class="left">
+                  <div class="pkg">${pkgName}</div>
+                  <div class="detail">₹${inv.amount} + ₹${inv.daily_profit}/day profit</div>
                 </div>
-                <div id="depositExtraFields" style="display:none;">
-                    <div class="field"><label>UTR ID (mandatory after payment)</label><input type="text" id="depositUtr" placeholder="Enter UTR number" required /></div>
-                    <div class="field"><label>Payment Screenshot (optional)</label><input type="file" id="depositScreenshot" accept="image/*" /></div>
-                </div>
-                <div class="warning-box" id="warningBox" style="display:none;">
-                    <strong>⚠️ WARNING:</strong> If you didn't make the payment and still submit a request, you may get banned.
-                    <br /><br />After payment, wait <strong>5-10 minutes</strong> before submitting. If you face any problem, contact <strong>@vivapay009</strong> on Telegram.
-                </div>
-                <button class="btn-primary-full" id="depositSubmitBtn" style="display:none;">Submit Deposit Request</button>
-            </div>
-            <div style="font-weight:600;color:#1a2a4a;font-size:16px;margin:10px 0 8px;">📋 Deposit History</div>
-            <div id="depositHistoryList"></div>
-        </div>
+                <button class="btn-sell" data-inv-id="${inv.id}">Sell</button>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
 
-        <!-- WITHDRAW -->
-        <div class="tab-content" id="tab-withdraw">
-            <div class="page-header"><div class="logo">WITHDRAW</div></div>
-            <div class="withdraw-form">
-                <p style="color:#4a5a6a;font-size:13px;margin-bottom:12px;">⏳ Withdrawals take up to 2 hours to process. Minimum ₹500.</p>
-                <div class="withdraw-tabs" id="withdrawTabs">
-                    <button class="wt-btn active" data-method="upi">UPI ID</button>
-                    <button class="wt-btn" data-method="bank">Bank Account</button>
-                </div>
-                <div class="withdraw-panel active" id="upiPanel">
-                    <div class="field"><label>Amount (₹) – Minimum 500</label><input type="number" id="withdrawAmountUPI" placeholder="Enter amount" min="500" required /></div>
-                    <div class="field"><label>Your UPI ID</label><input type="text" id="withdrawUpi" placeholder="Enter UPI ID to receive funds" required /></div>
-                    <button class="btn-primary-full" id="withdrawUPIBtn">Submit UPI Withdrawal</button>
-                </div>
-                <div class="withdraw-panel" id="bankPanel">
-                    <div class="field"><label>Amount (₹) – Minimum 500</label><input type="number" id="withdrawAmountBank" placeholder="Enter amount" min="500" required /></div>
-                    <div class="field"><label>Account Holder Name</label><input type="text" id="withdrawBankName" placeholder="Enter account holder name" required /></div>
-                    <div class="field"><label>Bank Account Number</label><input type="text" id="withdrawAccountNumber" placeholder="Enter account number" required /></div>
-                    <div class="field"><label>IFSC Code</label><input type="text" id="withdrawIfsc" placeholder="Enter IFSC code" required /></div>
-                    <button class="btn-primary-full" id="withdrawBankBtn">Submit Bank Withdrawal</button>
-                </div>
-                <p style="color:#8a9aaa;font-size:12px;margin-top:12px;text-align:center;">📱 For support: <a href="https://t.me/vivapay009" target="_blank" style="color:#c9a84c;text-decoration:none;">@vivapay009</a></p>
-            </div>
-            <div style="font-weight:600;color:#1a2a4a;font-size:16px;margin:10px 0 8px;">📤 Withdrawal History</div>
-            <div id="withdrawHistoryList"></div>
-        </div>
-
-        <!-- MINE -->
-        <div class="tab-content" id="tab-mine">
-            <div class="page-header"><div class="logo">MINE</div><div class="user-badge">ID: <span id="mineUserId">---</span></div></div>
-            <div style="display:flex;gap:12px;margin-bottom:16px;">
-                <div class="stat-box" style="flex:1;"><div class="stat-label">🪙 Token</div><div class="stat-value" id="mineBalance">0.00</div></div>
-                <div class="stat-box" style="flex:1;"><div class="stat-label">📈 Today Profit</div><div class="stat-value gold" id="mineTodayProfit">0.00</div></div>
-            </div>
-            <div style="font-weight:600;color:#1a2a4a;font-size:15px;margin:12px 0 8px;">📌 Active Investments</div>
-            <div id="activeInvestmentsList"></div>
-            <div style="font-weight:600;color:#1a2a4a;font-size:15px;margin:16px 0 8px;">⚙️ Settings</div>
-            <div class="mine-item" id="mineBuyHistory"><span class="label">📋 Buy History</span><span class="arrow">›</span></div>
-            <div class="mine-item" id="mineSellHistory"><span class="label">📤 Sell History</span><span class="arrow">›</span></div>
-            <div class="mine-item" id="mineTransferHistory"><span class="label">🔄 Transfer History</span><span class="arrow">›</span></div>
-            <div class="mine-item" id="mineModifyPassword"><span class="label">🔑 Modify Password</span><span class="arrow">›</span></div>
-            <div class="mine-footer"><div class="version">APP Version: 2.0.0</div><button class="signout-btn" id="signOutBtn">Sign Out</button></div>
-        </div>
-
-        <!-- BOTTOM NAV -->
-        <div class="bottom-nav">
-            <button class="nav-item active" data-tab="home"><span class="icon">🏠</span>Home</button>
-            <button class="nav-item" data-tab="buy"><span class="icon">🛒</span>Buy</button>
-            <button class="nav-item" data-tab="deposit"><span class="icon">📥</span>Deposit</button>
-            <button class="nav-item" data-tab="withdraw"><span class="icon">💸</span>Withdraw</button>
-            <button class="nav-item" data-tab="mine"><span class="icon">👤</span>Mine</button>
-        </div>
-    </div>
-
-    <!-- MYSTERY POPUP -->
-    <div id="mysteryPopup">
-        <div class="mystery-popup-content">
-            <button class="close-btn" id="mysteryCloseBtn">&times;</button>
-            <div class="popup-title">🎁 MYSTERY GIFT</div>
-            <div class="popup-sub">You've unlocked a surprise reward!</div>
-            <div class="gift-box">🎁</div>
-            <div class="bonus-amount">+₹<span id="popupBonus">0</span></div>
-            <button class="popup-btn" id="popupClaimBtn">Claim Now</button>
-            <button class="dont-show" id="dontShowToday">Don't show for today</button>
-        </div>
-    </div>
-
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box">
-            <div class="modal-title" id="modalTitle">Confirm</div>
-            <div class="modal-body" id="modalBody">Are you sure?</div>
-            <div class="modal-actions">
-                <button class="btn-cancel" id="modalCancel">Cancel</button>
-                <button class="btn-confirm" id="modalConfirm">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        (function() {
-            'use strict';
-
-            // ---- DOM refs ----
-            const tabs = {
-                home: document.getElementById('tab-home'),
-                buy: document.getElementById('tab-buy'),
-                deposit: document.getElementById('tab-deposit'),
-                withdraw: document.getElementById('tab-withdraw'),
-                mine: document.getElementById('tab-mine')
-            };
-            const navItems = document.querySelectorAll('.nav-item');
-
-            const modalOverlay = document.getElementById('modalOverlay');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const modalConfirm = document.getElementById('modalConfirm');
-            const modalCancel = document.getElementById('modalCancel');
-            let modalResolve = null;
-
-            function showModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
-                return new Promise((resolve) => {
-                    modalTitle.textContent = title;
-                    modalBody.innerHTML = message;
-                    modalConfirm.textContent = confirmText;
-                    modalCancel.textContent = cancelText;
-                    modalOverlay.classList.add('show');
-                    modalResolve = resolve;
-                });
-            }
-            modalCancel.addEventListener('click', () => {
-                modalOverlay.classList.remove('show');
-                if (modalResolve) modalResolve(false);
+          container.querySelectorAll('.btn-sell').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const invId = this.dataset.invId;
+              handleSellInvestment(invId);
             });
-            modalConfirm.addEventListener('click', () => {
-                modalOverlay.classList.remove('show');
-                if (modalResolve) modalResolve(true);
-            });
+          });
+        } catch (err) {
+          console.error(err);
+          container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading investments</div>';
+        }
+      }
 
-            // ---- switch tab ----
-            function switchTab(tabId) {
-                Object.keys(tabs).forEach(key => {
-                    tabs[key].classList.toggle('active', key === tabId);
-                });
-                navItems.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.tab === tabId);
-                });
-                if (tabId === 'home' || tabId === 'mine') loadDashboard();
-                if (tabId === 'buy') loadPackages();
-                if (tabId === 'deposit') {
-                    loadDepositHistory();
-                    // ---- Pre-fill deposit from mystery box ----
-                    const prefillAmount = sessionStorage.getItem('prefill_deposit');
-                    if (prefillAmount) {
-                        setTimeout(() => {
-                            const depositInput = document.getElementById('depositAmount');
-                            if (depositInput) {
-                                depositInput.value = prefillAmount;
-                                const qrBtn = document.getElementById('generateQRBtn');
-                                if (qrBtn) qrBtn.click();
-                            }
-                            sessionStorage.removeItem('prefill_deposit');
-                        }, 300);
-                    }
-                }
-                if (tabId === 'withdraw') loadWithdrawHistory();
-                if (tabId === 'mine') loadActiveInvestments();
-            }
+      async function handleSellInvestment(invId) {
+        const confirmed = await showModal('Sell Investment', 'Are you sure you want to sell this investment? You will get principal + profit.');
+        if (!confirmed) return;
 
-            navItems.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    switchTab(this.dataset.tab);
-                });
-            });
+        try {
+          const { data, error } = await supabaseClient.rpc('sell_investment', { p_investment_id: invId });
+          if (error) throw error;
+          if (data && data.success) {
+            showToast('Sold Successfully', `${data.message}. Return: ₹${parseFloat(data.return).toFixed(2)}`, 'success');
+            loadDashboard();
+            loadActiveInvestments();
+          } else {
+            showToast('Sell Failed', data?.message || 'Failed to sell.', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Sell Failed', err.message || 'Failed to sell investment.', 'error');
+        }
+      }
 
-            document.getElementById('homeBuyBtn').addEventListener('click', () => switchTab('buy'));
-            document.getElementById('qaBuyHistory').addEventListener('click', () => window.location.href = 'buy-history.html');
-            document.getElementById('qaSellHistory').addEventListener('click', () => window.location.href = 'sell-history.html');
-            document.getElementById('qaWithdraw').addEventListener('click', () => switchTab('withdraw'));
+      document.getElementById('mineBuyHistory').addEventListener('click', () => window.location.href = 'buy-history.html');
+      document.getElementById('mineSellHistory').addEventListener('click', () => window.location.href = 'sell-history.html');
+      document.getElementById('mineTransferHistory').addEventListener('click', () => showToast('Coming Soon', 'Transfer history will be available soon.', 'info'));
+      document.getElementById('mineModifyPassword').addEventListener('click', async function() {
+        if (!currentUser) return;
+        const newPass = prompt('Enter new password (min 6 chars):');
+        if (!newPass || newPass.length < 6) { showToast('Invalid Password', 'Password must be at least 6 characters.', 'error'); return; }
+        try {
+          const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+          if (error) throw error;
+          showToast('Password Updated', 'Please login again.', 'success');
+          await supabaseClient.auth.signOut();
+          window.location.href = 'index.html';
+        } catch (err) {
+          console.error(err);
+          showToast('Update Failed', err.message || 'Failed to update password.', 'error');
+        }
+      });
 
-            document.getElementById('mysteryPreview').addEventListener('click', () => window.location.href = 'mystery-box.html');
-            document.getElementById('referralPreview').addEventListener('click', () => window.location.href = 'referral.html');
+      // ---- Notices ----
+      const notices = [
+        "🌟 VIVI PAY is the most trusted investment platform. Start earning 8% daily profit now!",
+        "💎 Invest in our premium packages and watch your wealth grow every single day.",
+        "🚀 Join thousands of happy investors who are earning passive income with VIVI PAY.",
+        "💰 Deposit today and get instant profit – your financial freedom starts here!"
+      ];
+      const news = [
+        "📊 VIVI PAY reaches 10,000 active investors – thank you for your trust!",
+        "💡 Tip: Invest early to maximize your daily returns. Every day counts!",
+        "🏆 Our top investor earned ₹50,000 in just 7 days – you can do it too!",
+        "🎉 New investment plans added – check out the 'Buy' tab for more opportunities."
+      ];
 
-            document.getElementById('signOutBtn').addEventListener('click', async function() {
-                await supabaseClient.auth.signOut();
-                window.location.href = 'index.html';
-            });
+      document.getElementById('noticeOfficial').addEventListener('click', function() {
+        const msg = notices.join('\n\n');
+        showToast('Official Notice', msg, 'info');
+      });
+      document.getElementById('noticeNews').addEventListener('click', function() {
+        const msg = news.join('\n\n');
+        showToast('News', msg, 'info');
+      });
 
-            function formatDate(iso) {
-                if (!iso) return '';
-                const d = new Date(iso);
-                return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
+      // ---- Mystery Popup Logic ----
+      const mysteryPopup = document.getElementById('mysteryPopup');
+      const popupBonus = document.getElementById('popupBonus');
+      const popupClaimBtn = document.getElementById('popupClaimBtn');
+      const mysteryCloseBtn = document.getElementById('mysteryCloseBtn');
+      const dontShowBtn = document.getElementById('dontShowToday');
 
-            let currentUser = null;
-            let qrTimer = null;
-            let qrExpiryTime = 0;
+      let mysteryClaimTier = null;
 
-            // ---- Dashboard ----
-            async function loadDashboard() {
-                try {
-                    const { data: { user }, error } = await supabaseClient.auth.getUser();
-                    if (error || !user) { window.location.href = 'index.html'; return; }
-                    currentUser = user;
-                    const userId = user.id.slice(0, 8);
-                    document.getElementById('homeUserId').textContent = userId;
-                    document.getElementById('mineUserId').textContent = userId;
+      function shouldShowMysteryPopup() {
+        if (!currentUser) return false;
+        const today = new Date().toDateString();
+        const lastShown = localStorage.getItem('mystery_popup_last_' + currentUser.id);
+        if (lastShown === today) return false;
+        const flag = localStorage.getItem('show_mystery_popup_' + currentUser.id);
+        if (flag === 'true') {
+          localStorage.removeItem('show_mystery_popup_' + currentUser.id);
+          return true;
+        }
+        const lastPopupTime = parseInt(localStorage.getItem('mystery_popup_time_' + currentUser.id) || '0');
+        if (Date.now() - lastPopupTime > 3600000) return true;
+        return false;
+      }
 
-                    const { data: wallet } = await supabaseClient
-                        .from('wallets')
-                        .select('balance')
-                        .eq('user_id', user.id)
-                        .maybeSingle();
-                    const bal = wallet ? Number(wallet.balance).toFixed(2) : '0.00';
-                    document.getElementById('homeBalance').textContent = bal;
-                    document.getElementById('mineBalance').textContent = bal;
-                    document.getElementById('buyBalance').textContent = bal;
+      async function showMysteryPopup() {
+        if (!currentUser) return;
+        const { data, error } = await supabaseClient
+          .rpc('get_mystery_box_status', { p_user_id: currentUser.id });
+        if (error || !data) return;
+        const tiers = data.tiers || [];
+        let claimable = null;
+        for (let i = 0; i < tiers.length; i++) {
+          if (tiers[i].milestone_reached && !tiers[i].claimed) {
+            claimable = tiers[i];
+            break;
+          }
+        }
+        if (!claimable) return;
+        const bonus = Math.floor(Math.random() * 451) + 50;
+        popupBonus.textContent = bonus;
+        mysteryPopup.classList.add('show');
+        localStorage.setItem('mystery_popup_time_' + currentUser.id, Date.now().toString());
+        mysteryClaimTier = claimable.tier;
+      }
 
-                    const { data: investments } = await supabaseClient
-                        .from('investments')
-                        .select('daily_profit')
-                        .eq('user_id', user.id)
-                        .eq('status', 'active');
-                    let profit = 0;
-                    if (investments) investments.forEach(inv => { profit += parseFloat(inv.daily_profit); });
-                    document.getElementById('homeTodayProfit').textContent = profit.toFixed(2);
-                    document.getElementById('mineTodayProfit').textContent = profit.toFixed(2);
+      function closeMysteryPopup() {
+        mysteryPopup.classList.remove('show');
+      }
 
-                    const wdInputUPI = document.getElementById('withdrawAmountUPI');
-                    const wdInputBank = document.getElementById('withdrawAmountBank');
-                    if (wdInputUPI) wdInputUPI.max = bal;
-                    if (wdInputBank) wdInputBank.max = bal;
+      mysteryCloseBtn.addEventListener('click', closeMysteryPopup);
+      mysteryPopup.addEventListener('click', function(e) {
+        if (e.target === this) closeMysteryPopup();
+      });
 
-                    // ---- Mystery Box ----
-                    const { data: statusData, error: statusError } = await supabaseClient
-                        .rpc('get_mystery_box_status', { p_user_id: user.id });
+      popupClaimBtn.addEventListener('click', async function() {
+        if (!currentUser || !mysteryClaimTier) { closeMysteryPopup(); return; }
+        const tier = mysteryClaimTier;
+        try {
+          const { data, error } = await supabaseClient
+            .rpc('claim_mystery_box', { p_user_id: currentUser.id, p_tier: tier });
+          if (error) throw error;
+          if (!data.success) {
+            showToast('Claim Failed', data.message || 'Failed to claim.', 'error');
+            closeMysteryPopup();
+            return;
+          }
+          showToast('Claimed!', data.message, 'success');
+          closeMysteryPopup();
+          loadDashboard();
+        } catch (err) {
+          console.error(err);
+          showToast('Claim Failed', err.message || 'Error claiming box.', 'error');
+          closeMysteryPopup();
+        }
+      });
 
-                    if (!statusError && statusData) {
-                        const totalDeposits = parseFloat(statusData.total_deposits) || 0;
-                        const tiers = statusData.tiers || [];
-                        const progress = Math.min((totalDeposits / 5000) * 100, 100);
-                        document.getElementById('mysteryFill').style.width = progress + '%';
+      dontShowBtn.addEventListener('click', function() {
+        if (!currentUser) return;
+        const today = new Date().toDateString();
+        localStorage.setItem('mystery_popup_last_' + currentUser.id, today);
+        closeMysteryPopup();
+      });
 
-                        let nextTarget = 500;
-                        for (let i = 0; i < tiers.length; i++) {
-                            if (!tiers[i].milestone_reached && !tiers[i].claimed) {
-                                nextTarget = tiers[i].threshold;
-                                break;
-                            }
-                        }
-                        document.getElementById('mysterySub').textContent =
-                            `Deposit ₹${nextTarget} to unlock next Mystery Box`;
+      // ---- Init ----
+      (async function init() {
+        await loadDashboard();
+        setTimeout(() => {
+          if (shouldShowMysteryPopup()) {
+            showMysteryPopup();
+          }
+        }, 2000);
+        setInterval(() => {
+          if (shouldShowMysteryPopup()) {
+            showMysteryPopup();
+          }
+        }, 60000);
+        switchTab('home');
+      })();
 
-                        const labels = document.querySelectorAll('#milestoneLabels span');
-                        labels.forEach((el, idx) => {
-                            const val = parseInt(el.dataset.val);
-                            if (tiers[idx]) {
-                                if (tiers[idx].claimed) {
-                                    el.className = 'completed';
-                                    el.textContent = '✅ ₹' + val;
-                                } else if (tiers[idx].milestone_reached) {
-                                    el.className = 'reached';
-                                    el.textContent = '🔓 ₹' + val;
-                                } else {
-                                    el.className = '';
-                                    el.textContent = '🔒 ₹' + val;
-                                }
-                            }
-                        });
-                    }
+      window.switchTab = switchTab;
 
-                    // ---- Referral ----
-                    const { data: referrals } = await supabaseClient
-                        .from('referrals')
-                        .select('amount, status')
-                        .eq('referrer_id', user.id);
-
-                    let totalCommission = 0;
-                    let referredCount = 0;
-                    if (referrals) {
-                        referredCount = referrals.length;
-                        referrals.forEach(r => {
-                            if (r.status === 'credited') totalCommission += parseFloat(r.amount);
-                        });
-                    }
-                    document.getElementById('refCommission').textContent = totalCommission.toFixed(2);
-                    document.getElementById('refCount').textContent = referredCount;
-
-                } catch (err) { console.error(err); }
-            }
-
-            // ---- Packages ----
-            async function loadPackages() {
-                const container = document.getElementById('packageList');
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('packages')
-                        .select('*')
-                        .order('price', { ascending: true });
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No packages available</div>';
-                        return;
-                    }
-                    let html = '';
-                    data.forEach(pkg => {
-                        const dailyProfitAmount = (pkg.price * pkg.daily_profit_percent / 100);
-                        html += `
-                            <div class="pkg-card">
-                                <div class="left">
-                                    <div class="pkg-name">${pkg.name}</div>
-                                    <div class="pkg-detail">₹${pkg.price} + <span style="color:#c9a84c;">₹${dailyProfitAmount.toFixed(2)} daily profit</span></div>
-                                    <div class="pkg-profit">📈 ${pkg.daily_profit_percent}% daily = ₹${dailyProfitAmount.toFixed(2)}/day</div>
-                                </div>
-                                <div class="right">
-                                    <button class="btn-invest" data-pkg-id="${pkg.id}" data-price="${pkg.price}" data-name="${pkg.name}" data-profit="${pkg.daily_profit_percent}">Buy</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-
-                    container.querySelectorAll('.btn-invest').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const pkgId = this.dataset.pkgId;
-                            const price = parseInt(this.dataset.price);
-                            const name = this.dataset.name;
-                            const profitPercent = parseFloat(this.dataset.profit);
-                            handleInvestBuy(pkgId, price, name, profitPercent);
-                        });
-                    });
-                } catch (err) {
-                    console.error(err);
-                    container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading packages</div>';
-                }
-            }
-
-            async function handleInvestBuy(pkgId, price, name, profitPercent) {
-                if (!currentUser) { alert('Please login.'); return; }
-                const dailyProfit = price * profitPercent / 100;
-                const totalProfit30 = dailyProfit * 30;
-                const message = `
-                    <strong>${name}</strong><br/>
-                    Price: ₹${price}<br/>
-                    Daily Profit: ₹${dailyProfit.toFixed(2)} (${profitPercent}%)<br/>
-                    Total profit (30 days): <span class="highlight">₹${totalProfit30.toFixed(2)}</span>
-                `;
-                const confirmed = await showModal('Confirm Purchase', message);
-                if (!confirmed) return;
-
-                try {
-                    const { data, error } = await supabaseClient.rpc('purchase_investment', { p_package_id: pkgId });
-                    if (error) throw error;
-                    if (data && data.success === false) {
-                        alert('❌ ' + data.message + ' Please deposit first.');
-                        switchTab('deposit');
-                        return;
-                    }
-                    alert('✅ ' + data.message);
-                    loadDashboard();
-                    loadPackages();
-                    loadActiveInvestments();
-                } catch (err) {
-                    console.error(err);
-                    if (err.message && err.message.includes('Insufficient balance')) {
-                        alert('❌ Insufficient balance. Please deposit.');
-                        switchTab('deposit');
-                    } else {
-                        alert('❌ Failed to purchase.');
-                    }
-                }
-            }
-
-            // ---- QR ----
-            document.getElementById('generateQRBtn').addEventListener('click', function() {
-                const amount = document.getElementById('depositAmount').value;
-                if (!amount || parseFloat(amount) < 200) {
-                    alert('Minimum deposit is ₹200.');
-                    return;
-                }
-                const upiId = 'paramjeet201@fam';
-                const upiString = `upi://pay?pa=${upiId}&am=${amount}&cu=INR`;
-                document.getElementById('qrcode').innerHTML = '';
-                const qrContainer = document.getElementById('qrContainer');
-                qrContainer.style.display = 'block';
-                new QRCode(document.getElementById('qrcode'), {
-                    text: upiString,
-                    width: 180,
-                    height: 180,
-                    colorDark: '#1a2a4a',
-                    colorLight: '#ffffff',
-                });
-                document.getElementById('depositExtraFields').style.display = 'block';
-                document.getElementById('warningBox').style.display = 'block';
-                document.getElementById('depositSubmitBtn').style.display = 'block';
-
-                clearInterval(qrTimer);
-                qrExpiryTime = 5 * 60;
-                updateTimerDisplay();
-                qrTimer = setInterval(() => {
-                    qrExpiryTime--;
-                    updateTimerDisplay();
-                    if (qrExpiryTime <= 0) {
-                        clearInterval(qrTimer);
-                        qrContainer.style.display = 'none';
-                        document.getElementById('depositExtraFields').style.display = 'none';
-                        document.getElementById('warningBox').style.display = 'none';
-                        document.getElementById('depositSubmitBtn').style.display = 'none';
-                        alert('QR code expired. Please generate a new one.');
-                    }
-                }, 1000);
-
-                function updateTimerDisplay() {
-                    const mins = Math.floor(qrExpiryTime / 60);
-                    const secs = qrExpiryTime % 60;
-                    document.getElementById('timerDisplay').textContent =
-                        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                }
-            });
-
-            // ---- Deposit ----
-            async function loadDepositHistory() {
-                const container = document.getElementById('depositHistoryList');
-                if (!currentUser) return;
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('deposit_requests')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .order('created_at', { ascending: false });
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No deposits yet.</div>';
-                        return;
-                    }
-                    let html = '';
-                    data.forEach(req => {
-                        const statusClass = 'status-' + (req.status || 'pending');
-                        const screenshotLink = req.proof_url ? `<a href="${req.proof_url}" target="_blank" class="screenshot-link">📎 View Screenshot</a>` : '';
-                        html += `
-                            <div class="history-item">
-                                <div class="left">
-                                    <div class="amount">₹ ${Number(req.amount).toFixed(2)}</div>
-                                    <div class="date">${formatDate(req.created_at)}</div>
-                                    ${screenshotLink}
-                                </div>
-                                <span class="${statusClass}">${req.status || 'pending'}</span>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                } catch (err) {
-                    console.error(err);
-                    container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading history</div>';
-                }
-            }
-
-            document.getElementById('depositSubmitBtn').addEventListener('click', async function() {
-                const amount = document.getElementById('depositAmount').value;
-                const utr = document.getElementById('depositUtr').value.trim();
-                const screenshot = document.getElementById('depositScreenshot').files[0];
-
-                if (!amount || parseFloat(amount) < 200) { alert('Minimum deposit is ₹200.'); return; }
-                if (!utr) { alert('Please enter UTR ID.'); return; }
-                if (!currentUser) { alert('Please login.'); return; }
-
-                this.disabled = true;
-                this.textContent = 'Submitting...';
-
-                try {
-                    let screenshotUrl = null;
-                    if (screenshot) {
-                        const fileExt = screenshot.name.split('.').pop();
-                        const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
-                        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-                            .from('deposit-proofs')
-                            .upload(fileName, screenshot);
-                        if (uploadError) {
-                            console.warn('Screenshot upload failed:', uploadError);
-                        } else {
-                            const { data: urlData } = supabaseClient.storage
-                                .from('deposit-proofs')
-                                .getPublicUrl(fileName);
-                            screenshotUrl = urlData.publicUrl;
-                        }
-                    }
-
-                    const { error } = await supabaseClient
-                        .from('deposit_requests')
-                        .insert({
-                            user_id: currentUser.id,
-                            amount: parseFloat(amount),
-                            proof_url: screenshotUrl,
-                            utr_id: utr,
-                            status: 'pending'
-                        });
-
-                    if (error) throw error;
-
-                    alert('✅ Deposit request submitted! Wait for approval.');
-                    document.getElementById('depositAmount').value = '';
-                    document.getElementById('depositUtr').value = '';
-                    document.getElementById('depositScreenshot').value = '';
-                    document.getElementById('qrContainer').style.display = 'none';
-                    document.getElementById('depositExtraFields').style.display = 'none';
-                    document.getElementById('warningBox').style.display = 'none';
-                    document.getElementById('depositSubmitBtn').style.display = 'none';
-                    clearInterval(qrTimer);
-                    loadDepositHistory();
-                } catch (err) {
-                    console.error(err);
-                    alert('❌ Failed to submit deposit.');
-                } finally {
-                    this.disabled = false;
-                    this.textContent = 'Submit Deposit Request';
-                }
-            });
-
-            document.getElementById('copyUpiBtn').addEventListener('click', function() {
-                navigator.clipboard.writeText('paramjeet201@fam').then(() => {
-                    alert('UPI ID copied!');
-                }).catch(() => {
-                    const ta = document.createElement('textarea');
-                    ta.value = 'paramjeet201@fam';
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    ta.remove();
-                    alert('UPI ID copied!');
-                });
-            });
-
-            // ---- Withdrawal ----
-            const wtBtns = document.querySelectorAll('.wt-btn');
-            const upiPanel = document.getElementById('upiPanel');
-            const bankPanel = document.getElementById('bankPanel');
-
-            wtBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    wtBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    if (this.dataset.method === 'upi') {
-                        upiPanel.classList.add('active');
-                        bankPanel.classList.remove('active');
-                    } else {
-                        bankPanel.classList.add('active');
-                        upiPanel.classList.remove('active');
-                    }
-                });
-            });
-
-            async function loadWithdrawHistory() {
-                const container = document.getElementById('withdrawHistoryList');
-                if (!currentUser) return;
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('withdrawal_requests')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .order('created_at', { ascending: false });
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No withdrawals yet.</div>';
-                        return;
-                    }
-                    let html = '';
-                    data.forEach(req => {
-                        const statusClass = 'status-' + (req.status || 'pending');
-                        const method = req.account_number ? 'Bank' : 'UPI';
-                        html += `
-                            <div class="history-item">
-                                <div class="left">
-                                    <div class="amount">₹ ${Number(req.amount).toFixed(2)} (${method})</div>
-                                    <div class="date">${formatDate(req.created_at)}</div>
-                                </div>
-                                <span class="${statusClass}">${req.status || 'pending'}</span>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                } catch (err) {
-                    console.error(err);
-                    container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading history</div>';
-                }
-            }
-
-            async function submitWithdrawal(amount, data) {
-                if (!amount || parseFloat(amount) < 500) { alert('Minimum withdrawal is ₹500.'); return; }
-                if (!currentUser) { alert('Please login.'); return; }
-                const { data: wallet } = await supabaseClient
-                    .from('wallets')
-                    .select('balance')
-                    .eq('user_id', currentUser.id)
-                    .maybeSingle();
-                const bal = wallet ? parseFloat(wallet.balance) : 0;
-                if (parseFloat(amount) > bal) {
-                    alert('Insufficient balance. You have ₹' + bal.toFixed(2));
-                    return;
-                }
-                const confirmed = await showModal('Confirm Withdrawal',
-                    `Amount: ₹${amount}<br/>Please confirm your withdrawal request.`);
-                if (!confirmed) return;
-
-                try {
-                    const { error } = await supabaseClient
-                        .from('withdrawal_requests')
-                        .insert({
-                            user_id: currentUser.id,
-                            amount: parseFloat(amount),
-                            ...data,
-                            status: 'pending'
-                        });
-                    if (error) throw error;
-                    alert('✅ Withdrawal request submitted! Processing may take up to 2 hours.');
-                    loadWithdrawHistory();
-                    loadDashboard();
-                } catch (err) {
-                    console.error(err);
-                    alert('❌ Failed to submit withdrawal.');
-                }
-            }
-
-            document.getElementById('withdrawUPIBtn').addEventListener('click', function() {
-                const amount = document.getElementById('withdrawAmountUPI').value;
-                const upi = document.getElementById('withdrawUpi').value.trim();
-                if (!upi) { alert('Please enter your UPI ID.'); return; }
-                submitWithdrawal(amount, { upi_id: upi });
-            });
-
-            document.getElementById('withdrawBankBtn').addEventListener('click', function() {
-                const amount = document.getElementById('withdrawAmountBank').value;
-                const name = document.getElementById('withdrawBankName').value.trim();
-                const account = document.getElementById('withdrawAccountNumber').value.trim();
-                const ifsc = document.getElementById('withdrawIfsc').value.trim();
-                if (!name) { alert('Please enter account holder name.'); return; }
-                if (!account) { alert('Please enter account number.'); return; }
-                if (!ifsc) { alert('Please enter IFSC code.'); return; }
-                submitWithdrawal(amount, {
-                    account_holder: name,
-                    account_number: account,
-                    ifsc_code: ifsc
-                });
-            });
-
-            // ---- Active Investments ----
-            async function loadActiveInvestments() {
-                const container = document.getElementById('activeInvestmentsList');
-                if (!currentUser) return;
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('investments')
-                        .select('*, packages(name)')
-                        .eq('user_id', currentUser.id)
-                        .eq('status', 'active')
-                        .order('start_date', { ascending: false });
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">No active investments.</div>';
-                        return;
-                    }
-                    let html = '';
-                    data.forEach(inv => {
-                        const pkgName = inv.packages ? inv.packages.name : 'Package';
-                        html += `
-                            <div class="inv-item">
-                                <div class="left">
-                                    <div class="pkg">${pkgName}</div>
-                                    <div class="detail">₹${inv.amount} + ₹${inv.daily_profit}/day profit</div>
-                                </div>
-                                <button class="btn-sell" data-inv-id="${inv.id}">Sell</button>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-
-                    container.querySelectorAll('.btn-sell').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const invId = this.dataset.invId;
-                            handleSellInvestment(invId);
-                        });
-                    });
-                } catch (err) {
-                    console.error(err);
-                    container.innerHTML = '<div class="empty-state" style="color:#8a9aaa;text-align:center;padding:20px;">Error loading investments</div>';
-                }
-            }
-
-            async function handleSellInvestment(invId) {
-                const confirmed = await showModal('Sell Investment', 'Are you sure you want to sell this investment? You will get principal + profit.');
-                if (!confirmed) return;
-
-                try {
-                    const { data, error } = await supabaseClient.rpc('sell_investment', { p_investment_id: invId });
-                    if (error) throw error;
-                    if (data && data.success) {
-                        alert(`✅ ${data.message}. Return: ₹${parseFloat(data.return).toFixed(2)}`);
-                        loadDashboard();
-                        loadActiveInvestments();
-                    } else {
-                        alert('❌ ' + (data ? data.message : 'Failed to sell.'));
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert('❌ ' + (err.message || 'Failed to sell investment.'));
-                }
-            }
-
-            document.getElementById('mineBuyHistory').addEventListener('click', () => window.location.href = 'buy-history.html');
-            document.getElementById('mineSellHistory').addEventListener('click', () => window.location.href = 'sell-history.html');
-            document.getElementById('mineTransferHistory').addEventListener('click', () => alert('Transfer history will be available soon.'));
-            document.getElementById('mineModifyPassword').addEventListener('click', async function() {
-                if (!currentUser) return;
-                const newPass = prompt('Enter new password (min 6 chars):');
-                if (!newPass || newPass.length < 6) { alert('Password must be at least 6 characters.'); return; }
-                try {
-                    const { error } = await supabaseClient.auth.updateUser({ password: newPass });
-                    if (error) throw error;
-                    alert('✅ Password updated! Please login again.');
-                    await supabaseClient.auth.signOut();
-                    window.location.href = 'index.html';
-                } catch (err) {
-                    console.error(err);
-                    alert('❌ Failed to update password: ' + err.message);
-                }
-            });
-
-            // ---- Notices ----
-            const notices = [
-                "🌟 VIVI PAY is the most trusted investment platform. Start earning 8% daily profit now!",
-                "💎 Invest in our premium packages and watch your wealth grow every single day.",
-                "🚀 Join thousands of happy investors who are earning passive income with VIVI PAY.",
-                "💰 Deposit today and get instant profit – your financial freedom starts here!"
-            ];
-            const news = [
-                "📊 VIVI PAY reaches 10,000 active investors – thank you for your trust!",
-                "💡 Tip: Invest early to maximize your daily returns. Every day counts!",
-                "🏆 Our top investor earned ₹50,000 in just 7 days – you can do it too!",
-                "🎉 New investment plans added – check out the 'Buy' tab for more opportunities."
-            ];
-
-            document.getElementById('noticeOfficial').addEventListener('click', function() {
-                const msg = notices.join('\n\n');
-                alert('📢 OFFICIAL NOTICE\n\n' + msg);
-            });
-            document.getElementById('noticeNews').addEventListener('click', function() {
-                const msg = news.join('\n\n');
-                alert('📰 NEWS\n\n' + msg);
-            });
-
-            // ---- Mystery Popup Logic ----
-            const mysteryPopup = document.getElementById('mysteryPopup');
-            const popupBonus = document.getElementById('popupBonus');
-            const popupClaimBtn = document.getElementById('popupClaimBtn');
-            const mysteryCloseBtn = document.getElementById('mysteryCloseBtn');
-            const dontShowBtn = document.getElementById('dontShowToday');
-
-            let mysteryClaimTier = null;
-
-            function shouldShowMysteryPopup() {
-                if (!currentUser) return false;
-                const today = new Date().toDateString();
-                const lastShown = localStorage.getItem('mystery_popup_last_' + currentUser.id);
-                if (lastShown === today) return false;
-                const flag = localStorage.getItem('show_mystery_popup_' + currentUser.id);
-                if (flag === 'true') {
-                    localStorage.removeItem('show_mystery_popup_' + currentUser.id);
-                    return true;
-                }
-                const lastPopupTime = parseInt(localStorage.getItem('mystery_popup_time_' + currentUser.id) || '0');
-                if (Date.now() - lastPopupTime > 3600000) return true;
-                return false;
-            }
-
-            async function showMysteryPopup() {
-                if (!currentUser) return;
-                const { data, error } = await supabaseClient
-                    .rpc('get_mystery_box_status', { p_user_id: currentUser.id });
-                if (error || !data) return;
-                const tiers = data.tiers || [];
-                let claimable = null;
-                for (let i = 0; i < tiers.length; i++) {
-                    if (tiers[i].milestone_reached && !tiers[i].claimed) {
-                        claimable = tiers[i];
-                        break;
-                    }
-                }
-                if (!claimable) return;
-                const bonus = Math.floor(Math.random() * 451) + 50;
-                popupBonus.textContent = bonus;
-                mysteryPopup.classList.add('show');
-                localStorage.setItem('mystery_popup_time_' + currentUser.id, Date.now().toString());
-                mysteryClaimTier = claimable.tier;
-            }
-
-            function closeMysteryPopup() {
-                mysteryPopup.classList.remove('show');
-            }
-
-            mysteryCloseBtn.addEventListener('click', closeMysteryPopup);
-            mysteryPopup.addEventListener('click', function(e) {
-                if (e.target === this) closeMysteryPopup();
-            });
-
-            popupClaimBtn.addEventListener('click', async function() {
-                if (!currentUser || !mysteryClaimTier) { closeMysteryPopup(); return; }
-                const tier = mysteryClaimTier;
-                try {
-                    const { data, error } = await supabaseClient
-                        .rpc('claim_mystery_box', { p_user_id: currentUser.id, p_tier: tier });
-                    if (error) throw error;
-                    if (!data.success) {
-                        alert(data.message || 'Failed to claim.');
-                        closeMysteryPopup();
-                        return;
-                    }
-                    alert('🎉 ' + data.message);
-                    closeMysteryPopup();
-                    loadDashboard();
-                } catch (err) {
-                    console.error(err);
-                    alert('Error claiming box.');
-                    closeMysteryPopup();
-                }
-            });
-
-            dontShowBtn.addEventListener('click', function() {
-                if (!currentUser) return;
-                const today = new Date().toDateString();
-                localStorage.setItem('mystery_popup_last_' + currentUser.id, today);
-                closeMysteryPopup();
-            });
-
-            // ---- Init ----
-            (async function init() {
-                await loadDashboard();
-                setTimeout(() => {
-                    if (shouldShowMysteryPopup()) {
-                        showMysteryPopup();
-                    }
-                }, 2000);
-                setInterval(() => {
-                    if (shouldShowMysteryPopup()) {
-                        showMysteryPopup();
-                    }
-                }, 60000);
-                switchTab('home');
-            })();
-
-            window.switchTab = switchTab;
-
-        })();
-    </script>
-
+    })();
+  </script>
 </body>
 </html>
