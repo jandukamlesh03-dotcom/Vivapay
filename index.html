@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>VIVI PAY – Login</title>
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabaseClient.js"></script>
     <style>
-        /* ============================================================
-           BANKER'S TRUST THEME – Navy Blue + Gold
-           ============================================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+        }
         body {
             background: #0a1628;
             min-height: 100vh;
@@ -26,11 +27,9 @@
             padding: 32px 24px 28px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
             border: 1px solid #1a3a6b;
-            overflow: hidden;
         }
-
         .app-header {
             text-align: center;
             margin-bottom: 28px;
@@ -41,13 +40,14 @@
             color: #ffffff;
             letter-spacing: 1px;
         }
-        .app-header h1 span { color: #f5b342; }
+        .app-header h1 span {
+            color: #f5b342;
+        }
         .app-header p {
             color: #a0b4c8;
             font-size: 14px;
             margin-top: 4px;
         }
-
         .tab-bar {
             display: flex;
             background: #0a1628;
@@ -73,8 +73,9 @@
             color: #0a1628;
             box-shadow: 0 4px 14px rgba(245, 179, 66, 0.3);
         }
-        .tab-btn:active { transform: scale(0.96); }
-
+        .tab-btn:active {
+            transform: scale(0.96);
+        }
         .form-container {
             position: relative;
             overflow: hidden;
@@ -94,7 +95,6 @@
         .form-slide.hidden {
             display: none !important;
         }
-
         .form-group {
             margin-bottom: 18px;
             position: relative;
@@ -133,8 +133,9 @@
             font-size: 18px;
             user-select: none;
         }
-        .toggle-pwd:hover { color: #f5b342; }
-
+        .toggle-pwd:hover {
+            color: #f5b342;
+        }
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -152,8 +153,10 @@
             background: #d49a2a;
             transform: scale(0.97);
         }
-        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
-
+        .btn-primary:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
         .btn-google {
             width: 100%;
             padding: 14px;
@@ -171,8 +174,9 @@
             margin-top: 12px;
             transition: background 0.2s, transform 0.1s;
         }
-        .btn-google:active { transform: scale(0.97); }
-
+        .btn-google:active {
+            transform: scale(0.97);
+        }
         .divider {
             display: flex;
             align-items: center;
@@ -188,7 +192,6 @@
             height: 1px;
             background: #1a3a6b;
         }
-
         .toggle-link {
             text-align: center;
             margin-top: 18px;
@@ -204,8 +207,9 @@
             cursor: pointer;
             padding: 0 4px;
         }
-        .toggle-link button:active { opacity: 0.7; }
-
+        .toggle-link button:active {
+            opacity: 0.7;
+        }
         .forgot-link {
             text-align: right;
             margin-top: -10px;
@@ -230,7 +234,6 @@
             font-size: 14px;
             cursor: pointer;
         }
-
         .msg {
             text-align: center;
             font-size: 14px;
@@ -257,7 +260,6 @@
             background: #0c1a24;
             border: 1px solid #164e63;
         }
-
         .privacy-wrap {
             text-align: center;
             margin-top: 22px;
@@ -279,7 +281,6 @@
         .privacy-wrap a:active {
             color: #f5b342;
         }
-
         .help-link-wrap {
             text-align: center;
             margin-top: 14px;
@@ -329,7 +330,7 @@
             width: 100%;
             background: #111d33;
             border: 1px solid #f5b342;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border-radius: 16px;
             padding: 13px 16px;
             display: flex;
@@ -379,7 +380,7 @@
             border-color: #f87171;
         }
         .toast.toast-error .toast-icon {
-            background: rgba(248,113,113,0.12);
+            background: rgba(248, 113, 113, 0.12);
         }
 
         /* ----- PRIVACY MODAL ----- */
@@ -390,7 +391,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(6px);
             z-index: 9999;
             align-items: center;
@@ -410,7 +411,7 @@
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.8);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
         }
         .privacy-modal-content .modal-header {
             display: flex;
@@ -477,10 +478,13 @@
         .privacy-modal-content .modal-close-btn:active {
             background: #d49a2a;
         }
-
         @media (max-width: 420px) {
-            .app-card { padding: 20px 16px; }
-            .privacy-modal-content { padding: 20px 16px; }
+            .app-card {
+                padding: 20px 16px;
+            }
+            .privacy-modal-content {
+                padding: 20px 16px;
+            }
         }
     </style>
 </head>
@@ -503,7 +507,7 @@
 
         <div class="form-container">
 
-            <!-- ======== LOGIN FORM ======== -->
+            <!-- LOGIN FORM -->
             <div id="loginForm" class="form-slide active">
                 <div class="form-group">
                     <label>Email</label>
@@ -530,7 +534,7 @@
                 </div>
             </div>
 
-            <!-- ======== REGISTER FORM ======== -->
+            <!-- REGISTER FORM -->
             <div id="registerForm" class="form-slide">
                 <div class="form-group">
                     <label>Email</label>
@@ -566,7 +570,7 @@
                 </div>
             </div>
 
-            <!-- ======== FORGOT PASSWORD ======== -->
+            <!-- FORGOT PASSWORD -->
             <div id="forgotForm" class="form-slide">
                 <p style="color:#a0b4c8; text-align:center; margin-bottom:18px; line-height:1.6;">
                     Enter your email address and we'll send you a link to reset your password.
@@ -582,7 +586,6 @@
             </div>
         </div>
 
-        <!-- ======== PRIVACY POLICY + HELP ======== -->
         <div class="privacy-wrap">
             <a onclick="openPrivacyModal(); return false;">Privacy Policy</a>
             <a onclick="showTerms(); return false;">Terms of Service</a>
@@ -599,7 +602,7 @@
         </div>
     </div>
 
-    <!-- ======== PRIVACY MODAL ======== -->
+    <!-- PRIVACY MODAL -->
     <div id="privacyModal">
         <div class="privacy-modal-content">
             <div class="modal-header">
@@ -609,14 +612,12 @@
             <div class="modal-body">
                 <p><strong>Effective Date:</strong> 20 July 2026</p>
                 <p>VIVI PAY ("we", "our", or "us") is committed to protecting your privacy. This policy explains how we handle your information.</p>
-
                 <h3>1. Information We Collect</h3>
                 <ul>
                     <li>Personal details (name, email, phone number)</li>
                     <li>Transaction data (processed via secure third-party providers)</li>
                     <li>Device and usage data (IP address, app activity)</li>
                 </ul>
-
                 <h3>2. How We Use Information</h3>
                 <ul>
                     <li>Provide and improve services</li>
@@ -624,20 +625,15 @@
                     <li>Ensure security and prevent fraud</li>
                     <li>Communicate updates and support</li>
                 </ul>
-
                 <h3>3. Legal Compliance</h3>
                 <p><span class="highlight">India (IT Laws):</span> We comply with the Information Technology Act, 2000 and applicable rules.</p>
                 <p><span class="highlight">GDPR (EU Users):</span> If you are in the EU, your data is processed under lawful bases such as consent or legitimate interest.</p>
-
                 <h3>4. Data Sharing</h3>
                 <p>We do not sell your data. We may share it with trusted service providers or legal authorities if required.</p>
-
                 <h3>5. Data Security</h3>
                 <p>We use appropriate safeguards to protect your data, but no system is completely secure.</p>
-
                 <h3>6. Your Rights</h3>
                 <p>You can request access, correction, or deletion of your data by contacting us.</p>
-
                 <h3>7. Contact</h3>
                 <p>📱 Telegram: <a href="https://t.me/vivapay009" target="_blank">@vivapay009</a></p>
                 <p style="margin-top:16px; font-size:14px; color:#4a6a8a;">By using VIVI PAY, you agree to this Privacy Policy.</p>
@@ -679,14 +675,14 @@
                 type = type || 'success';
                 const toast = document.createElement('div');
                 toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
-                const iconSvg = type === 'error'
-                    ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>'
-                    : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f5b342" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#f5b342" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                const iconSvg = type === 'error' ?
+                    '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>' :
+                    '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f5b342" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#f5b342" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
                 toast.innerHTML =
                     '<div class="toast-icon">' + iconSvg + '</div>' +
                     '<div class="toast-text">' +
-                        '<div class="toast-title">' + title + '</div>' +
-                        (subtitle ? '<div class="toast-sub">' + subtitle + '</div>' : '') +
+                    '<div class="toast-title">' + title + '</div>' +
+                    (subtitle ? '<div class="toast-sub">' + subtitle + '</div>' : '') +
                     '</div>';
                 toastContainer.appendChild(toast);
                 requestAnimationFrame(() => toast.classList.add('show'));
@@ -785,23 +781,6 @@
                 this.textContent = 'Registering…';
 
                 try {
-                    // If referral code is provided, find the referrer's user ID
-                    let referrerId = null;
-                    if (referral) {
-                        const { data: users, error: userError } = await supabaseClient
-                            .from('users') // You need a 'users' table or use auth.users – we'll use auth.users
-                            .select('id')
-                            .eq('raw_user_meta_data->>referral_code', referral)
-                            .maybeSingle();
-                        // Since we don't have a users table, we'll use a custom table or skip for now.
-                        // For simplicity, we'll store referral_code in auth.users metadata.
-                        // We'll fetch by querying auth.users via admin – but that's not possible client-side.
-                        // Instead, we'll use a custom table 'referral_codes'.
-                        // I'll create it later – for now, we'll store the referral code in metadata.
-                        // We'll handle the referral logic in the backend trigger.
-                        // So we just store the referral code in user metadata.
-                    }
-
                     const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
@@ -809,7 +788,6 @@
                             data: {
                                 phone: phone,
                                 referral_code: referral || null,
-                                referrer_id: null // will be updated by backend if needed
                             }
                         }
                     });
@@ -817,7 +795,6 @@
                     if (error) throw error;
 
                     if (data.user) {
-                        // Create wallet
                         const userId = data.user.id;
                         const { data: existing } = await supabaseClient
                             .from('wallets')
@@ -867,20 +844,8 @@
                     if (error) throw error;
 
                     if (data.user) {
-                        // Check if we need to show privacy popup (first login)
-                        const userId = data.user.id;
-                        const { data: profile } = await supabaseClient
-                            .from('profiles') // you may not have this; we'll use a flag in localStorage
-                            .select('privacy_accepted')
-                            .eq('user_id', userId)
-                            .maybeSingle();
-                        // For simplicity, we'll use localStorage flag
-                        const privacyShown = localStorage.getItem('vivi_privacy_shown');
-                        if (!privacyShown) {
-                            localStorage.setItem('vivi_privacy_shown', 'true');
-                            // Show privacy modal after login
-                            setTimeout(() => openPrivacyModal(), 500);
-                        }
+                        // Set flag to show mystery popup on dashboard
+                        localStorage.setItem('show_mystery_popup_' + data.user.id, 'true');
                         window.location.href = 'dashboard.html';
                     }
 
@@ -894,21 +859,29 @@
                 }
             });
 
-            // ---- GOOGLE LOGIN ----
+            // ---- GOOGLE LOGIN (FIXED) ----
             async function signInWithGoogle() {
                 try {
+                    // Get the current URL without any query params
+                    const baseUrl = window.location.origin;
+                    const redirectUrl = baseUrl + '/dashboard.html';
+
                     const { data, error } = await supabaseClient.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
-                            redirectTo: window.location.origin + '/dashboard.html',
+                            redirectTo: redirectUrl,
                             queryParams: {
                                 access_type: 'offline',
                                 prompt: 'consent',
                             }
                         }
                     });
-                    if (error) throw error;
-                    // User will be redirected to Google and back
+                    if (error) {
+                        console.error('Google OAuth error:', error);
+                        showToast('Google login failed', error.message || 'Please try again.', 'error');
+                        return;
+                    }
+                    // The user will be redirected to Google, then back to redirectUrl
                 } catch (err) {
                     console.error('Google login error:', err);
                     showToast('Google login failed', err.message || 'Please try again.', 'error');
