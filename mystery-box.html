@@ -7,491 +7,143 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabaseClient.js"></script>
     <style>
-        /* ============================================================
-           MYSTERY GIFT – Premium Fantasy UI (Exact Match)
-           ============================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-        body {
-            background: #0a0a0f;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 20px 16px 40px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        body { background: #f5f7fa; min-height: 100vh; display: flex; justify-content: center; padding: 20px 16px 40px; }
         .container {
-            max-width: 420px;
-            width: 100%;
-            background: linear-gradient(160deg, #1a0e05, #2a1a0a, #1a0e05);
-            border-radius: 32px;
-            padding: 24px 16px 28px;
-            border: 2px solid #8B7355;
-            box-shadow: 0 0 60px rgba(245, 179, 66, 0.15),
-                        inset 0 0 60px rgba(245, 179, 66, 0.04),
-                        0 20px 60px rgba(0,0,0,0.8);
-            position: relative;
-            overflow: hidden;
+            width: 100%; max-width: 480px; background: #fff; border-radius: 32px;
+            padding: 24px 16px 28px; box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+            border: 1px solid #e0e4e8;
         }
-        .container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139,115,85,0.06) 2px, rgba(139,115,85,0.06) 4px);
-            pointer-events: none;
-        }
-        .container::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 30%, rgba(245,179,66,0.04) 0%, transparent 70%);
-            animation: glowPulse 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes glowPulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-        .container > * { position: relative; z-index: 2; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #e0e4e8; }
+        .header .title { font-size: 26px; font-weight: 900; color: #1a2a4a; }
+        .header .back-btn { background: none; border: none; color: #4a5a6a; font-size: 14px; cursor: pointer; text-decoration: none; }
+        .header .back-btn:active { color: #c9a84c; }
+        .info-box { background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8; margin-bottom: 20px; text-align: center; }
+        .info-box .label { color: #4a5a6a; font-size: 13px; }
+        .info-box .value { color: #1a2a4a; font-size: 24px; font-weight: 700; margin-top: 2px; }
+        .popup-subtitle { text-align: center; color: #4a5a6a; font-size: 14px; margin-bottom: 24px; }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(245, 179, 66, 0.2);
-        }
-        .header .title {
-            font-size: 26px;
-            font-weight: 900;
-            color: #f5b342;
-            text-shadow: 0 0 30px rgba(245, 179, 66, 0.3);
-            letter-spacing: 2px;
-        }
-        .header .back-btn {
-            background: none;
-            border: none;
-            color: #a0a0a0;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 6px 14px;
-            border-radius: 40px;
-            border: 1px solid #4a3a2a;
-            transition: 0.2s;
-            text-decoration: none;
-        }
-        .header .back-btn:active {
-            background: #4a3a2a;
-            color: #f5b342;
-        }
+        .task-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; padding: 0 8px; margin-bottom: 24px; }
+        .task-row::before { content: ''; position: absolute; top: 28px; left: 20px; right: 20px; height: 4px; background: #e0e4e8; border-radius: 4px; z-index: 0; }
+        .progress-line-fill { position: absolute; top: 28px; left: 20px; height: 4px; background: #c9a84c; border-radius: 4px; z-index: 1; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px rgba(201,168,76,0.3); }
+        .task-box { display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; z-index: 2; flex: 1; }
+        .task-box .task-circle { width: 44px; height: 44px; border-radius: 50%; background: #f5f7fa; border: 2px solid #e0e4e8; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #8a9aaa; transition: 0.4s; }
+        .task-box .task-circle.completed { background: #c9a84c; border-color: #c9a84c; color: #fff; box-shadow: 0 0 20px rgba(201,168,76,0.3); transform: scale(1.05); }
+        .task-box .task-circle.incomplete { background: #f5f7fa; border-color: #e0e4e8; color: #8a9aaa; opacity: 0.7; }
+        .task-box .task-label { font-size: 10px; font-weight: 600; color: #4a5a6a; text-align: center; line-height: 1.3; }
+        .task-box .task-label.completed { color: #c9a84c; }
+        .task-box .task-deposit-btn { background: #1a2a4a; border: none; border-radius: 40px; padding: 2px 10px; font-size: 9px; font-weight: 700; color: #fff; cursor: pointer; transition: 0.3s; margin-top: 2px; }
+        .task-box .task-deposit-btn:active { transform: scale(0.95); }
+        .task-node { width: 10px; height: 10px; border-radius: 50%; background: #e0e4e8; position: relative; z-index: 2; flex-shrink: 0; margin-top: 20px; }
+        .task-node.active { background: #c9a84c; box-shadow: 0 0 12px rgba(201,168,76,0.3); }
 
-        .popup-subtitle {
-            text-align: center;
-            color: #a0a0a0;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        /* ----- INFO BOX ----- */
-        .info-box {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
-            padding: 14px 16px;
-            border: 1px solid #4a3a2a;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .info-box .label {
-            color: #8a7a6a;
-            font-size: 13px;
-        }
-        .info-box .value {
-            color: #f5b342;
-            font-size: 24px;
-            font-weight: 700;
-            margin-top: 2px;
-            text-shadow: 0 0 20px rgba(245, 179, 66, 0.2);
-        }
-
-        /* ----- TASK ROW ----- */
-        .task-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            position: relative;
-            padding: 0 8px;
-            margin-bottom: 24px;
-        }
-        .task-row::before {
-            content: '';
-            position: absolute;
-            top: 28px;
-            left: 20px;
-            right: 20px;
-            height: 4px;
-            background: #2a2a2a;
-            border-radius: 4px;
-            z-index: 0;
-        }
-        .progress-line-fill {
-            position: absolute;
-            top: 28px;
-            left: 20px;
-            height: 4px;
-            background: linear-gradient(90deg, #f5b342, #ff6b35, #e74c3c);
-            border-radius: 4px;
-            z-index: 1;
-            width: 0%;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 20px rgba(245, 179, 66, 0.4),
-                        0 0 60px rgba(245, 179, 66, 0.15);
-        }
-        .progress-line-fill::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
-            animation: progressGlow 1.5s ease-in-out infinite;
-        }
-        @keyframes progressGlow {
-            0%,
-            100% {
-                opacity: 0.3;
-                transform: translateX(-20%);
-            }
-            50% {
-                opacity: 1;
-                transform: translateX(20%);
-            }
-        }
-
-        .task-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .task-box .task-circle {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #1a1a2a, #2a2a3a);
-            border: 2px solid #4a4a5a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 800;
-            color: #6a6a7a;
-            transition: 0.4s;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-        .task-box .task-circle.completed {
-            background: linear-gradient(145deg, #f5b342, #d49a2a);
-            border-color: #f5b342;
-            color: #0a0a0f;
-            box-shadow: 0 0 30px rgba(245, 179, 66, 0.4),
-                inset 0 0 20px rgba(255, 215, 0, 0.2);
-            transform: scale(1.05);
-        }
-        .task-box .task-circle.incomplete {
-            background: linear-gradient(145deg, #1a1a2a, #2a2a3a);
-            border-color: #4a4a5a;
-            color: #6a6a7a;
-            opacity: 0.6;
-        }
-        .task-box .task-label {
-            font-size: 10px;
-            font-weight: 600;
-            color: #8a8a9a;
-            text-align: center;
-            line-height: 1.3;
-        }
-        .task-box .task-label.completed {
-            color: #f5b342;
-        }
-        .task-box .task-label.incomplete {
-            color: #4a4a5a;
-        }
-        .task-box .task-deposit-btn {
-            background: linear-gradient(145deg, #8B7355, #6b5a3a);
-            border: 1px solid #f5b342;
-            border-radius: 40px;
-            padding: 2px 10px;
-            font-size: 9px;
-            font-weight: 700;
-            color: #f5b342;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 2px;
-        }
-        .task-box .task-deposit-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* ----- BUTTON ----- */
-        .btn-wood {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(145deg, #8B7355, #6b5a3a);
-            border: 2px solid #f5b342;
-            border-radius: 40px;
-            font-size: 18px;
-            font-weight: 800;
-            color: #f5b342;
-            cursor: pointer;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            box-shadow: 0 4px 20px rgba(245, 179, 66, 0.15);
-            transition: 0.3s;
-            letter-spacing: 1px;
-            margin-top: 16px;
-        }
-        .btn-wood:active {
-            transform: scale(0.97);
-        }
-        .btn-wood:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-wood:not(:disabled):active {
-            box-shadow: 0 4px 40px rgba(245, 179, 66, 0.4);
-        }
-
-        .footer {
-            text-align: center;
-            color: #4a4a5a;
-            font-size: 12px;
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(245, 179, 66, 0.08);
-        }
-
-        @media (max-width: 420px) {
-            .task-box .task-circle {
-                width: 38px;
-                height: 38px;
-                font-size: 14px;
-            }
-            .task-box .task-label {
-                font-size: 9px;
-            }
-            .task-row::before {
-                top: 24px;
-                left: 16px;
-                right: 16px;
-            }
-            .progress-line-fill {
-                top: 24px;
-                left: 16px;
-            }
-        }
+        .btn-wood { width: 100%; padding: 16px; background: #1a2a4a; border: none; border-radius: 40px; font-size: 18px; font-weight: 800; color: #fff; cursor: pointer; transition: 0.3s; margin-top: 16px; }
+        .btn-wood:active { transform: scale(0.97); background: #0f1d3a; }
+        .btn-wood:disabled { opacity: 0.5; cursor: not-allowed; }
+        .footer { text-align: center; color: #8a9aaa; font-size: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #e0e4e8; }
+        @media (max-width: 420px) { .task-box .task-circle { width: 38px; height: 38px; font-size: 14px; } .task-row::before { left: 16px; right: 16px; } .progress-line-fill { left: 16px; } }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="title">🎁 MYSTERY GIFT</div>
-            <a href="dashboard.html" class="back-btn">← Back</a>
-        </div>
-
-        <!-- Info Box -->
-        <div class="info-box">
-            <div class="label">💰 Weekly Deposits</div>
-            <div class="value" id="weeklyDeposits">₹0.00</div>
-            <div style="font-size:12px; color:#5a4a3a; margin-top:2px;">Reset every Monday</div>
-        </div>
-
+        <div class="header"><div class="title">🎁 MYSTERY GIFT</div><a href="dashboard.html" class="back-btn">← Back</a></div>
+        <div class="info-box"><div class="label">💰 Weekly Deposits</div><div class="value" id="weeklyDeposits">₹0.00</div><div style="font-size:12px; color:#8a9aaa;">Reset every Monday</div></div>
         <div class="popup-subtitle">Complete all tasks to unlock your special reward!</div>
-
-        <!-- Task Row with Progress -->
         <div class="task-row">
-            <div class="progress-line-fill" style="width:0%;"></div>
-
-            <!-- Task 1: ₹500 -->
-            <div class="task-box" data-tier="1">
-                <div class="task-circle incomplete">1</div>
-                <div class="task-label incomplete">Task 1</div>
-                <div class="task-label" style="font-size:8px; color:#4a4a5a;">Deposit ₹500</div>
-                <button class="task-deposit-btn" data-amount="500">Deposit</button>
-            </div>
-
-            <div class="task-node"></div>
-
-            <!-- Task 2: ₹1000 -->
-            <div class="task-box" data-tier="2">
-                <div class="task-circle incomplete">2</div>
-                <div class="task-label incomplete">Task 2</div>
-                <div class="task-label" style="font-size:8px; color:#4a4a5a;">Deposit ₹1000</div>
-                <button class="task-deposit-btn" data-amount="1000">Deposit</button>
-            </div>
-
-            <div class="task-node"></div>
-
-            <!-- Task 3: ₹1500 -->
-            <div class="task-box" data-tier="3">
-                <div class="task-circle incomplete">3</div>
-                <div class="task-label incomplete">Task 3</div>
-                <div class="task-label" style="font-size:8px; color:#4a4a5a;">Deposit ₹1500</div>
-                <button class="task-deposit-btn" data-amount="1500">Deposit</button>
-            </div>
-
-            <div class="task-node"></div>
-
-            <!-- Task 4: ₹2000 -->
-            <div class="task-box" data-tier="4">
-                <div class="task-circle incomplete">4</div>
-                <div class="task-label incomplete">Task 4</div>
-                <div class="task-label" style="font-size:8px; color:#4a4a5a;">Deposit ₹2000</div>
-                <button class="task-deposit-btn" data-amount="2000">Deposit</button>
-            </div>
-
-            <div class="task-node"></div>
-
-            <!-- Task 5: ₹5000 -->
-            <div class="task-box" data-tier="5">
-                <div class="task-circle incomplete">5</div>
-                <div class="task-label incomplete">Task 5</div>
-                <div class="task-label" style="font-size:8px; color:#4a4a5a;">Deposit ₹5000</div>
-                <button class="task-deposit-btn" data-amount="5000">Deposit</button>
-            </div>
+            <div class="progress-line-fill" id="progressLineFill" style="width:0%;"></div>
+            <!-- 5 tasks generated by JS -->
         </div>
-
-        <!-- Unlock Button -->
-        <button class="btn-wood" id="unlockBtn" disabled>
-            🔒 Complete all tasks to unlock
-        </button>
-
+        <button class="btn-wood" id="unlockBtn" disabled>🔒 Complete all tasks to unlock</button>
         <div class="footer">VIVI PAY &bull; Mystery Rewards</div>
     </div>
-
     <script>
         (function() {
-            'use strict';
-
             const BOXES = [
-                { tier: 1, threshold: 500, name: 'Silver Mystery Box', bonus: '₹50-100' },
-                { tier: 2, threshold: 1000, name: 'Gold Mystery Box', bonus: '₹75-150' },
-                { tier: 3, threshold: 1500, name: 'Platinum Mystery Box', bonus: '₹100-200' },
-                { tier: 4, threshold: 2000, name: 'Diamond Mystery Box', bonus: '₹150-250' },
-                { tier: 5, threshold: 5000, name: 'Grand Mystery Box', bonus: '₹200-500' }
+                { tier: 1, threshold: 500, name: 'Silver', icon: '🥈' },
+                { tier: 2, threshold: 1000, name: 'Gold', icon: '🥇' },
+                { tier: 3, threshold: 1500, name: 'Platinum', icon: '💎' },
+                { tier: 4, threshold: 2000, name: 'Diamond', icon: '💠' },
+                { tier: 5, threshold: 5000, name: 'Grand', icon: '👑' }
             ];
-
             let currentUser = null;
+            const taskRow = document.querySelector('.task-row');
 
-            // ---- Redirect to deposit with pre-filled amount ----
-            document.querySelectorAll('.task-deposit-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const amount = this.dataset.amount;
-                    // Store amount in session storage to pre-fill on deposit page
-                    sessionStorage.setItem('prefill_deposit', amount);
-                    window.location.href = 'dashboard.html#deposit';
-                });
-            });
-
-            // ---- Load Mystery Box Status ----
-            async function loadMysteryBoxStatus() {
+            async function loadStatus() {
                 try {
                     const { data: { user }, error } = await supabaseClient.auth.getUser();
-                    if (error || !user) {
-                        window.location.href = 'index.html';
-                        return;
-                    }
+                    if (error || !user) { window.location.href = 'index.html'; return; }
                     currentUser = user;
-
-                    const { data, error: rpcError } = await supabaseClient
-                        .rpc('get_mystery_box_status', { p_user_id: user.id });
-
-                    if (rpcError) throw rpcError;
-
+                    const { data, error: rpcErr } = await supabaseClient.rpc('get_mystery_box_status', { p_user_id: user.id });
+                    if (rpcErr) throw rpcErr;
                     const totalDeposits = parseFloat(data.total_deposits) || 0;
                     const tiers = data.tiers || [];
-
                     document.getElementById('weeklyDeposits').textContent = '₹' + totalDeposits.toFixed(2);
-
                     const progress = Math.min((totalDeposits / 5000) * 100, 100);
                     document.getElementById('progressLineFill').style.width = progress + '%';
 
-                    // Update each task box
-                    const taskBoxes = document.querySelectorAll('.task-box');
-                    taskBoxes.forEach((box, idx) => {
-                        const tier = BOXES[idx];
+                    // Build tasks
+                    let html = '';
+                    BOXES.forEach((box, idx) => {
                         const status = tiers[idx] || { milestone_reached: false, claimed: false };
-                        const circle = box.querySelector('.task-circle');
-                        const label = box.querySelector('.task-label');
-                        const depositLabel = box.querySelector('.task-label:not(.task-label)');
-                        const depositBtn = box.querySelector('.task-deposit-btn');
+                        const isClaimed = status.claimed;
+                        const isReached = status.milestone_reached;
+                        let circleClass = 'task-circle incomplete';
+                        let labelClass = 'task-label incomplete';
+                        let labelText = 'Task ' + (idx+1);
+                        let btnText = 'Deposit ₹' + box.threshold;
+                        let btnData = 'amount="' + box.threshold + '"';
+                        if (isClaimed) {
+                            circleClass = 'task-circle completed';
+                            labelClass = 'task-label completed';
+                            labelText = '✅ Claimed';
+                            btnText = 'Claimed';
+                            btnData = 'disabled';
+                        } else if (isReached) {
+                            circleClass = 'task-circle completed';
+                            labelClass = 'task-label completed';
+                            labelText = '🔓 Ready';
+                            btnText = 'Claim';
+                            btnData = 'data-claim="true" data-tier="' + box.tier + '"';
+                        }
+                        // Add node except after last
+                        const nodeHtml = (idx < BOXES.length - 1) ? `<div class="task-node ${isClaimed || isReached ? 'active' : ''}"></div>` : '';
+                        html += `
+                            <div class="task-box" data-tier="${box.tier}">
+                                <div class="${circleClass}">${idx+1}</div>
+                                <div class="${labelClass}">${labelText}</div>
+                                <div style="font-size:8px; color:#8a9aaa;">Deposit ₹${box.threshold}</div>
+                                <button class="task-deposit-btn" ${btnData}>${btnText}</button>
+                            </div>
+                            ${nodeHtml}
+                        `;
+                    });
+                    taskRow.innerHTML = html;
 
-                        if (status.claimed) {
-                            circle.className = 'task-circle completed';
-                            label.className = 'task-label completed';
-                            label.textContent = '✅ Claimed';
-                            depositBtn.style.display = 'none';
-                        } else if (status.milestone_reached) {
-                            circle.className = 'task-circle completed';
-                            label.className = 'task-label completed';
-                            label.textContent = '🔓 Ready';
-                            depositBtn.textContent = 'Claim';
-                            depositBtn.style.display = 'inline-block';
-                            depositBtn.dataset.claim = 'true';
-                            depositBtn.dataset.tier = tier.tier;
-                        } else {
-                            circle.className = 'task-circle incomplete';
-                            label.className = 'task-label incomplete';
-                            label.textContent = 'Task ' + (idx + 1);
-                            depositBtn.style.display = 'inline-block';
-                            depositBtn.textContent = 'Deposit ₹' + tier.threshold;
-                            depositBtn.dataset.amount = tier.threshold;
+                    // Attach events for deposit and claim
+                    document.querySelectorAll('.task-deposit-btn').forEach(btn => {
+                        if (btn.hasAttribute('data-claim')) {
+                            btn.addEventListener('click', async function(e) {
+                                e.stopPropagation();
+                                const tier = parseInt(this.dataset.tier);
+                                await claimBox(tier, user.id);
+                            });
+                        } else if (btn.hasAttribute('data-amount')) {
+                            btn.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                const amount = this.dataset.amount;
+                                sessionStorage.setItem('prefill_deposit', amount);
+                                window.location.href = 'dashboard.html#deposit';
+                            });
                         }
                     });
 
-                    // Handle claim buttons
-                    document.querySelectorAll('.task-deposit-btn[data-claim="true"]').forEach(btn => {
-                        btn.addEventListener('click', async function(e) {
-                            e.stopPropagation();
-                            const tier = parseInt(this.dataset.tier);
-                            await claimBox(tier, user.id);
-                        });
-                    });
-
                     // Update unlock button
-                    const allClaimed = tiers.every(t => t.claimed);
-                    const anyReachedNotClaimed = tiers.some(t => t.milestone_reached && !t.claimed);
-                    const allReached = tiers.every(t => t.milestone_reached);
-
                     const unlockBtn = document.getElementById('unlockBtn');
-                    if (allClaimed) {
-                        unlockBtn.disabled = true;
-                        unlockBtn.textContent = '🎉 All boxes claimed this week!';
-                    } else if (anyReachedNotClaimed) {
-                        unlockBtn.disabled = false;
-                        unlockBtn.textContent = '🎁 Claim Your Mystery Gift!';
-                        unlockBtn.dataset.claimAll = 'true';
-                    } else if (allReached && !anyReachedNotClaimed) {
-                        unlockBtn.disabled = true;
-                        unlockBtn.textContent = '🔒 All boxes claimed!';
-                    } else {
-                        unlockBtn.disabled = true;
-                        unlockBtn.textContent = '🔒 Deposit to unlock next box';
-                    }
+                    const allClaimed = tiers.every(t => t.claimed);
+                    const anyReady = tiers.some(t => t.milestone_reached && !t.claimed);
+                    if (allClaimed) { unlockBtn.disabled = true; unlockBtn.textContent = '🎉 All claimed this week!'; }
+                    else if (anyReady) { unlockBtn.disabled = false; unlockBtn.textContent = '🎁 Claim Your Mystery Gift!'; unlockBtn.dataset.claimAll = 'true'; }
+                    else { unlockBtn.disabled = true; unlockBtn.textContent = '🔒 Deposit to unlock next box'; }
 
                 } catch (err) {
                     console.error(err);
@@ -499,40 +151,25 @@
                 }
             }
 
-            // ---- Claim Box ----
             async function claimBox(tier, userId) {
                 try {
-                    const { data, error } = await supabaseClient
-                        .rpc('claim_mystery_box', { p_user_id: userId, p_tier: tier });
+                    const { data, error } = await supabaseClient.rpc('claim_mystery_box', { p_user_id: userId, p_tier: tier });
                     if (error) throw error;
-                    if (!data.success) {
-                        alert(data.message || 'Failed to claim.');
-                        return;
-                    }
+                    if (!data.success) { alert(data.message); return; }
                     alert('🎉 ' + data.message);
-                    loadMysteryBoxStatus();
-                } catch (err) {
-                    console.error(err);
-                    alert('Error claiming box.');
-                }
+                    loadStatus();
+                } catch (err) { console.error(err); alert('Error claiming box.'); }
             }
 
-            // ---- Claim All (Unlock Button) ----
             document.getElementById('unlockBtn').addEventListener('click', function() {
                 if (this.dataset.claimAll === 'true') {
-                    // Find the first unclaimed but reached box
-                    const claimBtns = document.querySelectorAll('.task-deposit-btn[data-claim="true"]');
-                    if (claimBtns.length > 0) {
-                        claimBtns[0].click();
-                    }
+                    const firstClaim = document.querySelector('.task-deposit-btn[data-claim="true"]');
+                    if (firstClaim) firstClaim.click();
                 }
             });
 
-            // ---- Init ----
-            loadMysteryBoxStatus();
-
+            loadStatus();
         })();
     </script>
-
 </body>
 </html>
