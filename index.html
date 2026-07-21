@@ -7,78 +7,115 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="supabaseClient.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, sans-serif;
-        }
+        /* ============================================================
+           PREMIUM FANTASY THEME – Wooden + Gold
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body {
-            background: #0a1628;
+            background: #0a0a0f;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 16px;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none;
+            z-index: 0;
         }
         .app-card {
-            background: #111d33;
-            border-radius: 28px;
-            padding: 32px 24px 28px;
+            max-width: 420px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
-            border: 1px solid #1a3a6b;
+            background: linear-gradient(160deg, #1a0e05, #2a1a0a, #1a0e05);
+            border-radius: 32px;
+            padding: 32px 24px 28px;
+            border: 2px solid #8B7355;
+            box-shadow: 0 0 60px rgba(245, 179, 66, 0.12),
+                        inset 0 0 60px rgba(245, 179, 66, 0.04),
+                        0 20px 60px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .app-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139,115,85,0.06) 2px, rgba(139,115,85,0.06) 4px);
+            pointer-events: none;
+        }
+        .app-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(245,179,66,0.04) 0%, transparent 70%);
+            animation: glowPulse 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes glowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
         .app-header {
             text-align: center;
             margin-bottom: 28px;
+            position: relative;
+            z-index: 2;
         }
         .app-header h1 {
             font-size: 28px;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 1px;
-        }
-        .app-header h1 span {
+            font-weight: 900;
             color: #f5b342;
+            text-shadow: 0 0 30px rgba(245, 179, 66, 0.25);
+            letter-spacing: 2px;
         }
+        .app-header h1 span { color: #ffd700; }
         .app-header p {
-            color: #a0b4c8;
+            color: #a0a0a0;
             font-size: 14px;
             margin-top: 4px;
+            font-weight: 300;
         }
         .tab-bar {
             display: flex;
-            background: #0a1628;
+            background: rgba(0,0,0,0.4);
             border-radius: 40px;
             padding: 4px;
             margin-bottom: 28px;
-            border: 1px solid #1a3a6b;
+            border: 1px solid #4a3a2a;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 2;
         }
         .tab-btn {
             flex: 1;
             border: none;
             background: transparent;
-            color: #4a6a8a;
+            color: #8a8a8a;
             font-size: 16px;
             font-weight: 600;
             padding: 10px 0;
             border-radius: 40px;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.3s ease;
         }
         .tab-btn.active {
-            background: #f5b342;
-            color: #0a1628;
-            box-shadow: 0 4px 14px rgba(245, 179, 66, 0.3);
+            background: linear-gradient(145deg, #f5b342, #d49a2a);
+            color: #0a0a0f;
+            box-shadow: 0 4px 20px rgba(245, 179, 66, 0.3);
+            transform: scale(1.02);
         }
-        .tab-btn:active {
-            transform: scale(0.96);
-        }
+        .tab-btn:active { transform: scale(0.95); }
         .form-container {
             position: relative;
             overflow: hidden;
+            z-index: 2;
         }
         .form-slide {
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -92,9 +129,7 @@
             transform: translateY(0);
             pointer-events: auto;
         }
-        .form-slide.hidden {
-            display: none !important;
-        }
+        .form-slide.hidden { display: none !important; }
         .form-group {
             margin-bottom: 18px;
             position: relative;
@@ -103,67 +138,73 @@
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #a0b4c8;
+            color: #c0b0a0;
             margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
         .form-group input {
             width: 100%;
             padding: 14px 16px;
-            background: #0a1628;
-            border: 1.5px solid #1a3a6b;
+            background: rgba(0,0,0,0.4);
+            border: 1.5px solid #4a3a2a;
             border-radius: 14px;
-            color: #ffffff;
+            color: #f0f0f0;
             font-size: 15px;
             outline: none;
-            transition: border 0.2s;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
         }
         .form-group input:focus {
             border-color: #f5b342;
+            box-shadow: 0 0 20px rgba(245, 179, 66, 0.15), inset 0 2px 8px rgba(0,0,0,0.4);
         }
-        .form-group input::placeholder {
-            color: #4a6a8a;
-            font-size: 14px;
-        }
+        .form-group input::placeholder { color: #5a5a5a; }
         .toggle-pwd {
             position: absolute;
             right: 16px;
             top: 44px;
             cursor: pointer;
-            color: #4a6a8a;
+            color: #5a5a5a;
             font-size: 18px;
             user-select: none;
         }
-        .toggle-pwd:hover {
-            color: #f5b342;
-        }
+        .toggle-pwd:hover { color: #f5b342; }
         .btn-primary {
             width: 100%;
             padding: 14px;
-            background: #f5b342;
-            border: none;
+            background: linear-gradient(145deg, #8B7355, #6b5a3a);
+            border: 2px solid #f5b342;
             border-radius: 40px;
-            color: #0a1628;
+            color: #f5b342;
             font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.3s ease;
             margin-top: 6px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(245, 179, 66, 0.15);
+            position: relative;
+            overflow: hidden;
         }
-        .btn-primary:active {
-            background: #d49a2a;
-            transform: scale(0.97);
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
         }
-        .btn-primary:disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
+        .btn-primary:hover::after { transform: translateX(100%); }
+        .btn-primary:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(245,179,66,0.3); }
+        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
         .btn-google {
             width: 100%;
             padding: 14px;
             background: #ffffff;
             border: none;
             border-radius: 40px;
-            color: #0a1628;
+            color: #0a0a0f;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -172,30 +213,28 @@
             justify-content: center;
             gap: 10px;
             margin-top: 12px;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        .btn-google:active {
-            transform: scale(0.97);
-        }
+        .btn-google:active { transform: scale(0.95); }
         .divider {
             display: flex;
             align-items: center;
             gap: 12px;
             margin: 18px 0 14px;
-            color: #4a6a8a;
+            color: #5a4a3a;
             font-size: 13px;
         }
-        .divider::before,
-        .divider::after {
+        .divider::before, .divider::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: #1a3a6b;
+            background: #4a3a2a;
         }
         .toggle-link {
             text-align: center;
             margin-top: 18px;
-            color: #a0b4c8;
+            color: #a0a0a0;
             font-size: 14px;
         }
         .toggle-link button {
@@ -203,13 +242,10 @@
             border: none;
             color: #f5b342;
             font-weight: 700;
-            font-size: 14px;
             cursor: pointer;
-            padding: 0 4px;
+            transition: all 0.3s;
         }
-        .toggle-link button:active {
-            opacity: 0.7;
-        }
+        .toggle-link button:hover { text-shadow: 0 0 20px rgba(245,179,66,0.4); }
         .forgot-link {
             text-align: right;
             margin-top: -10px;
@@ -218,21 +254,15 @@
         .forgot-link button {
             background: none;
             border: none;
-            color: #4a6a8a;
+            color: #5a4a3a;
             font-size: 13px;
             cursor: pointer;
             text-decoration: underline;
         }
-        .back-link {
-            text-align: center;
-            margin-top: 14px;
-        }
+        .back-link { text-align: center; margin-top: 14px; }
         .back-link button {
-            background: none;
-            border: none;
-            color: #a0b4c8;
-            font-size: 14px;
-            cursor: pointer;
+            background: none; border: none;
+            color: #a0a0a0; font-size: 14px; cursor: pointer;
         }
         .msg {
             text-align: center;
@@ -242,74 +272,41 @@
             margin-bottom: 12px;
             display: none;
         }
-        .msg.error {
-            display: block;
-            color: #f87171;
-            background: #1f0f12;
-            border: 1px solid #4a1a22;
-        }
-        .msg.success {
-            display: block;
-            color: #f5b342;
-            background: #1f1f0f;
-            border: 1px solid #4a3a1a;
-        }
-        .msg.info {
-            display: block;
-            color: #7dd3fc;
-            background: #0c1a24;
-            border: 1px solid #164e63;
-        }
+        .msg.error { display: block; color: #f87171; background: #1f0f12; border: 1px solid #4a1a22; }
+        .msg.success { display: block; color: #f5b342; background: #1f1f0f; border: 1px solid #4a3a1a; }
+        .msg.info { display: block; color: #7dd3fc; background: #0c1a24; border: 1px solid #164e63; }
         .privacy-wrap {
             text-align: center;
             margin-top: 22px;
             padding-top: 16px;
-            border-top: 1px solid #1a3a6b;
+            border-top: 1px solid #4a3a2a;
             display: flex;
             justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
         }
         .privacy-wrap a {
-            color: #4a6a8a;
+            color: #5a4a3a;
             font-size: 13px;
             text-decoration: none;
             cursor: pointer;
             transition: color 0.2s;
         }
-        .privacy-wrap a:hover,
-        .privacy-wrap a:active {
-            color: #f5b342;
-        }
-        .help-link-wrap {
-            text-align: center;
-            margin-top: 14px;
-        }
+        .privacy-wrap a:hover, .privacy-wrap a:active { color: #f5b342; }
+        .help-link-wrap { text-align: center; margin-top: 14px; }
         .help-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #0a1628;
-            border: 1px solid #1a3a6b;
-            color: #4a6a8a;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 9px 18px;
-            border-radius: 40px;
-            text-decoration: none;
-            transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #4a3a2a;
+            color: #8a7a6a;
+            font-size: 13px; font-weight: 600;
+            padding: 9px 18px; border-radius: 40px;
+            text-decoration: none; transition: all 0.2s;
         }
-        .help-link:active {
-            background: #1a3a6b;
-            color: #f5b342;
-        }
-        .help-link svg {
-            width: 15px;
-            height: 15px;
-            flex-shrink: 0;
-        }
+        .help-link:active { background: #4a3a2a; color: #f5b342; }
+        .help-link svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-        /* ----- TOAST ----- */
+        /* Toast */
         #toastContainer {
             position: fixed;
             top: 18px;
@@ -328,9 +325,9 @@
             pointer-events: auto;
             max-width: 380px;
             width: 100%;
-            background: #111d33;
+            background: #1a0e05;
             border: 1px solid #f5b342;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-radius: 16px;
             padding: 13px 16px;
             display: flex;
@@ -340,58 +337,27 @@
             transform: translateY(-16px) scale(0.96);
             transition: opacity 0.28s ease, transform 0.28s ease;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-        .toast.hide {
-            opacity: 0;
-            transform: translateY(-10px) scale(0.97);
-        }
+        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+        .toast.hide { opacity: 0; transform: translateY(-10px) scale(0.97); }
         .toast .toast-icon {
-            width: 34px;
-            height: 34px;
-            flex-shrink: 0;
-            background: rgba(245, 179, 66, 0.12);
+            width: 34px; height: 34px;
+            background: rgba(245,179,66,0.12);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
-        .toast .toast-icon svg {
-            width: 18px;
-            height: 18px;
-        }
-        .toast .toast-text {
-            flex: 1;
-        }
-        .toast .toast-title {
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-        .toast .toast-sub {
-            color: #a0b4c8;
-            font-size: 12.5px;
-            line-height: 1.4;
-        }
-        .toast.toast-error {
-            border-color: #f87171;
-        }
-        .toast.toast-error .toast-icon {
-            background: rgba(248, 113, 113, 0.12);
-        }
+        .toast .toast-icon svg { width: 18px; height: 18px; }
+        .toast .toast-text { flex: 1; }
+        .toast .toast-title { color: #ffffff; font-size: 14px; font-weight: 700; }
+        .toast .toast-sub { color: #a0a0a0; font-size: 12.5px; line-height: 1.4; }
+        .toast.toast-error { border-color: #f87171; }
+        .toast.toast-error .toast-icon { background: rgba(248,113,113,0.12); }
 
-        /* ----- PRIVACY MODAL ----- */
+        /* Privacy Modal */
         #privacyModal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
             backdrop-filter: blur(6px);
             z-index: 9999;
             align-items: center;
@@ -399,19 +365,17 @@
             padding: 20px;
             overflow-y: auto;
         }
-        #privacyModal.show {
-            display: flex;
-        }
+        #privacyModal.show { display: flex; }
         .privacy-modal-content {
-            background: #111d33;
-            border: 1px solid #1a3a6b;
+            background: linear-gradient(160deg, #1a0e05, #2a1a0a);
+            border: 2px solid #8B7355;
             border-radius: 28px;
             padding: 28px 24px;
             max-width: 500px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.8);
         }
         .privacy-modal-content .modal-header {
             display: flex;
@@ -420,31 +384,25 @@
             margin-bottom: 16px;
         }
         .privacy-modal-content .modal-header h2 {
-            color: #ffffff;
+            color: #f5b342;
             font-size: 22px;
             margin: 0;
         }
-        .privacy-modal-content .modal-header h2 span {
-            color: #f5b342;
-        }
         .privacy-modal-content .modal-close {
-            background: none;
-            border: none;
-            color: #4a6a8a;
+            background: none; border: none;
+            color: #5a4a3a;
             font-size: 28px;
             cursor: pointer;
             line-height: 1;
         }
-        .privacy-modal-content .modal-close:hover {
-            color: #f5b342;
-        }
+        .privacy-modal-content .modal-close:hover { color: #f5b342; }
         .privacy-modal-content .modal-body {
-            color: #a0b4c8;
+            color: #c0b0a0;
             font-size: 15px;
             line-height: 1.7;
         }
         .privacy-modal-content .modal-body h3 {
-            color: #ffffff;
+            color: #f0f0f0;
             margin-top: 18px;
             margin-bottom: 6px;
             font-size: 16px;
@@ -453,39 +411,22 @@
             padding-left: 20px;
             margin-bottom: 10px;
         }
-        .privacy-modal-content .modal-body ul li {
-            margin-bottom: 4px;
-        }
-        .privacy-modal-content .modal-body .highlight {
-            color: #f5b342;
-        }
-        .privacy-modal-content .modal-body a {
-            color: #f5b342;
-            text-decoration: none;
-        }
+        .privacy-modal-content .modal-body .highlight { color: #f5b342; }
+        .privacy-modal-content .modal-body a { color: #f5b342; text-decoration: none; }
         .privacy-modal-content .modal-close-btn {
             width: 100%;
             margin-top: 16px;
             padding: 12px;
-            background: #f5b342;
-            border: none;
+            background: linear-gradient(145deg, #8B7355, #6b5a3a);
+            border: 2px solid #f5b342;
             border-radius: 40px;
             font-weight: 700;
-            color: #0a1628;
+            color: #f5b342;
             font-size: 16px;
             cursor: pointer;
         }
-        .privacy-modal-content .modal-close-btn:active {
-            background: #d49a2a;
-        }
-        @media (max-width: 420px) {
-            .app-card {
-                padding: 20px 16px;
-            }
-            .privacy-modal-content {
-                padding: 20px 16px;
-            }
-        }
+        .privacy-modal-content .modal-close-btn:active { transform: scale(0.95); }
+        @media (max-width: 420px) { .app-card { padding: 20px 16px; } }
     </style>
 </head>
 <body>
@@ -522,13 +463,11 @@
                     <button type="button" id="gotoForgot">Forgot password?</button>
                 </div>
                 <button type="submit" class="btn-primary" id="loginBtn">Log In</button>
-
                 <div class="divider">or</div>
                 <button class="btn-google" id="googleLoginBtn">
                     <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                     Sign in with Google
                 </button>
-
                 <div class="toggle-link">
                     Don't have an account? <button type="button" id="gotoRegister">Register</button>
                 </div>
@@ -558,13 +497,11 @@
                     <input type="password" id="regConfirm" placeholder="Confirm password" required />
                 </div>
                 <button type="submit" class="btn-primary" id="registerBtn">Register</button>
-
                 <div class="divider">or</div>
                 <button class="btn-google" id="googleRegisterBtn">
                     <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                     Sign up with Google
                 </button>
-
                 <div class="toggle-link">
                     Already have an account? <button type="button" id="gotoLogin">Go login</button>
                 </div>
@@ -572,7 +509,7 @@
 
             <!-- FORGOT PASSWORD -->
             <div id="forgotForm" class="form-slide">
-                <p style="color:#a0b4c8; text-align:center; margin-bottom:18px; line-height:1.6;">
+                <p style="color:#a0a0a0; text-align:center; margin-bottom:18px; line-height:1.6;">
                     Enter your email address and we'll send you a link to reset your password.
                 </p>
                 <div class="form-group">
@@ -594,8 +531,8 @@
         <div class="help-link-wrap">
             <a href="https://t.me/vivapay009" target="_blank" class="help-link">
                 <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="120" cy="120" r="120" fill="#4a6a8a"/>
-                    <path d="M170 72L54 117c-8 3-8 8-1 10l30 9 12 37c1 4 3 5 6 5s5-1 7-3l17-16 35 26c6 4 11 2 12-6l22-104c2-9-4-13-11-10z" fill="#111d33"/>
+                    <circle cx="120" cy="120" r="120" fill="#5a4a3a"/>
+                    <path d="M170 72L54 117c-8 3-8 8-1 10l30 9 12 37c1 4 3 5 6 5s5-1 7-3l17-16 35 26c6 4 11 2 12-6l22-104c2-9-4-13-11-10z" fill="#1a0e05"/>
                 </svg>
                 Difficult to register? Get help
             </a>
@@ -606,7 +543,7 @@
     <div id="privacyModal">
         <div class="privacy-modal-content">
             <div class="modal-header">
-                <h2>Privacy <span>Policy</span></h2>
+                <h2>Privacy <span style="color:#f5b342;">Policy</span></h2>
                 <button class="modal-close" onclick="closePrivacyModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -636,7 +573,7 @@
                 <p>You can request access, correction, or deletion of your data by contacting us.</p>
                 <h3>7. Contact</h3>
                 <p>📱 Telegram: <a href="https://t.me/vivapay009" target="_blank">@vivapay009</a></p>
-                <p style="margin-top:16px; font-size:14px; color:#4a6a8a;">By using VIVI PAY, you agree to this Privacy Policy.</p>
+                <p style="margin-top:16px; font-size:14px; color:#5a4a3a;">By using VIVI PAY, you agree to this Privacy Policy.</p>
             </div>
             <button class="modal-close-btn" onclick="closePrivacyModal()">Close</button>
         </div>
@@ -675,14 +612,14 @@
                 type = type || 'success';
                 const toast = document.createElement('div');
                 toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
-                const iconSvg = type === 'error' ?
-                    '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>' :
-                    '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f5b342" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#f5b342" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                const iconSvg = type === 'error'
+                    ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>'
+                    : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f5b342" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#f5b342" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
                 toast.innerHTML =
                     '<div class="toast-icon">' + iconSvg + '</div>' +
                     '<div class="toast-text">' +
-                    '<div class="toast-title">' + title + '</div>' +
-                    (subtitle ? '<div class="toast-sub">' + subtitle + '</div>' : '') +
+                        '<div class="toast-title">' + title + '</div>' +
+                        (subtitle ? '<div class="toast-sub">' + subtitle + '</div>' : '') +
                     '</div>';
                 toastContainer.appendChild(toast);
                 requestAnimationFrame(() => toast.classList.add('show'));
@@ -707,18 +644,15 @@
                     f.classList.remove('active');
                     f.classList.add('hidden');
                 });
-
                 let targetForm = null;
                 if (name === 'login') targetForm = loginForm;
                 else if (name === 'register') targetForm = registerForm;
                 else if (name === 'forgot') targetForm = forgotForm;
-
                 if (targetForm) {
                     targetForm.classList.remove('hidden');
                     void targetForm.offsetWidth;
                     targetForm.classList.add('active');
                 }
-
                 if (name === 'login' || name === 'register') {
                     tabBar.classList.remove('hidden');
                     tabBtns.forEach(btn => {
@@ -735,7 +669,6 @@
                     showView(this.dataset.tab);
                 });
             });
-
             gotoRegister.addEventListener('click', () => showView('register'));
             gotoLogin.addEventListener('click', () => showView('login'));
             gotoForgot.addEventListener('click', () => showView('forgot'));
@@ -759,7 +692,6 @@
             document.getElementById('privacyModal').addEventListener('click', function(e) {
                 if (e.target === this) closePrivacyModal();
             });
-
             window.showTerms = function() {
                 showToast('Terms of Service', 'By using VIVI PAY you agree to our terms.', 'info');
             };
@@ -772,14 +704,11 @@
                 const referral = regReferral.value.trim();
                 const password = regPassword.value;
                 const confirm = regConfirm.value;
-
                 if (password.length < 6) { showMsg('Password must be at least 6 characters.', 'error'); return; }
                 if (password !== confirm) { showMsg('Passwords do not match.', 'error'); return; }
                 if (!phone) { showMsg('Please enter your phone number.', 'error'); return; }
-
                 this.disabled = true;
                 this.textContent = 'Registering…';
-
                 try {
                     const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
@@ -791,9 +720,7 @@
                             }
                         }
                     });
-
                     if (error) throw error;
-
                     if (data.user) {
                         const userId = data.user.id;
                         const { data: existing } = await supabaseClient
@@ -805,7 +732,6 @@
                             await supabaseClient.from('wallets').insert({ user_id: userId, balance: 0 });
                         }
                     }
-
                     showToast('Registration successful!', 'Please check your email to confirm your account.', 'success');
                     regEmail.value = '';
                     regPhone.value = '';
@@ -813,7 +739,6 @@
                     regPassword.value = '';
                     regConfirm.value = '';
                     showView('login');
-
                 } catch (err) {
                     console.error(err);
                     showMsg(err.message || 'Registration failed. Please try again.', 'error');
@@ -829,26 +754,19 @@
                 e.preventDefault();
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
-
                 if (!email || !password) { showMsg('Please fill in all fields.', 'error'); return; }
-
                 this.disabled = true;
                 this.textContent = 'Logging in…';
-
                 try {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
                         email: email,
                         password: password,
                     });
-
                     if (error) throw error;
-
                     if (data.user) {
-                        // Set flag to show mystery popup on dashboard
                         localStorage.setItem('show_mystery_popup_' + data.user.id, 'true');
                         window.location.href = 'dashboard.html';
                     }
-
                 } catch (err) {
                     console.error(err);
                     showMsg(err.message || 'Login failed. Check your credentials.', 'error');
@@ -859,21 +777,16 @@
                 }
             });
 
-            // ---- GOOGLE LOGIN (FIXED) ----
+            // ---- GOOGLE LOGIN ----
             async function signInWithGoogle() {
                 try {
-                    // Get the current URL without any query params
                     const baseUrl = window.location.origin;
                     const redirectUrl = baseUrl + '/dashboard.html';
-
                     const { data, error } = await supabaseClient.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
                             redirectTo: redirectUrl,
-                            queryParams: {
-                                access_type: 'offline',
-                                prompt: 'consent',
-                            }
+                            queryParams: { access_type: 'offline', prompt: 'consent' }
                         }
                     });
                     if (error) {
@@ -881,13 +794,11 @@
                         showToast('Google login failed', error.message || 'Please try again.', 'error');
                         return;
                     }
-                    // The user will be redirected to Google, then back to redirectUrl
                 } catch (err) {
                     console.error('Google login error:', err);
                     showToast('Google login failed', err.message || 'Please try again.', 'error');
                 }
             }
-
             document.getElementById('googleLoginBtn').addEventListener('click', signInWithGoogle);
             document.getElementById('googleRegisterBtn').addEventListener('click', signInWithGoogle);
 
@@ -896,21 +807,16 @@
                 e.preventDefault();
                 const email = forgotEmail.value.trim();
                 if (!email) { showMsg('Please enter your email.', 'error'); return; }
-
                 this.disabled = true;
                 this.textContent = 'Sending…';
-
                 try {
                     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                         redirectTo: window.location.origin + '/reset-password.html'
                     });
-
                     if (error) throw error;
-
                     showToast('Reset link sent!', 'Check your email for the password reset link.', 'success');
                     forgotEmail.value = '';
                     showView('login');
-
                 } catch (err) {
                     console.error(err);
                     showMsg(err.message || 'Could not send reset link.', 'error');
@@ -930,11 +836,8 @@
                     }
                 } catch (_) { /* ignore */ }
             })();
-
             showView('login');
-
         })();
     </script>
-
 </body>
 </html>
