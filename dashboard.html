@@ -8,13 +8,7 @@
   <script src="supabaseClient.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: #f5f7fa; min-height: 100vh; display: flex; justify-content: center; padding: 12px 12px 80px; }
     .app-container {
       width: 100%; max-width: 480px; background: #ffffff; border-radius: 32px;
@@ -70,10 +64,10 @@
     .mystery-progress-box:hover { border-color: #c9a84c; transform: translateY(-2px); }
     .mystery-progress-box .title { color: #1a2a4a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; }
     .mystery-progress-box .title span { color: #c9a84c; }
-    .mystery-progress-box .subtitle { color: #4a5a6a; font-size: 13px; margin-top: 2px; }
+    .mystery-progress-box .subtitle { color: #4a5a6a; font-size: 14px; font-weight: 600; margin-top: 2px; }
     .mystery-progress-box .progress-track { margin-top: 12px; height: 8px; background: #e0e4e8; border-radius: 8px; overflow: hidden; }
     .mystery-progress-box .progress-fill { height: 100%; background: #c9a84c; border-radius: 8px; width: 0%; transition: width 0.6s ease; }
-    .mystery-progress-box .milestones { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #8a9aaa; }
+    .mystery-progress-box .milestones { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; font-weight: 600; color: #8a9aaa; }
     .mystery-progress-box .milestones .reached { color: #c9a84c; font-weight: 700; }
     .mystery-progress-box .milestones .completed { color: #2e7d32; }
 
@@ -86,6 +80,13 @@
     .referral-preview .title span { color: #c9a84c; }
     .referral-preview .stats { display: flex; justify-content: space-between; margin-top: 8px; color: #4a5a6a; font-size: 13px; }
     .referral-preview .stats .gold { color: #c9a84c; font-weight: 600; }
+    .referral-code-box {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+      background: #fff; padding: 6px 12px; border-radius: 40px; border: 1px solid #e0e4e8;
+    }
+    .referral-code-box .code { font-size: 14px; font-weight: 700; color: #1a2a4a; flex: 1; }
+    .referral-code-box .copy-btn { background: #1a2a4a; border: none; border-radius: 40px; padding: 4px 12px; font-weight: 600; color: #fff; font-size: 12px; cursor: pointer; }
+    .referral-code-box .copy-btn:active { background: #0f1d3a; }
 
     .notice-box { background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
     .notice-box:active { background: #e8eaf0; transform: scale(0.98); }
@@ -152,24 +153,48 @@
     .withdraw-panel { display: none; }
     .withdraw-panel.active { display: block; }
 
+    /* MODAL with OK button */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
       display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px;
     }
     .modal-overlay.show { display: flex; }
     .modal-box {
-      background: #fff; border-radius: 28px; padding: 28px 24px; max-width: 400px; width: 100%;
-      border: 1px solid #e0e4e8; box-shadow: 0 16px 48px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
+      background: #ffffff; border-radius: 28px; padding: 28px 24px; max-width: 400px; width: 100%;
+      border: 1px solid #e0e4e8; box-shadow: 0 16px 48px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;
     }
     .modal-box .modal-title { color: #1a2a4a; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
     .modal-box .modal-body { color: #4a5a6a; font-size: 15px; margin-bottom: 20px; line-height: 1.6; }
     .modal-box .modal-body .highlight { color: #c9a84c; font-weight: 600; }
-    .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
-    .modal-box .modal-actions .btn-confirm { background: #1a2a4a; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #fff; cursor: pointer; font-size: 15px; }
-    .modal-box .modal-actions .btn-confirm:active { background: #0f1d3a; }
-    .modal-box .modal-actions .btn-cancel { background: #e0e4e8; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #1a2a4a; cursor: pointer; font-size: 15px; }
-    .modal-box .modal-actions .btn-cancel:active { background: #c8d0d8; }
+    .modal-actions {
+      display: flex; gap: 12px; justify-content: center;
+    }
+    .modal-actions .btn-ok {
+      background: #1a2a4a; border: none; border-radius: 40px; padding: 10px 40px; font-weight: 700; color: #fff; cursor: pointer; font-size: 15px;
+    }
+    .modal-actions .btn-ok:active { background: #0f1d3a; }
+    .modal-actions .btn-cancel { background: #e0e4e8; border: none; border-radius: 40px; padding: 10px 28px; font-weight: 700; color: #1a2a4a; cursor: pointer; font-size: 15px; }
+    .modal-actions .btn-cancel:active { background: #c8d0d8; }
+
+    /* TOAST with dark background */
+    #toastContainer {
+      position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 0 16px;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto; max-width: 400px; width: 100%; background: #1a2a4a; border: 1px solid #c9a84c;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3); border-radius: 16px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(-16px) scale(0.96);
+      transition: opacity 0.3s, transform 0.3s;
+      color: #fff;
+    }
+    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+    .toast .toast-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .toast .toast-title { font-weight: 700; font-size: 14px; }
+    .toast .toast-sub { font-size: 12.5px; opacity: 0.9; }
+    .toast.toast-error { border-color: #f87171; background: #2a1515; }
 
     #mysteryPopup {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -214,25 +239,6 @@
     .bottom-nav .nav-item:active { transform: scale(0.9); }
     .bottom-nav .nav-item.active .icon { color: #c9a84c; }
 
-    /* Toast */
-    #toastContainer {
-      position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 0 16px;
-      pointer-events: none;
-    }
-    .toast {
-      pointer-events: auto; max-width: 400px; width: 100%; background: #fff; border: 1px solid #e0e4e8;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-radius: 16px; padding: 14px 16px;
-      display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(-16px) scale(0.96);
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
-    .toast .toast-icon { width: 34px; height: 34px; background: #e8f0fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .toast .toast-title { color: #1a2a4a; font-size: 14px; font-weight: 700; }
-    .toast .toast-sub { color: #4a5a6a; font-size: 12.5px; }
-    .toast.toast-error { border-color: #f5c6c6; }
-    .toast.toast-error .toast-icon { background: #fde8e8; }
-
     @media (max-width: 480px) { .app-container { padding: 14px 12px 16px; border-radius: 20px; } .token-card .left .amount { font-size: 26px; } }
   </style>
 </head>
@@ -267,6 +273,7 @@
         <div class="qa-btn" id="qaWithdraw">💸 Withdraw</div>
       </div>
 
+      <!-- Mystery Box Progress -->
       <div class="mystery-progress-box" id="mysteryPreview">
         <div class="title">🎁 Mystery Box Progress <span>View Details →</span></div>
         <div class="subtitle" id="mysterySub">Deposit ₹500 to unlock Silver Mystery Box</div>
@@ -280,9 +287,14 @@
         </div>
       </div>
 
+      <!-- Referral Preview with Code -->
       <div class="referral-preview" id="referralPreview">
         <div class="title">👥 Referral Program <span>View Full →</span></div>
         <div class="stats"><span>💰 Commission: <span class="gold" id="refCommission">0.00</span></span><span>👤 Referred: <span class="gold" id="refCount">0</span></span></div>
+        <div class="referral-code-box">
+          <span class="code" id="refCodeDisplay">Loading...</span>
+          <button class="copy-btn" id="copyRefCodeBtn">Copy</button>
+        </div>
       </div>
 
       <div class="notice-box" id="noticeOfficial"><div class="title">📢 Official Notice <span class="more">More ></span></div><div class="desc" id="noticeDesc">New investment plans available with 8% daily profit.</div></div>
@@ -316,7 +328,7 @@
         </div>
         <div id="depositExtraFields" style="display:none;">
           <div class="field"><label>UTR ID (mandatory after payment)</label><input type="text" id="depositUtr" placeholder="Enter UTR number" required /></div>
-          <div class="field"><label>Payment Screenshot (optional)</label><input type="file" id="depositScreenshot" accept="image/*" /></div>
+          <div class="field"><label>Payment Screenshot (mandatory)</label><input type="file" id="depositScreenshot" accept="image/*" required /></div>
         </div>
         <div class="warning-box" id="warningBox" style="display:none;">
           <strong>⚠️ WARNING:</strong> If you didn't make the payment and still submit a request, you may get banned.
@@ -395,14 +407,14 @@
     </div>
   </div>
 
-  <!-- MODAL -->
+  <!-- MODAL (for Confirm, Alert, Notices) -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
       <div class="modal-title" id="modalTitle">Confirm</div>
       <div class="modal-body" id="modalBody">Are you sure?</div>
       <div class="modal-actions">
-        <button class="btn-cancel" id="modalCancel">Cancel</button>
-        <button class="btn-confirm" id="modalConfirm">Confirm</button>
+        <button class="btn-cancel" id="modalCancel" style="display:none;">Cancel</button>
+        <button class="btn-ok" id="modalOkBtn">OK</button>
       </div>
     </div>
   </div>
@@ -424,18 +436,53 @@
       const modalOverlay = document.getElementById('modalOverlay');
       const modalTitle = document.getElementById('modalTitle');
       const modalBody = document.getElementById('modalBody');
-      const modalConfirm = document.getElementById('modalConfirm');
+      const modalOkBtn = document.getElementById('modalOkBtn');
       const modalCancel = document.getElementById('modalCancel');
       let modalResolve = null;
 
+      // ---- Show modal with OK button only (alert) ----
+      function showAlertModal(title, message) {
+        return new Promise((resolve) => {
+          modalTitle.textContent = title;
+          modalBody.innerHTML = message;
+          modalOkBtn.textContent = 'OK';
+          modalCancel.style.display = 'none';
+          modalOverlay.classList.add('show');
+          modalResolve = resolve;
+        });
+      }
+
+      // ---- Show modal with Cancel/Confirm (confirmation) ----
+      function showConfirmModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
+        return new Promise((resolve) => {
+          modalTitle.textContent = title;
+          modalBody.innerHTML = message;
+          modalOkBtn.textContent = confirmText;
+          modalCancel.style.display = 'inline-block';
+          modalCancel.textContent = cancelText;
+          modalOverlay.classList.add('show');
+          modalResolve = resolve;
+        });
+      }
+
+      modalOkBtn.addEventListener('click', () => {
+        modalOverlay.classList.remove('show');
+        if (modalResolve) modalResolve(true);
+      });
+      modalCancel.addEventListener('click', () => {
+        modalOverlay.classList.remove('show');
+        if (modalResolve) modalResolve(false);
+      });
+
+      // ---- Toast ----
       function showToast(title, subtitle, type = 'success') {
         const container = document.getElementById('toastContainer');
         if (!container) return;
         const toast = document.createElement('div');
         toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
         const iconSvg = type === 'error'
-          ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#d32f2f" stroke-width="2"/><path d="M12 8v5" stroke="#d32f2f" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#d32f2f"/></svg>'
-          : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#1a2a4a" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#1a2a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f87171" stroke-width="2"/><path d="M12 8v5" stroke="#f87171" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="#f87171"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#c9a84c" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
         toast.innerHTML =
           '<div class="toast-icon">' + iconSvg + '</div>' +
           '<div class="toast-text"><div class="toast-title">' + title + '</div>' +
@@ -446,27 +493,8 @@
           toast.classList.remove('show');
           toast.classList.add('hide');
           setTimeout(() => toast.remove(), 300);
-        }, 4200);
+        }, 3500);
       }
-
-      function showModal(title, message, confirmText = 'Confirm', cancelText = 'Cancel') {
-        return new Promise((resolve) => {
-          modalTitle.textContent = title;
-          modalBody.innerHTML = message;
-          modalConfirm.textContent = confirmText;
-          modalCancel.textContent = cancelText;
-          modalOverlay.classList.add('show');
-          modalResolve = resolve;
-        });
-      }
-      modalCancel.addEventListener('click', () => {
-        modalOverlay.classList.remove('show');
-        if (modalResolve) modalResolve(false);
-      });
-      modalConfirm.addEventListener('click', () => {
-        modalOverlay.classList.remove('show');
-        if (modalResolve) modalResolve(true);
-      });
 
       // ---- switch tab ----
       function switchTab(tabId) {
@@ -516,6 +544,24 @@
         window.location.href = 'index.html';
       });
 
+      // ---- Copy referral code ----
+      document.getElementById('copyRefCodeBtn').addEventListener('click', function() {
+        const code = document.getElementById('refCodeDisplay').textContent;
+        if (code && code !== 'Loading...') {
+          navigator.clipboard.writeText(code).then(() => {
+            showToast('Copied!', 'Referral code copied.', 'success');
+          }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+            showToast('Copied!', 'Referral code copied.', 'success');
+          });
+        }
+      });
+
       function formatDate(iso) {
         if (!iso) return '';
         const d = new Date(iso);
@@ -535,6 +581,9 @@
           const userId = user.id.slice(0, 8);
           document.getElementById('homeUserId').textContent = userId;
           document.getElementById('mineUserId').textContent = userId;
+
+          // Show referral code
+          document.getElementById('refCodeDisplay').textContent = userId;
 
           const { data: wallet } = await supabaseClient
             .from('wallets')
@@ -667,7 +716,7 @@
 
       async function handleInvestBuy(pkgId, price, name, profitPercent) {
         if (!currentUser) {
-          showToast('Login Required', 'Please login first.', 'error');
+          showAlertModal('Login Required', 'Please login first.');
           return;
         }
         const dailyProfit = price * profitPercent / 100;
@@ -678,18 +727,18 @@
           Daily Profit: ₹${dailyProfit.toFixed(2)} (${profitPercent}%)<br/>
           Total profit (30 days): <span class="highlight">₹${totalProfit30.toFixed(2)}</span>
         `;
-        const confirmed = await showModal('Confirm Purchase', message);
+        const confirmed = await showConfirmModal('Confirm Purchase', message);
         if (!confirmed) return;
 
         try {
           const { data, error } = await supabaseClient.rpc('purchase_investment', { p_package_id: pkgId });
           if (error) {
             console.error('RPC error:', error);
-            showToast('Purchase Failed', error.message || 'Please try again.', 'error');
+            showAlertModal('Purchase Failed', error.message || 'Please try again.');
             return;
           }
           if (data && data.success === false) {
-            showToast('Purchase Failed', data.message || 'Please deposit first.', 'error');
+            showAlertModal('Purchase Failed', data.message || 'Please deposit first.');
             if (data.message && data.message.includes('Insufficient balance')) {
               switchTab('deposit');
             }
@@ -701,11 +750,11 @@
             loadPackages();
             loadActiveInvestments();
           } else {
-            showToast('Purchase Failed', 'Unknown error occurred.', 'error');
+            showAlertModal('Purchase Failed', 'Unknown error occurred.');
           }
         } catch (err) {
           console.error(err);
-          showToast('Purchase Failed', err.message || 'Please try again.', 'error');
+          showAlertModal('Purchase Failed', err.message || 'Please try again.');
         }
       }
 
@@ -713,7 +762,7 @@
       document.getElementById('generateQRBtn').addEventListener('click', function() {
         const amount = document.getElementById('depositAmount').value;
         if (!amount || parseFloat(amount) < 200) {
-          showToast('Invalid Amount', 'Minimum deposit is ₹200.', 'error');
+          showAlertModal('Invalid Amount', 'Minimum deposit is ₹200.');
           return;
         }
         const upiId = 'paramjeet201@fam';
@@ -744,7 +793,7 @@
             document.getElementById('depositExtraFields').style.display = 'none';
             document.getElementById('warningBox').style.display = 'none';
             document.getElementById('depositSubmitBtn').style.display = 'none';
-            showToast('QR Expired', 'Please generate a new QR code.', 'error');
+            showAlertModal('QR Expired', 'Please generate a new QR code.');
           }
         }, 1000);
 
@@ -798,29 +847,32 @@
         const utr = document.getElementById('depositUtr').value.trim();
         const screenshot = document.getElementById('depositScreenshot').files[0];
 
-        if (!amount || parseFloat(amount) < 200) { showToast('Invalid Amount', 'Minimum deposit is ₹200.', 'error'); return; }
-        if (!utr) { showToast('UTR Required', 'Please enter UTR ID.', 'error'); return; }
-        if (!currentUser) { showToast('Login Required', 'Please login.', 'error'); return; }
+        if (!amount || parseFloat(amount) < 200) { showAlertModal('Invalid Amount', 'Minimum deposit is ₹200.'); return; }
+        if (!utr) { showAlertModal('UTR Required', 'Please enter UTR ID.'); return; }
+        if (!screenshot) { showAlertModal('Screenshot Required', 'Please upload a payment screenshot.'); return; }
+        if (!currentUser) { showAlertModal('Login Required', 'Please login.'); return; }
 
         this.disabled = true;
         this.textContent = 'Submitting...';
 
         try {
           let screenshotUrl = null;
-          if (screenshot) {
-            const fileExt = screenshot.name.split('.').pop();
-            const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
-            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+          const fileExt = screenshot.name.split('.').pop();
+          const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            .from('deposit-proofs')
+            .upload(fileName, screenshot);
+          if (uploadError) {
+            console.warn('Screenshot upload failed:', uploadError);
+            showAlertModal('Upload Failed', 'Failed to upload screenshot. Please try again.');
+            this.disabled = false;
+            this.textContent = 'Submit Deposit Request';
+            return;
+          } else {
+            const { data: urlData } = supabaseClient.storage
               .from('deposit-proofs')
-              .upload(fileName, screenshot);
-            if (uploadError) {
-              console.warn('Screenshot upload failed:', uploadError);
-            } else {
-              const { data: urlData } = supabaseClient.storage
-                .from('deposit-proofs')
-                .getPublicUrl(fileName);
-              screenshotUrl = urlData.publicUrl;
-            }
+              .getPublicUrl(fileName);
+            screenshotUrl = urlData.publicUrl;
           }
 
           const { error } = await supabaseClient
@@ -847,7 +899,7 @@
           loadDepositHistory();
         } catch (err) {
           console.error(err);
-          showToast('Submission Failed', err.message || 'Please try again.', 'error');
+          showAlertModal('Submission Failed', err.message || 'Please try again.');
         } finally {
           this.disabled = false;
           this.textContent = 'Submit Deposit Request';
@@ -923,8 +975,8 @@
       }
 
       async function submitWithdrawal(amount, data) {
-        if (!amount || parseFloat(amount) < 500) { showToast('Invalid Amount', 'Minimum withdrawal is ₹500.', 'error'); return; }
-        if (!currentUser) { showToast('Login Required', 'Please login.', 'error'); return; }
+        if (!amount || parseFloat(amount) < 500) { showAlertModal('Invalid Amount', 'Minimum withdrawal is ₹500.'); return; }
+        if (!currentUser) { showAlertModal('Login Required', 'Please login.'); return; }
         const { data: wallet } = await supabaseClient
           .from('wallets')
           .select('balance')
@@ -932,15 +984,14 @@
           .maybeSingle();
         const bal = wallet ? parseFloat(wallet.balance) : 0;
         if (parseFloat(amount) > bal) {
-          showToast('Insufficient Balance', 'You have ₹' + bal.toFixed(2), 'error');
+          showAlertModal('Insufficient Balance', 'You have ₹' + bal.toFixed(2));
           return;
         }
-        const confirmed = await showModal('Confirm Withdrawal',
+        const confirmed = await showConfirmModal('Confirm Withdrawal',
           `Amount: ₹${amount}<br/>Please confirm your withdrawal request.`);
         if (!confirmed) return;
 
         try {
-          // For bank withdrawal, we don't send upi_id – it will be null
           const { error } = await supabaseClient
             .from('withdrawal_requests')
             .insert({
@@ -955,14 +1006,14 @@
           loadDashboard();
         } catch (err) {
           console.error(err);
-          showToast('Submission Failed', err.message || 'Please try again.', 'error');
+          showAlertModal('Submission Failed', err.message || 'Please try again.');
         }
       }
 
       document.getElementById('withdrawUPIBtn').addEventListener('click', function() {
         const amount = document.getElementById('withdrawAmountUPI').value;
         const upi = document.getElementById('withdrawUpi').value.trim();
-        if (!upi) { showToast('UPI Required', 'Please enter your UPI ID.', 'error'); return; }
+        if (!upi) { showAlertModal('UPI Required', 'Please enter your UPI ID.'); return; }
         submitWithdrawal(amount, { upi_id: upi });
       });
 
@@ -971,9 +1022,9 @@
         const name = document.getElementById('withdrawBankName').value.trim();
         const account = document.getElementById('withdrawAccountNumber').value.trim();
         const ifsc = document.getElementById('withdrawIfsc').value.trim();
-        if (!name) { showToast('Name Required', 'Please enter account holder name.', 'error'); return; }
-        if (!account) { showToast('Account Number Required', 'Please enter account number.', 'error'); return; }
-        if (!ifsc) { showToast('IFSC Required', 'Please enter IFSC code.', 'error'); return; }
+        if (!name) { showAlertModal('Name Required', 'Please enter account holder name.'); return; }
+        if (!account) { showAlertModal('Account Number Required', 'Please enter account number.'); return; }
+        if (!ifsc) { showAlertModal('IFSC Required', 'Please enter IFSC code.'); return; }
         submitWithdrawal(amount, {
           account_holder: name,
           account_number: account,
@@ -1025,7 +1076,7 @@
       }
 
       async function handleSellInvestment(invId) {
-        const confirmed = await showModal('Sell Investment', 'Are you sure you want to sell this investment? You will get principal + profit.');
+        const confirmed = await showConfirmModal('Sell Investment', 'Are you sure you want to sell this investment? You will get principal + profit.');
         if (!confirmed) return;
 
         try {
@@ -1036,11 +1087,11 @@
             loadDashboard();
             loadActiveInvestments();
           } else {
-            showToast('Sell Failed', data?.message || 'Failed to sell.', 'error');
+            showAlertModal('Sell Failed', data?.message || 'Failed to sell.');
           }
         } catch (err) {
           console.error(err);
-          showToast('Sell Failed', err.message || 'Failed to sell investment.', 'error');
+          showAlertModal('Sell Failed', err.message || 'Failed to sell investment.');
         }
       }
 
@@ -1050,7 +1101,7 @@
       document.getElementById('mineModifyPassword').addEventListener('click', async function() {
         if (!currentUser) return;
         const newPass = prompt('Enter new password (min 6 chars):');
-        if (!newPass || newPass.length < 6) { showToast('Invalid Password', 'Password must be at least 6 characters.', 'error'); return; }
+        if (!newPass || newPass.length < 6) { showAlertModal('Invalid Password', 'Password must be at least 6 characters.'); return; }
         try {
           const { error } = await supabaseClient.auth.updateUser({ password: newPass });
           if (error) throw error;
@@ -1059,11 +1110,11 @@
           window.location.href = 'index.html';
         } catch (err) {
           console.error(err);
-          showToast('Update Failed', err.message || 'Failed to update password.', 'error');
+          showAlertModal('Update Failed', err.message || 'Failed to update password.');
         }
       });
 
-      // ---- Notices (now using toast) ----
+      // ---- Notices (now use modal) ----
       const notices = [
         "🌟 VIVI PAY is the most trusted investment platform. Start earning 8% daily profit now!",
         "💎 Invest in our premium packages and watch your wealth grow every single day.",
@@ -1079,11 +1130,11 @@
 
       document.getElementById('noticeOfficial').addEventListener('click', function() {
         const msg = notices.join('\n\n');
-        showToast('Official Notice', msg, 'info');
+        showAlertModal('📢 Official Notice', msg);
       });
       document.getElementById('noticeNews').addEventListener('click', function() {
         const msg = news.join('\n\n');
-        showToast('News', msg, 'info');
+        showAlertModal('📰 News', msg);
       });
 
       // ---- Mystery Popup Logic ----
@@ -1148,7 +1199,7 @@
             .rpc('claim_mystery_box', { p_user_id: currentUser.id, p_tier: tier });
           if (error) throw error;
           if (!data.success) {
-            showToast('Claim Failed', data.message || 'Failed to claim.', 'error');
+            showAlertModal('Claim Failed', data.message || 'Failed to claim.');
             closeMysteryPopup();
             return;
           }
@@ -1157,7 +1208,7 @@
           loadDashboard();
         } catch (err) {
           console.error(err);
-          showToast('Claim Failed', err.message || 'Error claiming box.', 'error');
+          showAlertModal('Claim Failed', err.message || 'Error claiming box.');
           closeMysteryPopup();
         }
       });
