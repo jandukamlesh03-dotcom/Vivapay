@@ -8,7 +8,13 @@
   <script src="supabaseClient.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
     body { background: #f5f7fa; min-height: 100vh; display: flex; justify-content: center; padding: 12px 12px 80px; }
     .app-container {
       width: 100%; max-width: 480px; background: #ffffff; border-radius: 32px;
@@ -81,8 +87,8 @@
     .referral-preview .stats { display: flex; justify-content: space-between; margin-top: 8px; color: #4a5a6a; font-size: 13px; }
     .referral-preview .stats .gold { color: #c9a84c; font-weight: 600; }
 
-    .notice-box { background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8; margin-bottom: 12px; cursor: pointer; }
-    .notice-box:hover { border-color: #c9a84c; }
+    .notice-box { background: #f5f7fa; border-radius: 16px; padding: 14px 16px; border: 1px solid #e0e4e8; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
+    .notice-box:active { background: #e8eaf0; transform: scale(0.98); }
     .notice-box .title { color: #1a2a4a; font-weight: 600; font-size: 15px; }
     .notice-box .desc { color: #4a5a6a; font-size: 13px; margin-top: 4px; }
     .notice-box .more { color: #c9a84c; font-size: 13px; float: right; }
@@ -208,10 +214,31 @@
     .bottom-nav .nav-item:active { transform: scale(0.9); }
     .bottom-nav .nav-item.active .icon { color: #c9a84c; }
 
+    /* Toast */
+    #toastContainer {
+      position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 0 16px;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto; max-width: 400px; width: 100%; background: #fff; border: 1px solid #e0e4e8;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-radius: 16px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateY(-16px) scale(0.96);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+    .toast .toast-icon { width: 34px; height: 34px; background: #e8f0fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .toast .toast-title { color: #1a2a4a; font-size: 14px; font-weight: 700; }
+    .toast .toast-sub { color: #4a5a6a; font-size: 12.5px; }
+    .toast.toast-error { border-color: #f5c6c6; }
+    .toast.toast-error .toast-icon { background: #fde8e8; }
+
     @media (max-width: 480px) { .app-container { padding: 14px 12px 16px; border-radius: 20px; } .token-card .left .amount { font-size: 26px; } }
   </style>
 </head>
 <body>
+
+  <div id="toastContainer"></div>
 
   <div class="app-container" id="app">
     <!-- HOME -->
@@ -401,9 +428,9 @@
       const modalCancel = document.getElementById('modalCancel');
       let modalResolve = null;
 
-      // ---- Toast system (already exists in the HTML but we'll re-declare it) ----
       function showToast(title, subtitle, type = 'success') {
-        const container = document.getElementById('toastContainer') || document.body;
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
         const toast = document.createElement('div');
         toast.className = 'toast' + (type === 'error' ? ' toast-error' : '');
         const iconSvg = type === 'error'
@@ -639,9 +666,9 @@
       }
 
       async function handleInvestBuy(pkgId, price, name, profitPercent) {
-        if (!currentUser) { 
+        if (!currentUser) {
           showToast('Login Required', 'Please login first.', 'error');
-          return; 
+          return;
         }
         const dailyProfit = price * profitPercent / 100;
         const totalProfit30 = dailyProfit * 30;
@@ -913,6 +940,7 @@
         if (!confirmed) return;
 
         try {
+          // For bank withdrawal, we don't send upi_id – it will be null
           const { error } = await supabaseClient
             .from('withdrawal_requests')
             .insert({
@@ -1035,7 +1063,7 @@
         }
       });
 
-      // ---- Notices ----
+      // ---- Notices (now using toast) ----
       const notices = [
         "🌟 VIVI PAY is the most trusted investment platform. Start earning 8% daily profit now!",
         "💎 Invest in our premium packages and watch your wealth grow every single day.",
