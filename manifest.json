@@ -1,0 +1,21 @@
+{
+  "name": "VIVI PAY",
+  "short_name": "VIVI PAY",
+  "description": "Invest, Earn, Grow with 8% daily profit",
+  "start_url": "/dashboard.html",
+  "display": "standalone",
+  "background_color": "#1a2a4a",
+  "theme_color": "#1a2a4a",
+  "icons": [
+    {
+      "src": "logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
