@@ -1751,7 +1751,17 @@
                 localStorage.setItem('mystery_popup_last_' + currentUser.id, today);
                 closeMysteryPopup();
             });
-
+// ---- Pre-fill deposit amount from mystery box ----
+const prefillAmount = sessionStorage.getItem('prefill_deposit');
+if (prefillAmount) {
+    const depositInput = document.getElementById('depositAmount');
+    if (depositInput) {
+        depositInput.value = prefillAmount;
+        // Optionally trigger QR generation automatically
+        document.getElementById('generateQRBtn').click();
+    }
+    sessionStorage.removeItem('prefill_deposit');
+}
             // ---- Init ----
             (async function init() {
                 await loadDashboard();
