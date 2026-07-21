@@ -3,424 +3,73 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Mystery Box – VIVI PAY</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="supabaseClient.js"></script>
-    <style>
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: system-ui, sans-serif;
-        }
-        body {
-            background: #0a1628;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 20px 16px 40px;
-        }
-        .container {
-            max-width: 420px;
-            width: 100%;
-            background: linear-gradient(145deg, #1a0e05, #2a1a0a);
-            border-radius: 32px;
-            padding: 24px 16px 28px;
-            border: 2px solid #f5b342;
-            box-shadow: 0 0 60px rgba(245, 179, 66, 0.2), inset 0 0 60px rgba(245, 179, 66, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle at center, rgba(245,179,66,0.03) 0%, transparent 70%);
-            animation: glowPulse 6s ease-in-out infinite;
-        }
-        @keyframes glowPulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 1; }
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(245, 179, 66, 0.3);
-            position: relative;
-            z-index: 2;
-        }
-        .header .title {
-            font-size: 28px;
-            font-weight: 900;
-            color: #f5b342;
-            text-shadow: 0 0 30px rgba(245, 179, 66, 0.5);
-            letter-spacing: 2px;
-        }
-        .header .back-btn {
-            background: none; border: none;
-            color: #a0b4c8;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .header .back-btn:active { color: #f5b342; }
-
-        .info-box {
-            background: rgba(0,0,0,0.4);
-            border-radius: 16px;
-            padding: 14px 16px;
-            border: 1px solid rgba(245, 179, 66, 0.2);
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
-        }
-        .info-box .label { color: #a0b4c8; font-size: 14px; }
-        .info-box .value { color: #f5b342; font-size: 22px; font-weight: 700; margin-top: 2px; }
-
-        /* Progress line */
-        .progress-container {
-            position: relative;
-            margin: 20px 0 30px;
-            padding: 0 10px;
-            z-index: 2;
-        }
-        .progress-line {
-            position: relative;
-            height: 8px;
-            background: #2a1a0a;
-            border-radius: 8px;
-            border: 1px solid rgba(245, 179, 66, 0.2);
-            overflow: visible;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f5b342, #ff6b35, #e74c3c);
-            border-radius: 8px;
-            width: 0%;
-            transition: width 0.8s ease;
-            box-shadow: 0 0 20px rgba(245, 179, 66, 0.5);
-        }
-        .milestone-nodes {
-            display: flex;
-            justify-content: space-between;
-            margin-top: -6px;
-            position: relative;
-        }
-        .milestone-node {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 11px;
-            color: #4a6a8a;
-            position: relative;
-        }
-        .milestone-node .dot {
-            width: 16px; height: 16px;
-            border-radius: 50%;
-            background: #1a3a6b;
-            border: 2px solid #4a6a8a;
-            margin-bottom: 4px;
-            transition: 0.3s;
-        }
-        .milestone-node .dot.reached {
-            background: #f5b342;
-            border-color: #f5b342;
-            box-shadow: 0 0 20px rgba(245, 179, 66, 0.6);
-        }
-        .milestone-node .dot.claimed {
-            background: #58c4a0;
-            border-color: #58c4a0;
-            box-shadow: 0 0 20px rgba(88, 196, 160, 0.6);
-        }
-        .milestone-node .dot.locked {
-            background: #1a3a6b;
-            border-color: #4a6a8a;
-        }
-        .milestone-node .label {
-            font-weight: 600;
-        }
-        .milestone-node .label.reached { color: #f5b342; }
-        .milestone-node .label.claimed { color: #58c4a0; }
-        .milestone-node .label.locked { color: #4a6a8a; }
-
-        /* Box cards */
-        .box-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 16px 0 20px;
-            position: relative;
-            z-index: 2;
-        }
-        .box-card {
-            background: rgba(0,0,0,0.5);
-            border-radius: 16px;
-            padding: 14px 10px;
-            border: 1px solid rgba(245, 179, 66, 0.15);
-            text-align: center;
-            transition: 0.3s;
-            position: relative;
-        }
-        .box-card .box-icon { font-size: 40px; margin-bottom: 4px; }
-        .box-card .box-name {
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        .box-card .box-status {
-            font-size: 12px;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-        .box-card .box-status.claimed { color: #58c4a0; }
-        .box-card .box-status.reached { color: #f5b342; }
-        .box-card .box-status.locked { color: #4a6a8a; }
-        .box-card .claim-btn {
-            margin-top: 8px;
-            background: #f5b342;
-            border: none;
-            border-radius: 40px;
-            padding: 6px 16px;
-            font-weight: 700;
-            color: #0a1628;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .box-card .claim-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .box-card .claim-btn:active { background: #d49a2a; }
-        .box-card .bonus-hint {
-            color: #a0b4c8;
-            font-size: 11px;
-            margin-top: 4px;
-        }
-
-        /* Button */
-        .btn-wood {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(145deg, #f5b342, #d49a2a);
-            border: none;
-            border-radius: 40px;
-            font-weight: 800;
-            color: #0a1628;
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: 0 4px 30px rgba(245, 179, 66, 0.3);
-            transition: 0.2s;
-            position: relative;
-            z-index: 2;
-        }
-        .btn-wood:active { transform: scale(0.96); }
-        .btn-wood:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .footer {
-            text-align: center;
-            color: #4a6a8a;
-            font-size: 12px;
-            margin-top: 20px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(245, 179, 66, 0.1);
-            position: relative;
-            z-index: 2;
-        }
-        .footer a { color: #f5b342; text-decoration: none; }
-
-        @media (max-width: 420px) {
-            .box-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .box-card .box-icon { font-size: 32px; }
-        }
-    </style>
+    <title>Mystery Gift – VIVI PAY</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
+
+    <div class="game-container" id="mysteryContainer">
+        <!-- Header -->
         <div class="header">
-            <div class="title">🎁 MYSTERY BOX</div>
-            <a href="dashboard.html" class="back-btn">← Back</a>
+            <div class="title">MYSTERY GIFT</div>
+            <a href="#" class="back-btn" onclick="history.back()">← Back</a>
         </div>
 
-        <div class="info-box">
-            <div class="label">💰 Weekly Deposits</div>
-            <div class="value" id="weeklyDeposits">₹0.00</div>
-            <div style="font-size:13px; color:#4a6a8a; margin-top:2px;">Reset every Monday</div>
-        </div>
+        <!-- Popup Content -->
+        <div class="mystery-popup">
+            <div class="popup-title">🎁 MYSTERY GIFT</div>
+            <div class="popup-subtitle">Complete all tasks to unlock your special reward!</div>
 
-        <!-- Progress bar -->
-        <div class="progress-container">
-            <div class="progress-line">
-                <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+            <!-- Task Row with Progress -->
+            <div class="task-row">
+                <!-- Progress line fill (controlled by JS) -->
+                <div class="progress-line-fill" style="width: 0%;"></div>
+
+                <!-- Task 1 -->
+                <div class="task-box">
+                    <div class="task-circle incomplete">1</div>
+                    <div class="task-label incomplete">Task 1</div>
+                </div>
+
+                <!-- Node 1 -->
+                <div class="task-node"></div>
+
+                <!-- Task 2 -->
+                <div class="task-box">
+                    <div class="task-circle incomplete">2</div>
+                    <div class="task-label incomplete">Task 2</div>
+                </div>
+
+                <!-- Node 2 -->
+                <div class="task-node"></div>
+
+                <!-- Task 3 -->
+                <div class="task-box">
+                    <div class="task-circle incomplete">3</div>
+                    <div class="task-label incomplete">Task 3</div>
+                </div>
+
+                <!-- Node 3 -->
+                <div class="task-node"></div>
+
+                <!-- Task 4 -->
+                <div class="task-box">
+                    <div class="task-circle incomplete">4</div>
+                    <div class="task-label incomplete">Task 4</div>
+                </div>
             </div>
-            <div class="milestone-nodes" id="milestoneNodes">
-                <!-- will be generated by JS -->
-            </div>
-        </div>
 
-        <!-- Box Cards -->
-        <div class="box-grid" id="boxGrid">
-            <!-- Generated by JS -->
-        </div>
+            <!-- Unlock Button -->
+            <button class="btn-wood" id="unlockBtn" disabled>
+                🔒 Complete all tasks to unlock
+            </button>
 
-        <!-- Extra info -->
-        <button class="btn-wood" id="claimAllBtn" disabled>UNLOCK NEXT MYSTERY GIFT</button>
-        <p style="color:#4a6a8a; font-size:13px; text-align:center; margin-top:12px; position:relative; z-index:2;">
-            Each box gives a random bonus. Resets every Monday.
-        </p>
-
-        <div class="footer">
-            VIVI PAY &bull; Mystery Rewards
+            <p style="text-align:center; color:#4a4a5a; font-size:12px; margin-top:12px;">
+                💡 Click on a task circle to mark it complete (demo mode)
+            </p>
         </div>
     </div>
 
-    <script>
-        (function() {
-            const BOXES = [
-                { tier: 1, threshold: 500, name: 'Silver Mystery Box', icon: '🥈', bonus: '₹50-100' },
-                { tier: 2, threshold: 1000, name: 'Gold Mystery Box', icon: '🥇', bonus: '₹75-150' },
-                { tier: 3, threshold: 1500, name: 'Platinum Mystery Box', icon: '💎', bonus: '₹100-200' },
-                { tier: 4, threshold: 2000, name: 'Diamond Mystery Box', icon: '💠', bonus: '₹150-250' },
-                { tier: 5, threshold: 5000, name: 'Grand Mystery Box', icon: '👑', bonus: '₹200-500' }
-            ];
-
-            async function loadMysteryBoxStatus() {
-                try {
-                    const { data: { user }, error } = await supabaseClient.auth.getUser();
-                    if (error || !user) { window.location.href = 'index.html'; return; }
-
-                    const { data, error: rpcError } = await supabaseClient
-                        .rpc('get_mystery_box_status', { p_user_id: user.id });
-
-                    if (rpcError) throw rpcError;
-
-                    const totalDeposits = parseFloat(data.total_deposits) || 0;
-                    const tiers = data.tiers || [];
-
-                    document.getElementById('weeklyDeposits').textContent = '₹' + totalDeposits.toFixed(2);
-
-                    // Progress fill
-                    const progress = Math.min((totalDeposits / 5000) * 100, 100);
-                    document.getElementById('progressFill').style.width = progress + '%';
-
-                    // Render milestones
-                    const nodesContainer = document.getElementById('milestoneNodes');
-                    let nodesHtml = '';
-                    BOXES.forEach((box, idx) => {
-                        const status = tiers[idx] || { milestone_reached: false, claimed: false };
-                        let dotClass = 'locked';
-                        let labelClass = 'locked';
-                        if (status.claimed) { dotClass = 'claimed'; labelClass = 'claimed'; }
-                        else if (status.milestone_reached) { dotClass = 'reached'; labelClass = 'reached'; }
-                        nodesHtml += `
-                            <div class="milestone-node">
-                                <div class="dot ${dotClass}"></div>
-                                <div class="label ${labelClass}">₹${box.threshold}</div>
-                            </div>
-                        `;
-                    });
-                    nodesContainer.innerHTML = nodesHtml;
-
-                    // Render boxes
-                    const grid = document.getElementById('boxGrid');
-                    let gridHtml = '';
-                    let allClaimed = true;
-                    BOXES.forEach((box, idx) => {
-                        const status = tiers[idx] || { milestone_reached: false, claimed: false };
-                        const isClaimed = status.claimed;
-                        const isReached = status.milestone_reached;
-                        const statusText = isClaimed ? '✅ Claimed' : (isReached ? '🔓 Ready' : '🔒 Locked');
-                        const statusClass = isClaimed ? 'claimed' : (isReached ? 'reached' : 'locked');
-                        const btnDisabled = !isReached || isClaimed;
-                        if (!isClaimed) allClaimed = false;
-
-                        gridHtml += `
-                            <div class="box-card">
-                                <div class="box-icon">${box.icon}</div>
-                                <div class="box-name">${box.name}</div>
-                                <div class="box-status ${statusClass}">${statusText}</div>
-                                <div class="bonus-hint">Bonus: ${box.bonus}</div>
-                                <button class="claim-btn" data-tier="${box.tier}" ${btnDisabled ? 'disabled' : ''}>
-                                    ${isClaimed ? 'Claimed' : (isReached ? 'Claim' : 'Locked')}
-                                </button>
-                            </div>
-                        `;
-                    });
-                    grid.innerHTML = gridHtml;
-
-                    // Attach claim events
-                    document.querySelectorAll('.claim-btn:not([disabled])').forEach(btn => {
-                        btn.addEventListener('click', async function() {
-                            const tier = parseInt(this.dataset.tier);
-                            await claimBox(tier, user.id);
-                        });
-                    });
-
-                    // Update main button
-                    const mainBtn = document.getElementById('claimAllBtn');
-                    if (allClaimed) {
-                        mainBtn.disabled = true;
-                        mainBtn.textContent = '🎉 All boxes claimed this week!';
-                    } else {
-                        // Find next unclaimed that is reached
-                        let nextTier = null;
-                        for (let i = 0; i < BOXES.length; i++) {
-                            const status = tiers[i] || {};
-                            if (!status.claimed && status.milestone_reached) {
-                                nextTier = BOXES[i];
-                                break;
-                            }
-                        }
-                        if (nextTier) {
-                            mainBtn.disabled = false;
-                            mainBtn.textContent = `🎁 Claim ${nextTier.name}`;
-                            mainBtn.dataset.tier = nextTier.tier;
-                        } else {
-                            mainBtn.disabled = true;
-                            mainBtn.textContent = '🔒 Deposit to unlock next box';
-                        }
-                    }
-
-                } catch (err) {
-                    console.error(err);
-                    alert('Failed to load mystery box status.');
-                }
-            }
-
-            async function claimBox(tier, userId) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .rpc('claim_mystery_box', { p_user_id: userId, p_tier: tier });
-
-                    if (error) throw error;
-                    if (!data.success) {
-                        alert(data.message || 'Failed to claim.');
-                        return;
-                    }
-                    alert('🎉 ' + data.message);
-                    // Refresh
-                    loadMysteryBoxStatus();
-                } catch (err) {
-                    console.error(err);
-                    alert('Error claiming box.');
-                }
-            }
-
-            // Main claim button
-            document.getElementById('claimAllBtn').addEventListener('click', function() {
-                const tier = parseInt(this.dataset.tier);
-                if (!tier) return;
-                const userId = supabaseClient.auth.user()?.id;
-                if (userId) claimBox(tier, userId);
-            });
-
-            loadMysteryBoxStatus();
-        })();
-    </script>
-
+    <script src="script.js"></script>
 </body>
 </html>
