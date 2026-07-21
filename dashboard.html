@@ -65,7 +65,10 @@
 
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn {
+            from { opacity:0; transform:translateY(8px); }
+            to { opacity:1; transform:translateY(0); }
+        }
 
         .page-header {
             display: flex;
@@ -139,21 +142,6 @@
             transition: all 0.3s;
         }
         .btn-primary-full:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(245,179,66,0.3); }
-
-        .btn-wood {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(145deg, #f5b342, #d49a2a);
-            border: none;
-            border-radius: 40px;
-            font-weight: 800;
-            color: #0a0a0f;
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: 0 4px 30px rgba(245, 179, 66, 0.3);
-            transition: 0.2s;
-        }
-        .btn-wood:active { transform: scale(0.95); }
 
         .token-card {
             background: rgba(0,0,0,0.3);
@@ -1052,7 +1040,22 @@
                 });
                 if (tabId === 'home' || tabId === 'mine') loadDashboard();
                 if (tabId === 'buy') loadPackages();
-                if (tabId === 'deposit') loadDepositHistory();
+                if (tabId === 'deposit') {
+                    loadDepositHistory();
+                    // ---- Pre-fill deposit amount from mystery box ----
+                    const prefillAmount = sessionStorage.getItem('prefill_deposit');
+                    if (prefillAmount) {
+                        setTimeout(() => {
+                            const depositInput = document.getElementById('depositAmount');
+                            if (depositInput) {
+                                depositInput.value = prefillAmount;
+                                const qrBtn = document.getElementById('generateQRBtn');
+                                if (qrBtn) qrBtn.click();
+                            }
+                            sessionStorage.removeItem('prefill_deposit');
+                        }, 300);
+                    }
+                }
                 if (tabId === 'withdraw') loadWithdrawHistory();
                 if (tabId === 'mine') loadActiveInvestments();
             }
@@ -1166,16 +1169,6 @@
                                 }
                             }
                         });
-
-                        // Check if any milestone reached and not claimed -> show popup
-                        let milestoneToClaim = null;
-                        for (let i = 0; i < tiers.length; i++) {
-                            if (tiers[i].milestone_reached && !tiers[i].claimed) {
-                                milestoneToClaim = tiers[i];
-                                break;
-                            }
-                        }
-                        // We'll handle popup separately via the timer
                     }
 
                     // ---- Referral ----
@@ -1689,7 +1682,6 @@
 
             async function showMysteryPopup() {
                 if (!currentUser) return;
-                // Check if any milestone reached and not claimed
                 const { data, error } = await supabaseClient
                     .rpc('get_mystery_box_status', { p_user_id: currentUser.id });
                 if (error || !data) return;
@@ -1702,15 +1694,10 @@
                     }
                 }
                 if (!claimable) return;
-
-                // Fetch possible bonus amount (random within range)
-                // We'll call claim function later with a random amount
-                // For now, we show a generic popup
                 const bonus = Math.floor(Math.random() * 451) + 50;
                 popupBonus.textContent = bonus;
                 mysteryPopup.classList.add('show');
                 localStorage.setItem('mystery_popup_time_' + currentUser.id, Date.now().toString());
-                // Store the tier for claim
                 mysteryClaimTier = claimable.tier;
             }
 
@@ -1751,17 +1738,7 @@
                 localStorage.setItem('mystery_popup_last_' + currentUser.id, today);
                 closeMysteryPopup();
             });
-// ---- Pre-fill deposit amount from mystery box ----
-const prefillAmount = sessionStorage.getItem('prefill_deposit');
-if (prefillAmount) {
-    const depositInput = document.getElementById('depositAmount');
-    if (depositInput) {
-        depositInput.value = prefillAmount;
-        // Optionally trigger QR generation automatically
-        document.getElementById('generateQRBtn').click();
-    }
-    sessionStorage.removeItem('prefill_deposit');
-}
+
             // ---- Init ----
             (async function init() {
                 await loadDashboard();
